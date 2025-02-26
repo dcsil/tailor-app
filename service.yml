@@ -1,0 +1,14 @@
+tools:
+  exceptions: 
+  ci: https://github.com/dcsil/tailor-app/actions
+
+services:
+  production: 
+
+docs:
+  getting_started: https://github.com/dcsil/tailor-app
+  
+commands:
+  bootstrap: 
+  server: 
+  test: 
