@@ -1,5 +1,6 @@
 tools:
   exceptions: 
+  logging: 
   ci: https://github.com/dcsil/tailor-app/actions
 
 services:
