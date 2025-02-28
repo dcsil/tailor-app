@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Load environment variables
+source .env
+
+# MongoDB
+python backend/init_mongo.py
+
+# Backend
+cd backend
+pip install -r requirements.txt 
+
+# Frontend dependencies
+cd ../frontend
+npm install
+
+# Docker Compose
+docker-compose up -d
+
+echo "Services are up and running."
