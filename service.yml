@@ -1,5 +1,5 @@
 tools:
-  exceptions: 
+  exceptions: https://tailor-ra.sentry.io/issues/
   logging: 
   ci: https://github.com/dcsil/tailor-app/actions
 
