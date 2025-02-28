@@ -12,9 +12,7 @@ function App() {
       </div>
       <h1>Hello World!</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+      <button onClick={() => {throw new Error("This is your first error!");}}>Break the world</button>
       </div>
       <p className="read-the-docs">
         Made using Vite
