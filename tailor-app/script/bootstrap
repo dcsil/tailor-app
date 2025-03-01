@@ -3,12 +3,12 @@
 # Load environment variables
 source .env
 
-# MongoDB
-python backend/init_mongo.py
-
 # Backend
 cd backend
 pip install -r requirements.txt 
+
+# MongoDB
+python backend/init_mongo.py
 
 # Frontend dependencies
 cd ../frontend

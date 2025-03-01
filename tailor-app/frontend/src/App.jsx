@@ -8,7 +8,7 @@ function App() {
   // temporary for checking backend and frontend integration
   const [healthStatus, setHealthStatus] = useState(null);
   const API_URL = import.meta.env.VITE_BACKEND_URL;
-  print(API_URL)
+  
   useEffect(() => {
     fetch(`${API_URL}/health`)
       .then(response => response.json()) 
