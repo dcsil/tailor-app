@@ -32,10 +32,6 @@ TEMPLATES = {
     }
 }
 
-@app.route('/', methods=['GET'])
-def home():
-    return "Hello, World!"
-
 @app.route('/api/generate', methods=['POST'])
 def generate_response():
     data = request.json
@@ -66,12 +62,14 @@ def generate_response():
 def health_check():
     return jsonify({'status': 'ok'})
 
+# Serve static files from the React app
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path != "" and os.path.exists(app.static_folder + '/' + path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, 'index.html')
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
