@@ -11,6 +11,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    sourcemap: false
+    sourcemap: false,
+    rollupOptions: {
+      context: 'globalThis',
+      external: ['@rollup/rollup-linux-x64-gnu']
+    }
   }
 })
