@@ -6,7 +6,7 @@
       "npm": "9.x"
     },
     "scripts": {
-      "heroku-postbuild": "cd frontend && npm install --include=dev && npm run build"
+      "heroku-postbuild": "cd frontend && npm install --include=dev --no-optional && ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 npm run build"
     },
     "cacheDirectories": ["frontend/node_modules"]
 }
