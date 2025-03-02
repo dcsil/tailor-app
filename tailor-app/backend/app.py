@@ -1,15 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import cohere
 import os
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
+import os.path
 
 # Load environment variables
 load_dotenv()
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/dist')
 CORS(app)  # Enable CORS for development
 
 # Initialize Cohere client
@@ -64,6 +65,13 @@ def generate_response():
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'ok'})
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
