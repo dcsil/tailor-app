@@ -23,7 +23,11 @@ jobs:
               run: |
                 cd tailor-app/frontend
                 npm ci
-            - name: tests
+            - name: front-end tests
               run: |
                 cd tailor-app/frontend  
                 npm test 
+            - name: back-end tests
+              run: |
+                cd tailor-app/backend
+                pytest tests/
