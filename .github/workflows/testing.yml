@@ -25,5 +25,5 @@ jobs:
                 npm ci
             - name: tests
               run: |
-                cd frontend  
+                cd tailor-app/frontend  
                 npm test 
