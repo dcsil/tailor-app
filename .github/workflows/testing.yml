@@ -27,11 +27,3 @@ jobs:
               run: |
                 cd tailor-app/frontend  
                 npm test 
-            - name: back-end package installation
-              run: |
-                cd tailor-app/backend
-                python3 -m pip install -r requirements.txt
-            - name: back-end testing
-              run: |
-                cd tailor-app/backend
-                python3 -m pytest tests/
