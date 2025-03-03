@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import tailorLogo from './assets/tailor-blank-bg.png'
 import './App.css'
 import Chat from './components/Chat'
+import { getBackendUrl } from './utils/env';
 
 function App() {
   const [count, setCount] = useState(0)
   
   // temporary for checking backend and frontend integration
   const [healthStatus, setHealthStatus] = useState(null);
-  const API_URL = import.meta.env.VITE_BACKEND_URL;
+  const API_URL = getBackendUrl();
   
   useEffect(() => {
     fetch(`${API_URL}/health`)
