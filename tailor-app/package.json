@@ -1,0 +1,12 @@
+{
+    "name": "tailor-app",
+    "version": "1.0.0",
+    "engines": {
+      "node": "18.x",
+      "npm": "9.x"
+    },
+    "scripts": {
+      "heroku-postbuild": "cd frontend && npm install --include=dev --no-optional && npm install @rollup/rollup-linux-x64-gnu --no-save && ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 npm run build"
+    },
+    "cacheDirectories": ["frontend/node_modules"]
+}

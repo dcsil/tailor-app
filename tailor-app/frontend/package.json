@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "jest-environment-jsdom": "^29.7.0",
@@ -43,5 +44,9 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "vite": "^6.2.0"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
   }
 }

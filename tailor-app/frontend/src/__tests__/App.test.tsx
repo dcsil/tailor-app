@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 
 // Mock the modules before importing App
 jest.mock("../utils/env");
@@ -25,8 +25,11 @@ describe('App Component', () => {
     expect(true).toBe(true);
   });
 
-  test("Renders the main page", () => {
-    render(<App />);
+  test("Renders the main page", async () => {
+    await act(async () => {
+      render(<App />);
+    });
+
     expect(screen.getByText("Hello World!")).toBeInTheDocument();
     // Test if the mocked Chat component is present
     expect(screen.getByTestId("chat-component")).toBeInTheDocument();
