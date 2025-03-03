@@ -18,8 +18,12 @@ jobs:
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v1
               with:
-                node-version: ${{ matrix.node-version }}
-            - name: npm install
-              run: npm ci
-            - name: tests
-              run: npm test 
+                node-version: ${{ matrix.node-version }} 
+            - name: back-end package installation
+              run: |
+                cd tailor-app/backend
+                python3 -m pip install -r requirements.txt
+            - name: back-end testing
+              run: |
+                cd tailor-app/backend
+                python3 -m pytest tests/
