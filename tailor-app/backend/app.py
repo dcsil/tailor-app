@@ -7,8 +7,19 @@ from azure.storage.blob import BlobServiceClient
 import os.path
 
 # Load environment variables
-load_dotenv()
+# Detect if running on Heroku
+is_heroku = 'DYNO' in os.environ
 
+# Load from .env file with appropriate override setting
+current_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(current_dir, '.env')
+
+if is_heroku:
+    # On Heroku: Don't override platform environment variables
+    load_dotenv(dotenv_path=env_path)
+else:
+    # Locally: Force override to handle your local environment issue
+    load_dotenv(dotenv_path=env_path, override=True)
 # Initialize Flask app
 app = Flask(__name__, static_folder='../frontend/dist')
 CORS(app)  # Enable CORS for development
