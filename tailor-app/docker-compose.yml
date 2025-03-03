@@ -1,0 +1,51 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: ../.docker/Dockerfile-backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
+      - PINTEREST_API_KEY=${PINTEREST_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - VITE_GRAPHQL_URI=${VITE_GRAPHQL_URI}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: ../.docker/Dockerfile-frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_GRAPHQL_URI=${VITE_GRAPHQL_URI}
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
+volumes:
+  mongo-data:
+    driver: local

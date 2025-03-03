@@ -1,10 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
 import tailorLogo from './assets/tailor-blank-bg.png'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
+  
+  // temporary for checking backend and frontend integration
+  const [healthStatus, setHealthStatus] = useState(null);
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+  
+  useEffect(() => {
+    fetch(`${API_URL}/health`)
+      .then(response => response.json()) 
+      .then(data => {
+        setHealthStatus(data.status); 
+      })
+      .catch(error => {
+        console.error("Error fetching health check:", error); 
+      });
+  }, []);
+  
   return (
     <>
       <div>
@@ -17,7 +32,7 @@ function App() {
         </button>
       </div>
       <p className="read-the-docs">
-        Made using Vite
+        {healthStatus ? ` - Backend Status: ${healthStatus}` : " - Checking backend connection"}
       </p>
     </>
   )

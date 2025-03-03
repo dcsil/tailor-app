@@ -3,6 +3,7 @@ from flask_cors import CORS
 import cohere
 import os
 from dotenv import load_dotenv
+from azure.storage.blob import BlobServiceClient
 
 # Load environment variables
 load_dotenv()
@@ -30,6 +31,9 @@ TEMPLATES = {
     }
 }
 
+@app.route('/', methods=['GET'])
+def home():
+    return "Hello, World!"
 
 @app.route('/api/generate', methods=['POST'])
 def generate_response():
@@ -62,5 +66,5 @@ def health_check():
     return jsonify({'status': 'ok'})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)
