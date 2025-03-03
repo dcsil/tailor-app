@@ -34,4 +34,4 @@ jobs:
             - name: back-end testing
               run: |
                 cd tailor-app/backend
-                python3 -m pip pytest tests/
+                python3 -m pytest tests/
