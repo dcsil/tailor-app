@@ -32,6 +32,10 @@ TEMPLATES = {
     }
 }
 
+@app.route('/', methods=['GET'])
+def home():
+    return "Hello, World!"
+    
 @app.route('/api/generate', methods=['POST'])
 def generate_response():
     data = request.json
