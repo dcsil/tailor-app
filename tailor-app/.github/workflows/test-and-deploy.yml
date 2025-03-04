@@ -1,7 +1,10 @@
-name: Unit Tests
+name: Test and Deploy
 
 on:
     pull_request:
+        branches:
+            - main
+    push:
         branches:
             - main
 
@@ -35,3 +38,20 @@ jobs:
               run: |
                 cd tailor-app/backend
                 python3 -m pytest tests/
+
+    deploy:
+        needs: tests
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # only executes on push
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: install heroku CLI
+              run: curl https://cli-assets.heroku.com/install.sh | sh
+          
+            - name: deploy to heroku
+              uses: akhileshns/heroku-deploy@v3.12.13
+              with:
+                heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+                heroku_app_name: "tailor"
+                heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          
