@@ -12,4 +12,4 @@ docs:
 commands:
   bootstrap: script/bootstrap
   server: cd tailor-app; cd frontend; npm install; npm run dev
-  test: npm test
+  test: npm run test
