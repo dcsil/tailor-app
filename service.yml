@@ -4,12 +4,14 @@ tools:
   ci: https://github.com/dcsil/tailor-app/actions
 
 services:
-  production: 
+  production: https://tailor-4d71417e9aab.herokuapp.com/
 
 docs:
   getting_started: https://github.com/dcsil/tailor-app
   
 commands:
-  bootstrap: 
-  server: 
+  bootstrap: script/bootstrap
+  server: cd frontend; npm install; npm run dev
   test: 
+    frontend: npm test
+    backend: pytest tests/
