@@ -11,5 +11,7 @@ docs:
   
 commands:
   bootstrap: script/bootstrap
-  server: cd tailor-app; cd frontend; npm install; npm run dev
+  server:
+    frontend: cd tailor-app; cd frontend; npm run dev
+    backend: cd tailor-app; cd backend; python3 app.py
   test: cd tailor-app; npm run test
