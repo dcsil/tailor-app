@@ -6,7 +6,8 @@
       "npm": "9.x"
     },
     "scripts": {
-      "heroku-postbuild": "cd frontend && npm install --include=dev --no-optional && npm install @rollup/rollup-linux-x64-gnu --no-save && ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 npm run build"
+      "heroku-postbuild": "cd frontend && npm install --include=dev --no-optional && npm install @rollup/rollup-linux-x64-gnu --no-save && ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 npm run build",
+      "test": "(cd frontend && npm test) && (cd backend && pytest tests/)"
     },
     "cacheDirectories": ["frontend/node_modules"]
 }
