@@ -1,6 +1,6 @@
 tools:
   exceptions: https://tailor-ra.sentry.io/issues/
-  logging: 
+  logging: https://service.us2.sumologic.com/ui/?appName=tailor&addonId=sumologic#/home
   ci: https://github.com/dcsil/tailor-app/actions
 
 services:
@@ -11,7 +11,5 @@ docs:
   
 commands:
   bootstrap: script/bootstrap
-  server: cd frontend; npm install; npm run dev
-  test: 
-    frontend: cd frontend; npm test
-    backend: cd backend; pytest tests/
+  server: cd tailor-app; cd frontend; npm install; npm run dev
+  test: npm test
