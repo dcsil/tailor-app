@@ -1,3 +1,4 @@
+import sentry_sdk
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import cohere
@@ -5,6 +6,22 @@ import os
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 import os.path
+
+sentry_sdk.init(
+    dsn="https://31ac1b5e4bbf822e2c0589df00b27a26@o4508887891836928.ingest.us.sentry.io/4508905308815360",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    _experiments={
+        # Set continuous_profiling_auto_start to True
+        # to automatically start the profiler on when
+        # possible.
+        "continuous_profiling_auto_start": True,
+    },
+)
 
 # Load environment variables
 load_dotenv()
@@ -61,6 +78,11 @@ def generate_response():
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'ok'})
+
+@app.route("/error/test")
+def error_test():
+    1/0  # raises an error
+    return "<p>This is a Sentry error test.</p>"
 
 # Serve static files from the React app
 @app.route('/', defaults={'path': ''})
