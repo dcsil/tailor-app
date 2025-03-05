@@ -28,11 +28,8 @@ function App() {
         <img src={tailorLogo} className="h-16 mx-auto" alt="Tailor logo" />
       </div>
       <h1>Hello World!</h1>
-      {/* <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div> */}
+
+      <button onClick={() => {throw new Error("This is your first error!");}}>Break the world</button>
       
       <div className="mt-8">
         <Chat />
