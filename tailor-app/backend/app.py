@@ -1,11 +1,21 @@
 import sentry_sdk
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session
 from flask_cors import CORS
 import cohere
 import os
+import time
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 import os.path
+import uuid
+
+# Import MongoDB functionality
+from init_mongo import (
+    initialize_user,
+    insert_document,
+    find_documents,
+    update_document
+)
 
 sentry_sdk.init(
     dsn="https://31ac1b5e4bbf822e2c0589df00b27a26@o4508887891836928.ingest.us.sentry.io/4508905308815360",
@@ -28,6 +38,7 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__, static_folder='../frontend/dist')
+app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
 CORS(app)  # Enable CORS for development
 
 # Initialize Cohere client
@@ -49,6 +60,16 @@ TEMPLATES = {
     }
 }
   
+# For demo purposes - enables session user tracking
+def get_user_id():
+    """Get current user ID from session or create a temporary one"""
+    if 'user_id' not in session:
+        session['user_id'] = f"user_{uuid.uuid4().hex[:8]}"
+        # Initialize collections for this user
+        initialize_user(session['user_id'])
+        print(f"Created new user ID: {session['user_id']}")
+    return session['user_id']
+
 @app.route('/api/generate', methods=['POST'])
 def generate_response():
     data = request.json
@@ -57,7 +78,18 @@ def generate_response():
     
     try:
         template = TEMPLATES[template_name]
+        user_id = get_user_id()
         
+        # Store conversation in MongoDB
+        conversation_doc = {
+            "prompt": user_prompt,
+            "template": template_name,
+            "timestamp": time.time()
+        }
+        
+        doc_id = insert_document(user_id, "conversations", conversation_doc)
+        print(f"Saved conversation with ID: {doc_id}")
+
         response = co.chat(
             model=CHAT_MODEL,
             messages=[
@@ -68,12 +100,42 @@ def generate_response():
             max_tokens=template['max_tokens']
         )
         
+        response_text = response.message.content[0].text
+        
+        # Update the document with the response
+        update_document(
+            user_id, 
+            "conversations", 
+            doc_id, 
+            {"response": response_text}
+        )
+        
         return jsonify({
-            'response': response.message.content[0].text
+            'response': response_text,
+            'conversation_id': doc_id,
+            'user_id': user_id
         })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    """Retrieve conversation history for the current user"""
+    user_id = get_user_id()
+    
+    # Fetch recent conversations
+    conversations = list(find_documents(
+        user_id, 
+        "conversations", 
+        {}
+    ).sort("timestamp", -1).limit(10))
+    
+    # Convert ObjectId to string for JSON serialization
+    for conv in conversations:
+        conv["_id"] = str(conv["_id"])
+    
+    return jsonify(conversations)
 
 @app.route('/health', methods=['GET'])
 def health_check():
