@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 import os.path
 import uuid
+from pathlib import Path
 
 # Import MongoDB functionality
 from init_mongo import (
@@ -33,8 +34,12 @@ sentry_sdk.init(
     },
 )
 
+BASE_DIR = Path(__file__).resolve().parent
+backend_env = BASE_DIR / ".env"
+root_env = BASE_DIR.parent / ".env"
+
 # Load environment variables
-load_dotenv()
+load_dotenv(dotenv_path=root_env, override=True)
 
 # Initialize Flask app
 app = Flask(__name__, static_folder='../frontend/dist')

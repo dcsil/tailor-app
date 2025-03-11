@@ -1,12 +1,20 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from dotenv import load_dotenv
 import os
 import logging
 import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+backend_env = BASE_DIR / ".env"
+root_env = BASE_DIR.parent / ".env"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+load_dotenv(dotenv_path=root_env, override=True)
 
 # Configuration management with validation
 def get_config():
