@@ -117,7 +117,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx"
-  ],
+, "src/__tests__/Home.test.jsx"  ],
   "exclude": [
     "node_modules",
     "**/*.js",
