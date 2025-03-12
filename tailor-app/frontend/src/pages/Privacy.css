@@ -1,9 +1,15 @@
-/* PrivacyPolicy.css */
+/* Privacy.css */
+
+.logo {
+  cursor: pointer;
+  width: 10%;
+  margin-left: -9rem;
+  margin-top: -3rem;
+}
 
 /* Container */
 .privacy-policy-container {
     max-width: 900px;
-    margin: 40px auto;
     padding: 20px;
     background-color: #ffffff;
     border-radius: 8px;

@@ -1,7 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import './Privacy.css';
+import tailorLogo from '../assets/tailor-blank-bg.png'
 
 const Privacy = () => {
+  const navigate = useNavigate();
     return (
+      <>
+      <img src={tailorLogo} className="logo" alt="Tailor logo" onClick={() => navigate("/")} />
         <div className="privacy-policy-container">
           <h1 className="privacy-policy-title">Privacy Policy</h1>
     
@@ -76,6 +81,7 @@ const Privacy = () => {
             </p>
           </section>
         </div>
+        </>
       );
 };
 
