@@ -2,6 +2,7 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, act } from "@testing-library/react";
 
+
 // Mock the modules before importing App
 jest.mock("../utils/env");
 jest.mock("../components/Chat", () => {
@@ -18,20 +19,25 @@ jest.mock("../components/Chat", () => {
 );
 
 // Import App after the mocks are set up
-import App from "../App";
+import Home from "../pages/Home";
+import { BrowserRouter as Router } from "react-router-dom";
 
-describe('App Component', () => {
+describe('Home Component', () => {
   test('demo', () => {
     expect(true).toBe(true);
   });
 
   test("Renders the main page", async () => {
     await act(async () => {
-      render(<App />);
+        render(
+            <Router>
+              <Home />
+            </Router>
+          );
     });
 
-    expect(screen.getByText("Hello World!")).toBeInTheDocument();
     // Test if the mocked Chat component is present
     expect(screen.getByTestId("chat-component")).toBeInTheDocument();
+    expect(screen.getByTitle("privacy")).toBeInTheDocument();
   });
 });
