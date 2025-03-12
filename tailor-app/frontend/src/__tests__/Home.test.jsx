@@ -2,7 +2,6 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, act } from "@testing-library/react";
 
-
 // Mock the modules before importing App
 jest.mock("../utils/env");
 jest.mock("../components/Chat", () => {
@@ -12,7 +11,7 @@ jest.mock("../components/Chat", () => {
 });
 
 // Mock the fetch API
-(window as any).fetch = jest.fn(() => 
+window.fetch = jest.fn(() => 
     Promise.resolve({
       json: () => Promise.resolve({ status: 'ok' }),
     })
