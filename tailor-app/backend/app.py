@@ -12,6 +12,7 @@ from pathlib import Path
 
 # Import MongoDB functionality
 from init_mongo import (
+    initialize_mongo,
     initialize_user,
     insert_document,
     find_documents,
@@ -45,6 +46,9 @@ load_dotenv(dotenv_path=root_env, override=True)
 app = Flask(__name__, static_folder='../frontend/dist')
 app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
 CORS(app)  # Enable CORS for development
+
+# Initialize MongoDB connection
+mongo_client, mongo_db = initialize_mongo()
 
 # Initialize Cohere client
 co = cohere.ClientV2(
@@ -161,5 +165,9 @@ def serve(path):
         return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == "__main__":
+    # Ensure database connection is initialized when running as a standalone app
+    if mongo_client is None and mongo_db is None:
+        initialize_mongo(force_connect=True)
+    
     port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)

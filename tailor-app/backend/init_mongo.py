@@ -16,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(dotenv_path=root_env, override=True)
 
+# Global variables
+client = None
+db = None
+testing_mode = os.getenv("TESTING", "False").lower() == "true"
+
 # Configuration management with validation
 def get_config():
     config = {
@@ -40,31 +45,53 @@ def get_config():
     logger.info(f"Using database: {config['db_name']}")
     return config
 
-# Get validated configuration
-config = get_config()
-MONGO_URI = config["mongo_uri"]
-DB_NAME = config["db_name"]
+# Initialize MongoDB connection
+def initialize_mongo(force_connect=False):
+    global client, db
+    
+    if testing_mode and not force_connect:
+        logger.info("Running in test mode without MongoDB connection")
+        return None, None
+    
+    config = get_config()
+    MONGO_URI = config["mongo_uri"]
+    DB_NAME = config["db_name"]
+    
+    # Connection with timeout settings for cloud deployment
+    client = MongoClient(
+        MONGO_URI,
+        serverSelectionTimeoutMS=5000,  # 5 seconds timeout for server selection
+        connectTimeoutMS=10000,         # 10 seconds to establish a connection
+        socketTimeoutMS=45000           # 45 seconds for operations
+    )
 
-# Connection with timeout settings for cloud deployment
-client = MongoClient(
-    MONGO_URI,
-    serverSelectionTimeoutMS=5000,  # 5 seconds timeout for server selection
-    connectTimeoutMS=10000,         # 10 seconds to establish a connection
-    socketTimeoutMS=45000           # 45 seconds for operations
-)
+    try:
+        client.admin.command('ping')
+        logger.info("Successfully connected to MongoDB Atlas")
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB Atlas: {e}")
+        if force_connect:
+            raise
+        else:
+            # Allow tests to continue
+            logger.warning("Continuing without database connection for testing")
+            return None, None
 
-try:
-    client.admin.command('ping')
-    logger.info("Successfully connected to MongoDB Atlas")
-except Exception as e:
-    logger.error(f"Failed to connect to MongoDB Atlas: {e}")
-    raise
-
-db = client.get_database(DB_NAME)
-
+    db = client.get_database(DB_NAME)
+    return client, db
 
 # User collection management
 def get_user_collection(user_id, collection_type):
+    if db is None:
+        if testing_mode:
+            logger.debug(f"Test mode: Simulating access to collection user_{user_id}_{collection_type}")
+            return MockCollection(f"user_{user_id}_{collection_type}")
+        else:
+            # Initialize connection for lazy loading
+            initialize_mongo()
+            if db is None:
+                raise RuntimeError("Database connection failed and not in testing mode")
+    
     return db.get_collection(f"user_{user_id}_{collection_type}")
 
 # Basic CRUD operations
@@ -73,7 +100,7 @@ def insert_document(user_id, collection_type, document):
     result = collection.insert_one(document)
     return str(result.inserted_id)
 
-def find_documents(user_id, collection_type, query = None):
+def find_documents(user_id, collection_type, query=None):
     collection = get_user_collection(user_id, collection_type)
     return collection.find(query or {})
 
@@ -89,7 +116,7 @@ def delete_document(user_id, collection_type, document_id):
     return collection.delete_one({"_id": ObjectId(document_id)})
 
 # Stub for future vector operations
-def vector_search_stub(user_id, query_text, limit = 10):
+def vector_search_stub(user_id, query_text, limit=10):
     logger.info(f"Vector search stub called for user {user_id} with query: {query_text}")
     return []
 
@@ -97,7 +124,9 @@ def vector_search_stub(user_id, query_text, limit = 10):
 def initialize_user(user_id):
     # Conversations collection
     conversations = get_user_collection(user_id, "conversations")
-    conversations.create_index("timestamp")
+    
+    if not testing_mode:
+        conversations.create_index("timestamp")
     
     logger.info(f"Initialized collections for user: {user_id}")
     
@@ -106,3 +135,44 @@ def initialize_user(user_id):
         "initialized": True,
         "collections": ["conversations"]
     }
+
+# Mock collection for testing
+class MockCollection:
+    def __init__(self, name):
+        self.name = name
+        self.data = []
+        
+    def insert_one(self, document):
+        document_id = ObjectId()
+        document["_id"] = document_id
+        self.data.append(document)
+        
+        class Result:
+            def __init__(self, inserted_id):
+                self.inserted_id = inserted_id
+        
+        return Result(document_id)
+    
+    def find(self, query=None):
+        return []
+    
+    def update_one(self, filter_dict, update_dict):
+        class Result:
+            def __init__(self):
+                self.modified_count = 0
+        
+        return Result()
+    
+    def delete_one(self, filter_dict):
+        class Result:
+            def __init__(self):
+                self.deleted_count = 0
+        
+        return Result()
+    
+    def create_index(self, field_name):
+        pass
+
+# Only initialize connection if this file is run directly or if we're not in testing mode
+if __name__ == "__main__" or not testing_mode:
+    initialize_mongo()
