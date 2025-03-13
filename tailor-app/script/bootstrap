@@ -8,7 +8,7 @@ cd backend
 pip install -r requirements.txt 
 
 # MongoDB
-python ../backend/init_mongo.py
+python ../backend/mongo_db/init_mongo.py
 
 # Frontend dependencies
 cd ../frontend

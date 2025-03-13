@@ -100,6 +100,11 @@ def insert_document(user_id, collection_type, document):
     result = collection.insert_one(document)
     return str(result.inserted_id)
 
+def insert_documents(user_id, collection_type, documents):
+    collection = get_user_collection(user_id, collection_type)
+    results = collection.insert_many(documents)
+    return [str(doc_id) for doc_id in results.inserted_ids] 
+
 def find_documents(user_id, collection_type, query=None):
     collection = get_user_collection(user_id, collection_type)
     return collection.find(query or {})
@@ -114,6 +119,11 @@ def update_document(user_id, collection_type, document_id, update):
 def delete_document(user_id, collection_type, document_id):
     collection = get_user_collection(user_id, collection_type)
     return collection.delete_one({"_id": ObjectId(document_id)})
+
+def delete_documents(user_id, collection_type, document_ids):
+    collection = get_user_collection(user_id, collection_type)
+    object_ids = [ObjectId(doc_id) for doc_id in document_ids]  
+    return collection.delete_many({"_id": {"$in": object_ids}})
 
 # Stub for future vector operations
 def vector_search_stub(user_id, query_text, limit=10):
