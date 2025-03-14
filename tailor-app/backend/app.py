@@ -1,22 +1,19 @@
 import sentry_sdk
-from flask import Flask, request, jsonify, send_from_directory, session
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
-import cohere
 import os
-import time
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 import os.path
-import uuid
 from pathlib import Path
+from routes.pin_routes import pin_bp
+from routes.chat_routes import chat_bp
+# from routes.moodboard_routes import moodboard_bp
+
 
 # Import MongoDB functionality
 from init_mongo import (
     initialize_mongo,
-    initialize_user,
-    insert_document,
-    find_documents,
-    update_document
 )
 
 sentry_sdk.init(
@@ -50,101 +47,9 @@ CORS(app)  # Enable CORS for development
 # Initialize MongoDB connection
 mongo_client, mongo_db = initialize_mongo()
 
-# Initialize Cohere client
-co = cohere.ClientV2(
-    api_key=os.getenv('COHERE_API_KEY'))
-CHAT_MODEL = "command-r-08-2024"
-
-# Prompt templates
-TEMPLATES = {
-    'basic_chat': {
-        'system_prompt': "You are a helpful fashion assistant.",
-        'temperature': 0.7,
-        'max_tokens': 300
-    },
-    'expert_mode': {
-        'system_prompt': "You are an expert programmer focused on providing technical solutions.",
-        'temperature': 0.3,
-        'max_tokens': 500
-    }
-}
-  
-# For demo purposes - enables session user tracking
-def get_user_id():
-    """Get current user ID from session or create a temporary one"""
-    if 'user_id' not in session:
-        session['user_id'] = f"user_{uuid.uuid4().hex[:8]}"
-        # Initialize collections for this user
-        initialize_user(session['user_id'])
-        print(f"Created new user ID: {session['user_id']}")
-    return session['user_id']
-
-@app.route('/api/generate', methods=['POST'])
-def generate_response():
-    data = request.json
-    user_prompt = data.get('prompt', '')
-    template_name = data.get('template', 'basic_chat')
-    
-    try:
-        template = TEMPLATES[template_name]
-        user_id = get_user_id()
-        
-        # Store conversation in MongoDB
-        conversation_doc = {
-            "prompt": user_prompt,
-            "template": template_name,
-            "timestamp": time.time()
-        }
-        
-        doc_id = insert_document(user_id, "conversations", conversation_doc)
-        print(f"Saved conversation with ID: {doc_id}")
-
-        response = co.chat(
-            model=CHAT_MODEL,
-            messages=[
-                {"role": "system", "content": template['system_prompt']},
-                {"role": "user", "content": user_prompt}
-            ],
-            temperature=template['temperature'],
-            max_tokens=template['max_tokens']
-        )
-        
-        response_text = response.message.content[0].text
-        
-        # Update the document with the response
-        update_document(
-            user_id, 
-            "conversations", 
-            doc_id, 
-            {"response": response_text}
-        )
-        
-        return jsonify({
-            'response': response_text,
-            'conversation_id': doc_id,
-            'user_id': user_id
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/history', methods=['GET'])
-def get_history():
-    """Retrieve conversation history for the current user"""
-    user_id = get_user_id()
-    
-    # Fetch recent conversations
-    conversations = list(find_documents(
-        user_id, 
-        "conversations", 
-        {}
-    ).sort("timestamp", -1).limit(10))
-    
-    # Convert ObjectId to string for JSON serialization
-    for conv in conversations:
-        conv["_id"] = str(conv["_id"])
-    
-    return jsonify(conversations)
+app.register_blueprint(pin_bp)
+app.register_blueprint(chat_bp)
+# app.register_blueprint(moodboard_bp)
 
 @app.route('/health', methods=['GET'])
 def health_check():
