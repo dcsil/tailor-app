@@ -74,13 +74,5 @@ if __name__ == "__main__":
     if mongo_client is None and mongo_db is None:
         initialize_mongo(force_connect=True)
     
-    json_file_path = "./assets/sample_images.json"  # Adjust path if needed
-    with open(json_file_path, "r") as file:
-        post_data = json.load(file)
-    
-    # prepopulate the database with the sample data under ./assets/sample_images.json
-    with app.test_request_context(method="POST", json=post_data):
-        insert_pins()  
-    
     port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)
