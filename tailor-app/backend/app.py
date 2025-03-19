@@ -1,12 +1,12 @@
 import sentry_sdk
-from flask import Flask, json, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 import os.path
 from pathlib import Path
-from routes.pin_routes import insert_pins, pin_bp
+from routes.pin_routes import pin_bp
 from routes.chat_routes import chat_bp
 from routes.moodboard_routes import moodboard_bp
 
