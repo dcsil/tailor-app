@@ -1,36 +1,48 @@
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from flask import json
-from bson import ObjectId
 
 
 @patch('routes.pin_routes.insert_document')
 @patch('routes.pin_routes.get_user_id')
-def test_insert_pin(mock_get_user_id, mock_insert_document, client):
+@patch('routes.pin_routes.co.embed')
+def test_insert_pin(mock_embed, mock_get_user_id, mock_insert_document, client):
     """Test the insert_pin route."""
     mock_get_user_id.return_value = "user_123"
     mock_insert_document.return_value = "pin_123"
+    embedding = [[0.1, 0.2, 0.3, 0.4]]
+    mock_embed.return_value.embeddings.float = embedding
+
     pin_data = {"description": "Test Pin"}
     response = client.post('/api/insert-pin', json=pin_data)
-    
+    pin_data["embedding"] = embedding
+
     assert response.status_code == 200
-    data = json.loads(response.data)
-    
-    # Ensure that the response has the expected pin_id (as a string)
+    data = json.loads(response.data)    
     assert data['pin_id'] == "pin_123"
     assert data['user_id'] == "user_123"
     mock_get_user_id.assert_called_once()
     mock_insert_document.assert_called_once_with("user_123", "pins", pin_data)
+    mock_embed.assert_called_once_with(
+        texts=["Test Pin"], 
+        model="embed-english-v3.0", 
+        input_type="search_document", 
+        embedding_types=["float"]
+    )
 
 @patch('routes.pin_routes.insert_documents')
 @patch('routes.pin_routes.get_user_id')
-def test_insert_pins(mock_get_user_id, mock_insert_documents, client):
+@patch('routes.pin_routes.co.embed')
+def test_insert_pins(mock_embed, mock_get_user_id, mock_insert_documents, client):
     """Test the insert_pins route."""
     mock_get_user_id.return_value = "user_123"
     mock_insert_documents.return_value = ["pin_123", "pin_124"]
+    embedding = [[0.1, 0.2, 0.3, 0.4]] * 2 
+    mock_embed.return_value.embeddings.float = embedding
 
     pins_data = [{"url": "http://example1.com", "description": "Test Pin 1"}, {"url": "http://example2.com", "description": "Test Pin 2"}]
     response = client.post('/api/insert-pins', json=pins_data)
+    pins_data[0]["embedding"] = [0.1, 0.2, 0.3, 0.4]
+    pins_data[1]["embedding"] = [0.1, 0.2, 0.3, 0.4] 
     
     assert response.status_code == 200
     data = json.loads(response.data)
@@ -40,6 +52,12 @@ def test_insert_pins(mock_get_user_id, mock_insert_documents, client):
     
     mock_get_user_id.assert_called_once()
     mock_insert_documents.assert_called_once_with("user_123", "pins", pins_data)
+    mock_embed.assert_called_once_with(
+        texts=["Test Pin 1", "Test Pin 2"], 
+        model="embed-english-v3.0", 
+        input_type="search_document", 
+        embedding_types=["float"]
+    )
 
 @patch('routes.pin_routes.delete_document')
 @patch('routes.pin_routes.get_user_id')

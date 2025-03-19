@@ -1,7 +1,6 @@
 """
 Search in the database for images most relevant to the text prompt based on the image descriptions and/or alt_text.
 """
-
 import cohere
 import logging
 co = cohere.ClientV2()
@@ -9,52 +8,43 @@ co = cohere.ClientV2()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def search_database(pins, prompt):
+def search_database(pin_collection, pins, prompt, prefilter = {}, postfilter = {},path="embedding",topK=5):
     """
     Search the database for the most relevant image descriptions/alt_texts to prompt.
     Return a list of image ids
     """
-    descriptions, alt_texts = [], []
     if not pins:
         return []
-    
-    for pin in pins:
-        description = pin["description"]
-        alt_text = pin["alt_text"]
-        if description and description.strip(): # should not be empty or only-white space
-            descriptions.append(description)
+    try:
+        query_emb = co.embed(
+            texts=[prompt],
+            model="embed-english-v3.0",
+            input_type="search_query",
+            embedding_types=["float"],
+        ).embeddings.float
+
+        vs_query = {
+            "index": "default",
+            "path": path,
+            "queryVector": query_emb[0],
+            "numCandidates": 30,
+            "limit": topK,
+        }
+
+        if len(prefilter)>0:
+            vs_query["filter"] = prefilter
+        
+        new_search_query = {"$vectorSearch": vs_query}
+        project = {"$project": {"score": {"$meta": "vectorSearchScore"},"_id": 1,"description": 1}}
+        
+        if len(postfilter.keys())>0:
+            postFilter = {"$match":postfilter}
+            res = list(pin_collection.aggregate([new_search_query, project, postFilter]))
         else:
-            descriptions.append("None")
-        if alt_text and alt_text.strip(): # should not be empty or only-white space
-            alt_texts.append(alt_text)
-        else:
-            alt_texts.append("None")
-
-    response1 = co.rerank(
-        model="rerank-v3.5",
-        query=prompt,
-        documents=descriptions,
-        top_n=10,
-    )
-
-    response2 = co.rerank(
-        model="rerank-v3.5",
-        query=prompt,
-        documents=alt_texts,
-        top_n=10,
-    )
+            res = list(pin_collection.aggregate([new_search_query, project]))
+        return [r["description"] for r in res]
     
-    matched_indices = set()
-    logger.warning(response1)
-    logger.warning(response2)
-
-    for result in response1.results:  
-        if result.relevance_score >= 0.1:
-            matched_indices.add(result.index)
-
-    for result in response2.results: 
-        if result.relevance_score >= 0.1:
-            matched_indices.add(result.index)
-       
-    return [pins[idx]["_id"] for idx in matched_indices] 
-    
+    except Exception as e:
+        logger.warning(e)
+        return []
+               

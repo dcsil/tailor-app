@@ -2,14 +2,23 @@ from flask import Blueprint, request, jsonify
 from bson import ObjectId
 from init_mongo import insert_document, insert_documents, delete_document, delete_documents, update_document, find_documents
 from utils.helpers import get_user_id
+import cohere
 
+co = cohere.ClientV2()
 pin_bp = Blueprint('pins', __name__)
 
 @pin_bp.route('/api/insert-pin', methods=['POST'])
 def insert_pin():
     pin_data = request.json
     try:
-        user_id = get_user_id()    
+        user_id = get_user_id() 
+        pin_data["embedding"] = co.embed(
+            texts=[pin_data["description"]],
+            model="embed-english-v3.0",
+            input_type="search_document",
+            embedding_types=["float"],
+        ).embeddings.float   
+        
         pin_id = insert_document(user_id, "pins", pin_data)
         return jsonify({'pin_id': pin_id, 'user_id': user_id})
     except Exception as e:
@@ -20,6 +29,16 @@ def insert_pins():
     pins_data = request.json
     try:
         user_id = get_user_id()    
+        desc_emb = co.embed(
+            texts=[p["description"] for p in pins_data],
+            model="embed-english-v3.0",
+            input_type="search_document",
+            embedding_types=["float"],
+        ).embeddings.float
+        
+        for i, _ in enumerate(pins_data):
+            pins_data[i]["embedding"] = desc_emb[i]
+
         pin_ids = insert_documents(user_id, "pins", pins_data)
         return jsonify({'pin_ids': pin_ids, 'user_id': user_id})
     except Exception as e:

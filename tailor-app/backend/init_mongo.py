@@ -1,3 +1,4 @@
+import time
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
@@ -92,7 +93,31 @@ def get_user_collection(user_id, collection_type):
             if db is None:
                 raise RuntimeError("Database connection failed and not in testing mode")
     
-    return db.get_collection(f"user_{user_id}_{collection_type}")
+    existing_collections = db.list_collection_names()
+    collection_name = f"user_{user_id}_{collection_type}"
+    collection = db.get_collection(collection_name)
+    if collection_type == "pins" and collection_name not in existing_collections:
+        collection = db.create_collection(collection_name)
+        collection.create_search_index({"definition":
+            {"mappings":
+                {"dynamic": True,
+                "fields": {
+                    "embedding" : {
+                        "dimensions": 1024,
+                        "similarity": "cosine",
+                        "type": "knnVector"
+                    },
+                    "fullplot": {
+                        "type": "string"
+                    }
+                    }}},
+            "name": "default"
+            }
+        )
+        logger.info("Waiting for the search index to get ready...")
+        time.sleep(20) 
+        
+    return collection
 
 # Basic CRUD operations
 def insert_document(user_id, collection_type, document):
