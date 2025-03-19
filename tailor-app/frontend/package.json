@@ -14,10 +14,14 @@
   "dependencies": {
     "@sentry/react": "^9.3.0",
     "@sentry/vite-plugin": "^3.2.2",
+    "@tailwindcss/vite": "^4.0.14",
     "jest-environment-jsdom": "^29.7.0",
+    "lucide-react": "^0.483.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-extract-colors": "^1.5.1",
     "react-router-dom": "^7.2.0",
+    "tailwindcss": "^4.0.14",
     "typescript": "^5.8.2"
   },
   "devDependencies": {
@@ -49,7 +53,7 @@
     "vite": "^6.2.0"
   },
   "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "node": ">=18.0",
+    "npm": ">=9.0"
   }
 }

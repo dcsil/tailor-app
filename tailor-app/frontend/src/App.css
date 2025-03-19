@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 :root {
   --color-gray-dark: #1f2937;
   --color-gray-medium: #4b5563;
@@ -7,13 +9,13 @@
 }
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  margin: auto;
   padding: 2rem;
   text-align: center;
-  height: 90vh;
   display: flex;
   flex-direction: column;
+  background-color: black;
+  min-height: fit-content;
 }
 
 .logo {

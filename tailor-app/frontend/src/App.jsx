@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import tailorLogo from './assets/tailor-blank-bg.png'
-import './App.css'
-import Chat from './components/Chat'
+
+// Assets and styling
 import { getBackendUrl } from './utils/env';
+import tailorLogo from './assets/tailor-white-logo.png'
+import './App.css'
+
+// Components
+import Chat from './components/Chat'
+import PromptInput from './components/PromptInput'
+import Footer from './components/Footer'
+
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
-  
   // temporary for checking backend and frontend integration
   const [healthStatus, setHealthStatus] = useState(null);
   const API_URL = getBackendUrl();
@@ -23,20 +30,18 @@ function App() {
   }, []);
   
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen bg-black text-white">
       <div className="mb-8">
-        <img src={tailorLogo} className="h-16 mx-auto" alt="Tailor logo" />
+        <img src={tailorLogo} className="mx-auto" alt="Tailor logo" />
       </div>
-      <h1>Hello World!</h1>
-
-      <button onClick={() => {throw new Error("This is your first error!");}}>Break the world</button>
-      
-      <div className="mt-8">
+      <PromptInput/>
+           
+      {/* <div className="mt-8">
         <Chat />
-      </div>
-      <p className="read-the-docs">
-        {healthStatus ? ` - Backend Status: ${healthStatus}` : " - Checking backend connection"}
-      </p>
+      </div> */}
+
+      <Footer></Footer>
+      
     </div>
   )
 }
