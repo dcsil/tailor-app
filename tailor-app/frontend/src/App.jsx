@@ -1,8 +1,4 @@
-
-/* eslint-disable */
-import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-
 
 // Assets and styling
 import './App.css'
@@ -11,6 +7,8 @@ import './App.css'
 import Moodboard from './pages/Moodboard'
 import HomePage from './pages/HomePage'
 import MyChat from './pages/Chat'
+import Home from "./pages/Home";
+import Privacy from "./pages/Privacy";
 
 function App() {
   return (
@@ -22,7 +20,7 @@ function App() {
             </Routes>
 
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
