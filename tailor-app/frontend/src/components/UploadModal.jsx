@@ -67,7 +67,7 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
     formData.append('user_id', userId);
 
     try {
-      const response = await fetch(`${API_URL}/api/files/upload`, {
+      const response = await fetch(`${API_URL}/api/file/upload`, {
         method: 'POST',
         body: formData,
         // No need to set Content-Type header as fetch sets it correctly with boundary for FormData

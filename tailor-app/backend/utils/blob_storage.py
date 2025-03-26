@@ -89,6 +89,20 @@ class AzureBlobStorage:
         except Exception as e:
             logger.error(f"Error deleting blob from Azure Blob Storage: {e}")
             return False
-
+    
+    def update_blob(self, blob_name, new_file_data, container_name=None):
+        """
+        Update a blob in Azure Blob Storage
+        """
+        try:
+            container_client = self.get_container_client(container_name)
+            blob_client = container_client.get_blob_client(blob_name)
+            blob_client.upload_blob(new_file_data, overwrite=True)
+            logger.info(f"Blob '{blob_name}' updates successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Error deleting blob from Azure Blob Storage: {e}")
+            return False
+        
 # Create a singleton instance
 blob_storage = AzureBlobStorage()
