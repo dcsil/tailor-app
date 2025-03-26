@@ -4,7 +4,7 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 
 
-const Image = ({id, src, initialX, initialY, initialWidth, initialHeight, boardClick, imageSelected, handleDelete, handleSelect}) => {
+const Image = ({id, src, initialX, initialY, initialWidth, initialHeight, boardClick, imageSelected, handleDelete, handleSelect, bringToFront}) => {
 
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [dimensions, setDimensions] = useState({ width: initialWidth, height: initialHeight });
@@ -12,20 +12,21 @@ const Image = ({id, src, initialX, initialY, initialWidth, initialHeight, boardC
   const imageRef = useRef(null);
 
   // handle selection locally
-  const handleClick = (e) => {
+  const onClick = (e) => {
       e.stopPropagation();
       handleSelect(id);
   };
 
-  const handleResize = (e, {node, size, handle}) => {
+  const onResize = (e, {node, size, handle}) => {
     e.stopPropagation();
     setDimensions({ width: size.width, height: size.height});
+    bringToFront(id);
   };
   
-  const handleDrag = (e, ui) => {
+  const onDrag = (e, ui) => {
     console.log(x.position)
     setPosition({x: x + ui.deltaX, y: y + ui.deltaY,})
-    console.log(x.position)
+    bringToFront(id);
   }
 
   // conditionally wrap with Draggable & ResizableBox if selected
@@ -33,7 +34,7 @@ const Image = ({id, src, initialX, initialY, initialWidth, initialHeight, boardC
     <img
       src={src}
       alt="Selectable"
-      onClick={handleClick}
+      onClick={onClick}
       style={{
         width: `${dimensions.width}px`,
         height: `${dimensions.height}px`,
@@ -69,13 +70,13 @@ const Image = ({id, src, initialX, initialY, initialWidth, initialHeight, boardC
   return  (
       <Draggable 
       cancel=".react-resizable-handle"
-      onDragEnd={handleDrag}
+      onDragEnd={onDrag}
       disabled={!imageSelected}
       >
       <ResizableBox 
         height={dimensions.height}
         width={dimensions.width}
-        onResize={handleResize}
+        onResize={onResize}
         resizeHandles={imageSelected ? ["se"] : []}
       >
       <div>

@@ -20,30 +20,32 @@ const BoardTest = () => {
     
     const [images, setImages] = useState([
         { id: 1, src: activity, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 2, src: fabric, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 3, src: runway2, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 4, src: hair, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 5, src: style, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 6, src: palette, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 7, src: runway3, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 8, src: interior, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 9, src: runway, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 10, src: fabric1, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 11, src: scenery, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 12, src: runway4, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
+        { id: 2, src: fabric, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 2 },
+        { id: 3, src: runway2, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 3},
+        { id: 4, src: hair, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 4 },
+        { id: 5, src: style, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 5 },
+        { id: 6, src: palette, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 6},
+        { id: 7, src: runway3, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 7 },
+        { id: 8, src: interior, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 8 },
+        { id: 9, src: runway, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 9 },
+        { id: 10, src: fabric1, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 10 },
+        { id: 11, src: scenery, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 11 },
+        { id: 12, src: runway4, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 12 },
       ]);
     
     const [selectedId, setSelectedId] = useState(null);
     const boardRef = useRef(null);
+    const nextId = useRef(13);
+    const nextZIndex = useRef(13);
 
     // Deselect on click
     const handleBoardClick = () => {
       setSelectedId(null);
-      console.log('here');
     };
 
     // Select on click 
     const handleSelect = (id) => {
+      bringToFront(id);
       setSelectedId(id);
     };
 
@@ -52,6 +54,34 @@ const BoardTest = () => {
       setSelectedId(null);
       return;
     }
+
+    // const handleResize = (id, width, height) => {
+    //   const currentZ = nextZIndex.current;
+    //   setImages(images.map(img => 
+    //     { if (img.id === id) {
+    //       return { ...img, width, height, zIndex: currentZ };
+    //     }
+    //     return img;}
+
+    //   ));
+    //   nextZIndex.current += 1;
+    //   setSelectedId(id);
+    // };
+  
+    const bringToFront = (id) => {
+      const currentZ = nextZIndex.current;
+      setImages(images.map(img => 
+            { if (img.id === id) {
+              console.log(img.zIndex);
+              return { ...img, zIndex: currentZ };
+              
+            }
+            return img;}
+    
+          ));
+      nextZIndex.current += 1;
+      setSelectedId(id);
+    };
 
     return (
         <div className="flex flex-row p-4">
@@ -73,6 +103,7 @@ const BoardTest = () => {
                         imageSelected={img.id === selectedId}
                         handleDelete={handleDelete}
                         handleSelect={handleSelect}
+                        bringToFront={bringToFront}
                     />
                 </div>
             ))}
