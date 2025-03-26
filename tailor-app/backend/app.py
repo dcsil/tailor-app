@@ -6,10 +6,9 @@ from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 import os.path
 from pathlib import Path
-from routes.pin_routes import pin_bp
 from routes.chat_routes import chat_bp
 from routes.file_routes import file_bp
-# from routes.moodboard_routes import moodboard_bp
+from routes.moodboard_routes import moodboard_bp
 
 
 # Import MongoDB functionality
@@ -48,10 +47,9 @@ CORS(app)  # Enable CORS for development
 # Initialize MongoDB connection
 mongo_client, mongo_db = initialize_mongo()
 
-app.register_blueprint(pin_bp)
 app.register_blueprint(chat_bp)
 app.register_blueprint(file_bp)
-# app.register_blueprint(moodboard_bp)
+app.register_blueprint(moodboard_bp)
 
 @app.route('/health', methods=['GET'])
 def health_check():

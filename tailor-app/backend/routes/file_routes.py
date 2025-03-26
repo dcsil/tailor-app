@@ -3,9 +3,11 @@ import os
 from datetime import datetime
 import logging
 from utils.blob_storage import blob_storage
-from init_mongo import insert_document, find_documents, delete_document
+from init_mongo import insert_document, find_documents, delete_document, update_document
 from werkzeug.utils import secure_filename
+import cohere
 
+co = cohere.ClientV2()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -61,6 +63,13 @@ def upload_file():
             original_filename=secure_name
         )
         
+        embedding = co.embed(
+            texts=[description],
+            model="embed-english-v3.0",
+            input_type="search_document",
+            embedding_types=["float"],
+        ).embeddings.float   
+
         # Prepare document for MongoDB
         file_document = {
             "filename": secure_name,
@@ -69,7 +78,8 @@ def upload_file():
             "description": description,
             "size_bytes": upload_result["size"],
             "timestamp": datetime.utcnow(),
-            "container": upload_result["container"]
+            "container": upload_result["container"],
+            "embedding": embedding[0],
         }
         
         # Store metadata in MongoDB
@@ -148,12 +158,59 @@ def delete_file(user_id, file_id):
                 logger.warning(f"Could not delete blob {blob_name} from container {container}")
         
         # Delete from MongoDB
-        result = delete_document(user_id, "files", file_id)
+        delete_document(user_id, "files", file_id)
         
         return jsonify({
             "success": True,
             "message": "File deleted successfully",
-            "delete_count": result.deleted_count
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error deleting file: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+    
+
+@file_bp.route('/api/files/<user_id>/<file_id>', methods=['PATCH'])
+def update_file(user_id, file_id):
+    """
+    Endpoint to update a file description (both in Azure Blob Storage and MongoDB)
+    """
+    try:
+        # Find the file document first to get the blob name
+        file_docs = list(find_documents(user_id, "files", {"_id": file_id}))
+        
+        if not file_docs:
+            return jsonify({"error": "File not found"}), 404
+            
+        file_doc = file_docs[0]
+        blob_name = file_doc.get("blob_name")
+        container = file_doc.get("container")
+        description = request.form.get('description', '')
+        file_doc["description"] = description
+        new_embedding = co.embed(
+                texts=[description],
+                model="embed-english-v3.0",
+                input_type="search_document",
+                embedding_types=["float"],
+            ).embeddings.float
+        file_doc["embedding"] = new_embedding[0]   
+        
+        # Update in Azure Blob Storage
+        if blob_name:
+            blob_updated = blob_storage.update_blob(blob_name, file_doc, container)
+            if not blob_updated:
+                logger.warning(f"Could not update blob {blob_name} in container {container}")
+        
+        # Update in MongoDB
+        result = update_document(user_id, "files", file_id, file_doc)
+        
+        return jsonify({
+            "success": True,
+            "message": "File updated successfully",
+            "file_data": result
         }), 200
         
     except Exception as e:
