@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState, useRef, useEffect } from 'react';
 import Image from './Image';
-import ImageTest from './ImageTest';
+// import ImageTest from './ImageTest';
 import frankenpet from '../assets/frankenpet.png';
 
 const Board = () => {
