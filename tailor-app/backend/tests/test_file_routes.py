@@ -25,7 +25,7 @@ def test_upload_file_success(mock_insert_document, mock_embed, mock_upload_file,
         'user_id': 'user_123'
     }
     
-    response = client.post('/api/file/upload', data=data, content_type='multipart/form-data')
+    response = client.post('/api/files/upload', data=data, content_type='multipart/form-data')
     
     assert response.status_code == 200
     response_json = response.get_json()
@@ -42,7 +42,7 @@ def test_get_user_files_success(mock_find_documents, client):
         {"_id": "2", "filename": "test2.jpg", "description": "Test file 2"}
     ]
     
-    response = client.get('/api/get-files/user/user_123')
+    response = client.get('/api/files/user/user_123')
     
     assert response.status_code == 200
     response_json = response.get_json()
@@ -62,7 +62,7 @@ def test_delete_file_success(mock_delete_document, mock_delete_blob, mock_find_d
     ]
     mock_delete_blob.return_value = True  
 
-    response = client.delete("/api/delete-file/1/123")
+    response = client.delete("/api/files/1/123")
 
     assert response.status_code == 200
 
@@ -87,7 +87,7 @@ def test_update_file_success(mock_embed, mock_update_document, mock_update_blob,
     mock_embed.return_value.embeddings.float = [[0.1, 0.2, 0.3]]
     mock_update_document.return_value = {"_id": "123", "filename": "test.jpg", "description": "New description"}
 
-    response = client.patch("/api/update-file/1/123", data={"description": "New description"})
+    response = client.patch("/api/files/1/123", data={"description": "New description"})
 
     assert response.status_code == 200
 

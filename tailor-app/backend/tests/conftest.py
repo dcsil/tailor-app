@@ -17,6 +17,7 @@ def setup_environment():
     yield
 
 from app import app
+os.environ['AZURE_STORAGE_CONNECTION_STRING'] = 'test-azure-key'
 
 @pytest.fixture
 def client():

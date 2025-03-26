@@ -22,7 +22,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@file_bp.route('/api/file/upload', methods=['POST'])
+@file_bp.route('/api/files/upload', methods=['POST'])
 def upload_file():
     """
     Endpoint to upload a file to Azure Blob Storage and store metadata in MongoDB
@@ -103,7 +103,7 @@ def upload_file():
             "error": str(e)
         }), 500
 
-@file_bp.route('/api/get-files/user/<user_id>', methods=['GET'])
+@file_bp.route('/api/files/user/<user_id>', methods=['GET'])
 def get_user_files(user_id):
     """
     Endpoint to retrieve all files uploaded by a specific user
@@ -135,7 +135,7 @@ def get_user_files(user_id):
             "error": str(e)
         }), 500
 
-@file_bp.route('/api/delete-file/<user_id>/<file_id>', methods=['DELETE'])
+@file_bp.route('/api/files/<user_id>/<file_id>', methods=['DELETE'])
 def delete_file(user_id, file_id):
     """
     Endpoint to delete a file (both from Azure Blob Storage and MongoDB)
@@ -173,7 +173,7 @@ def delete_file(user_id, file_id):
         }), 500
     
 
-@file_bp.route('/api/update-file/<user_id>/<file_id>', methods=['PATCH'])
+@file_bp.route('/api/files/<user_id>/<file_id>', methods=['PATCH'])
 def update_file(user_id, file_id):
     """
     Endpoint to update a file description (both in Azure Blob Storage and MongoDB)
