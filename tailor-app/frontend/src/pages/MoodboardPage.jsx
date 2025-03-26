@@ -7,15 +7,16 @@ import '../App.css'
 // Components
 import Header from '../components/Header'
 import Board from '../components/Board'
+import BoardTest from '../components/BoardTest'
 
-function Moodboard (){
+function MoodboardPage (){
 
     return(
         <div className="flex flex-col min-h-screen bg-black text-white">
         <Header/>
-        <Board/>
+        <BoardTest/>
         </div>
 
     );
 }
-export default Moodboard
+export default MoodboardPage
