@@ -27,21 +27,3 @@ def search_prompt():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-
-@moodboard_bp.route('/api/regenerate-search', methods=['POST'])
-def regenerate_search_prompt():
-    prompt = request.json.get("prompt")
-    if not prompt:
-        return jsonify({"error": "Missing 'prompt' field in request"}), 400
-
-    try:
-        user_id = get_user_id()
-        files_collection = get_user_collection(user_id, "files")
-        image_id = search_database(files_collection, prompt, postfilter={"score": {"$gt":0.3}}, topK=1)
-        return jsonify({
-            'image_ids': image_id,
-            'user_id': user_id
-        })
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
