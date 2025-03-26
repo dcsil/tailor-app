@@ -14,10 +14,10 @@ def setup_environment():
     """Set up environment variables for testing."""
 
     # Add any other environment variables needed for tests
+    os.environ['AZURE_STORAGE_CONNECTION_STRING'] = 'test-azure-key'
     yield
 
 from app import app
-os.environ['AZURE_STORAGE_CONNECTION_STRING'] = 'test-azure-key'
 
 @pytest.fixture
 def client():
