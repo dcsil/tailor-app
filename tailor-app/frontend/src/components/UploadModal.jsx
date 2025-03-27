@@ -28,12 +28,28 @@ const ModalPortal = ({ children }) => {
 const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState('');
+  const [fileClass, setFileClass] = useState('');
+  const [colour, setColour] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const API_URL = getBackendUrl();
 
   const MAX_DESCRIPTION_LENGTH = 500;
+  
+  // Valid classes for the dropdown
+  const validClasses = [
+    'art and film',
+    'fabric',
+    'fashion illustration',
+    'garment',
+    'historical photograph',
+    'location photograph',
+    'nature',
+    'runway', 
+    'street style photograph', 
+    'texture'
+  ];
 
   // Handle file selection
   const handleFileChange = (e) => {
@@ -50,6 +66,16 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
       setDescription(text);
     }
   };
+  
+  // Handle class selection
+  const handleClassChange = (e) => {
+    setFileClass(e.target.value);
+  };
+  
+  // Handle colour change
+  const handleColourChange = (e) => {
+    setColour(e.target.value);
+  };
 
   // Handle file upload using fetch API instead of axios
   const handleUpload = async () => {
@@ -65,6 +91,8 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
     formData.append('file', file);
     formData.append('description', description);
     formData.append('user_id', userId);
+    formData.append('class', fileClass);
+    formData.append('colour', colour);
 
     try {
       const response = await fetch(`${API_URL}/api/files/upload`, {
@@ -87,6 +115,8 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
       // Clear form after successful upload
       setFile(null);
       setDescription('');
+      setFileClass('');
+      setColour('');
       
       // Close the modal after a short delay to show success message
       setTimeout(() => {
@@ -130,6 +160,29 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
 
   if (!isOpen) return null;
 
+  // Label and input shared styles
+  const labelStyle = {
+    display: 'block', 
+    marginBottom: '8px', 
+    fontWeight: 600,
+    color: '#374151',
+    fontSize: '15px'
+  };
+  
+  const inputStyle = {
+    width: '100%', 
+    border: '1px solid #d1d5db', 
+    padding: '10px',
+    borderRadius: '6px',
+    backgroundColor: '#f9fafb',
+    color: '#111827',
+    fontSize: '15px'
+  };
+  
+  const sectionStyle = {
+    marginBottom: '24px'
+  };
+
   // Use our custom portal component
   return (
     <ModalPortal>
@@ -162,7 +215,9 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
             width: '100%',
             maxWidth: '450px',
-            position: 'relative'
+            position: 'relative',
+            maxHeight: '90vh',
+            overflowY: 'auto'
           }}
           onClick={e => e.stopPropagation()}
         >
@@ -177,27 +232,15 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
           }}>Upload Image</h2>
           
           {/* File input */}
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '8px', 
-              fontWeight: 600,
-              color: '#374151',
-              fontSize: '15px'
-            }}>
+          <div style={sectionStyle}>
+            <label style={labelStyle}>
               Select Image (PNG, JPG, JPEG, GIF)
             </label>
             <input
               type="file"
               accept=".png,.jpg,.jpeg,.gif"
               onChange={handleFileChange}
-              style={{ 
-                width: '100%', 
-                border: '1px solid #d1d5db', 
-                padding: '10px',
-                borderRadius: '6px',
-                backgroundColor: '#f9fafb'
-              }}
+              style={inputStyle}
               disabled={isUploading}
             />
             {file && (
@@ -208,29 +251,17 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
           </div>
           
           {/* Description */}
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '8px', 
-              fontWeight: 600,
-              color: '#374151',
-              fontSize: '15px'
-            }}>
+          <div style={sectionStyle}>
+            <label style={labelStyle}>
               Description
             </label>
             <textarea
               value={description}
               onChange={handleDescriptionChange}
               style={{ 
-                width: '100%', 
-                border: '1px solid #d1d5db', 
-                padding: '12px',
-                borderRadius: '6px',
+                ...inputStyle,
                 minHeight: '100px',
-                resize: 'vertical',
-                backgroundColor: '#f9fafb',
-                color: '#111827',
-                fontSize: '15px'
+                resize: 'vertical'
               }}
               maxLength={MAX_DESCRIPTION_LENGTH}
               disabled={isUploading}
@@ -245,6 +276,41 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
             }}>
               {description.length}/{MAX_DESCRIPTION_LENGTH}
             </p>
+          </div>
+          
+          {/* Class Selection */}
+          <div style={sectionStyle}>
+            <label style={labelStyle}>
+              Class
+            </label>
+            <select
+              value={fileClass}
+              onChange={handleClassChange}
+              style={inputStyle}
+              disabled={isUploading}
+            >
+              <option value="">Select a class</option>
+              {validClasses.map((cls) => (
+                <option key={cls} value={cls}>
+                  {cls.charAt(0).toUpperCase() + cls.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Colour */}
+          <div style={sectionStyle}>
+            <label style={labelStyle}>
+              Colour
+            </label>
+            <input
+              type="text"
+              value={colour}
+              onChange={handleColourChange}
+              style={inputStyle}
+              disabled={isUploading}
+              placeholder="Enter colour information"
+            />
           </div>
 
           {/* Status messages */}
