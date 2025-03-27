@@ -216,6 +216,7 @@ def update_file(user_id, file_id):
         container = file_doc.get("container")
         
         # Get updated fields
+        original_description = file_doc.get('description', '')
         description = request.form.get('description', file_doc.get('description', ''))
         file_class = request.form.get('class', file_doc.get('class', ''))
         colour = request.form.get('colour', file_doc.get('colour', ''))
@@ -230,7 +231,8 @@ def update_file(user_id, file_id):
         file_doc["colour"] = colour
         
         # Update embedding if description changed
-        if description != file_doc.get('description', ''):
+        if description != original_description:
+            print("HERE", description, file_doc.get('description', ''))
             new_embedding = co.embed(
                 texts=[description],
                 model="embed-english-v3.0",
