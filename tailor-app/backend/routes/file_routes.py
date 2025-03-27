@@ -5,6 +5,7 @@ import logging
 from utils.blob_storage import blob_storage
 from init_mongo import insert_document, find_documents, delete_document, update_document
 from werkzeug.utils import secure_filename
+from utils.helpers import allowed_file, ALLOWED_EXTENSIONS
 import cohere
 
 co = cohere.ClientV2()
@@ -14,13 +15,6 @@ logger = logging.getLogger(__name__)
 
 # Create Blueprint
 file_bp = Blueprint('file_bp', __name__)
-
-# Define allowed file extensions for security
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @file_bp.route('/api/files/upload', methods=['POST'])
 def upload_file():

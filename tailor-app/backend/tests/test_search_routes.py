@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
-@patch('routes.moodboard_routes.get_user_id') 
-@patch('routes.moodboard_routes.get_user_collection')  
-@patch('routes.moodboard_routes.search_database') 
+@patch('routes.search_routes.get_user_id') 
+@patch('routes.search_routes.get_user_collection')  
+@patch('routes.search_routes.search_database') 
 def test_search_prompt_valid_request(mock_search, mock_get_collection, mock_get_user_id, client):
     mock_get_user_id.return_value = 'user123'
     mock_get_collection.return_value = "mocked_files_collection"
