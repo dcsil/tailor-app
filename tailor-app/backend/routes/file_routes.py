@@ -86,7 +86,7 @@ def upload_file():
         )
         
         embedding = co.embed(
-            texts=[description],
+            texts=[description, file_class, colour],
             model="embed-english-v3.0",
             input_type="search_document",
             embedding_types=["float"],
@@ -216,7 +216,6 @@ def update_file(user_id, file_id):
         container = file_doc.get("container")
         
         # Get updated fields
-        original_description = file_doc.get('description', '')
         description = request.form.get('description', file_doc.get('description', ''))
         file_class = request.form.get('class', file_doc.get('class', ''))
         colour = request.form.get('colour', file_doc.get('colour', ''))
@@ -230,16 +229,14 @@ def update_file(user_id, file_id):
         file_doc["class"] = file_class
         file_doc["colour"] = colour
         
-        # Update embedding if description changed
-        if description != original_description:
-            print("HERE", description, file_doc.get('description', ''))
-            new_embedding = co.embed(
-                texts=[description],
-                model="embed-english-v3.0",
-                input_type="search_document",
-                embedding_types=["float"],
-            ).embeddings.float
-            file_doc["embedding"] = new_embedding[0]   
+        # Update embedding 
+        new_embedding = co.embed(
+            texts=[description, file_class, colour],
+            model="embed-english-v3.0",
+            input_type="search_document",
+            embedding_types=["float"],
+        ).embeddings.float
+        file_doc["embedding"] = new_embedding[0]   
         
         # Update in Azure Blob Storage
         if blob_name:
