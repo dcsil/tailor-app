@@ -8,8 +8,8 @@ import os.path
 from pathlib import Path
 from routes.chat_routes import chat_bp
 from routes.file_routes import file_bp
-from routes.moodboard_routes import moodboard_bp
-
+from routes.search_routes import search_bp
+from routes.moodboard_routes import board_bp
 
 # Import MongoDB functionality
 from init_mongo import (
@@ -49,7 +49,8 @@ mongo_client, mongo_db = initialize_mongo()
 
 app.register_blueprint(chat_bp)
 app.register_blueprint(file_bp)
-app.register_blueprint(moodboard_bp)
+app.register_blueprint(search_bp)
+app.register_blueprint(board_bp)
 
 @app.route('/health', methods=['GET'])
 def health_check():
