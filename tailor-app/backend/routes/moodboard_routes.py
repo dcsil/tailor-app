@@ -44,6 +44,7 @@ def insert_moodboard():
         # Get other form data
         user_id = request.form.get('user_id')
         image_ids = request.image_ids
+        prompt = request.prompt
         
         if not user_id:
             return jsonify({"error": "User ID is required"}), 400
@@ -66,14 +67,19 @@ def insert_moodboard():
             "timestamp": datetime.utcnow(),
             "container": upload_result["container"],
             "image_ids": image_ids,
+            "prompt": prompt,
         }
         
         # Store metadata in MongoDB
-        document_id = insert_document(user_id, "board", board_document)
+        document_id = insert_document(user_id, "boards", board_document)
         
         # Add the MongoDB ID to the response
         upload_result["document_id"] = document_id
         upload_result["original_boardname"] = secure_name
+
+        # delete the temporary board
+        temp_board_id = list(find_documents(user_id, "temp_boards", {"prompt": prompt}))[0]
+        delete_document(user_id, "temp_boards", temp_board_id)
         
         return jsonify({
             "success": True,
@@ -125,7 +131,7 @@ def delete_moodboard(user_id, board_id):
     """
     try:
         # Find the board document first to get the blob name
-        board_docs = list(find_documents(user_id, "board", {"_id": board_id}))
+        board_docs = list(find_documents(user_id, "boards", {"_id": board_id}))
         
         if not board_docs:
             return jsonify({"error": "Board not found"}), 404

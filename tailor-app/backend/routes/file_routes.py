@@ -16,6 +16,22 @@ logger = logging.getLogger(__name__)
 # Create Blueprint
 file_bp = Blueprint('file_bp', __name__)
 
+
+# Define valid file classes
+VALID_CLASSES = {
+    'art and film',
+    'fabric',
+    'fashion illustration',
+    'garment',
+    'historical photograph',
+    'location photograph',
+    'nature',
+    'runway', 
+    'street style photograph', 
+    'texture'
+}
+
+
 @file_bp.route('/api/files/upload', methods=['POST'])
 def upload_file():
     """
@@ -25,6 +41,8 @@ def upload_file():
     - file: The file to upload
     - description: Text description of the file
     - user_id: ID of the user uploading the file
+    - class: Classification of the file (from predefined list)
+    - colour: Colour description of the file
     """
     try:
         # Check if all required fields are present
@@ -44,9 +62,15 @@ def upload_file():
         # Get other form data
         description = request.form.get('description', '')
         user_id = request.form.get('user_id')
+        file_class = request.form.get('class', '')
+        colour = request.form.get('colour', '')
         
         if not user_id:
             return jsonify({"error": "User ID is required"}), 400
+        
+        # Validate class if provided
+        if file_class and file_class not in VALID_CLASSES:
+            return jsonify({"error": f"Invalid class. Allowed classes: {', '.join(VALID_CLASSES)}"}), 400
             
         # Secure the filename
         secure_name = secure_filename(file.filename)
@@ -58,7 +82,7 @@ def upload_file():
         )
         
         embedding = co.embed(
-            texts=[description],
+            texts=[description, file_class, colour],
             model="embed-english-v3.0",
             input_type="search_document",
             embedding_types=["float"],
@@ -74,6 +98,8 @@ def upload_file():
             "timestamp": datetime.utcnow(),
             "container": upload_result["container"],
             "embedding": embedding[0],
+            "class": file_class,
+            "colour": colour
         }
         
         # Store metadata in MongoDB
@@ -83,6 +109,8 @@ def upload_file():
         upload_result["document_id"] = document_id
         upload_result["original_filename"] = secure_name
         upload_result["description"] = description
+        upload_result["class"] = file_class
+        upload_result["colour"] = colour
         
         return jsonify({
             "success": True,
@@ -170,10 +198,10 @@ def delete_file(user_id, file_id):
 @file_bp.route('/api/files/<user_id>/<file_id>', methods=['PATCH'])
 def update_file(user_id, file_id):
     """
-    Endpoint to update a file description (both in Azure Blob Storage and MongoDB)
+    Endpoint to update file metadata (description, class, colour) in MongoDB and Azure Blob Storage
     """
     try:
-        # Find the file document first to get the blob name
+        # Find the file document first
         file_docs = list(find_documents(user_id, "files", {"_id": file_id}))
         
         if not file_docs:
@@ -182,14 +210,28 @@ def update_file(user_id, file_id):
         file_doc = file_docs[0]
         blob_name = file_doc.get("blob_name")
         container = file_doc.get("container")
-        description = request.form.get('description', '')
+        
+        # Get updated fields
+        description = request.form.get('description', file_doc.get('description', ''))
+        file_class = request.form.get('class', file_doc.get('class', ''))
+        colour = request.form.get('colour', file_doc.get('colour', ''))
+        
+        # Validate class if it's been changed
+        if file_class and file_class != file_doc.get('class', '') and file_class not in VALID_CLASSES:
+            return jsonify({"error": f"Invalid class. Allowed classes: {', '.join(VALID_CLASSES)}"}), 400
+        
+        # Update document fields
         file_doc["description"] = description
+        file_doc["class"] = file_class
+        file_doc["colour"] = colour
+        
+        # Update embedding 
         new_embedding = co.embed(
-                texts=[description],
-                model="embed-english-v3.0",
-                input_type="search_document",
-                embedding_types=["float"],
-            ).embeddings.float
+            texts=[description, file_class, colour],
+            model="embed-english-v3.0",
+            input_type="search_document",
+            embedding_types=["float"],
+        ).embeddings.float
         file_doc["embedding"] = new_embedding[0]   
         
         # Update in Azure Blob Storage
@@ -208,7 +250,7 @@ def update_file(user_id, file_id):
         }), 200
         
     except Exception as e:
-        logger.error(f"Error deleting file: {e}", exc_info=True)
+        logger.error(f"Error updating file: {e}", exc_info=True)
         return jsonify({
             "success": False,
             "error": str(e)
