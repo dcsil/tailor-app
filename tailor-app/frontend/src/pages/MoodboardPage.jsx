@@ -8,7 +8,7 @@ import '../App.css'
 import Header from '../components/Header'
 import Board from '../components/Board'
 
-function Moodboard (){
+function MoodboardPage (){
 
     return(
         <div className="flex flex-col min-h-screen bg-black text-white">
@@ -18,4 +18,4 @@ function Moodboard (){
 
     );
 }
-export default Moodboard
+export default MoodboardPage
