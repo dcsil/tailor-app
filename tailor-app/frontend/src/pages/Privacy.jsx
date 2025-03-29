@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import './Privacy.css';
-import tailorLogo from '../assets/tailor-blank-bg.png'
+import tailorLogo from '../assets/tailor-white-logo.png'
 
 const Privacy = () => {
   const navigate = useNavigate();
