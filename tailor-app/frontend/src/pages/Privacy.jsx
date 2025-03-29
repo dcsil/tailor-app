@@ -4,9 +4,13 @@ import tailorLogo from '../assets/tailor-white-logo.png'
 
 const Privacy = () => {
   const navigate = useNavigate();
+
     return (
       <>
-      <img src={tailorLogo} className="logo" alt="Tailor logo" onClick={() => navigate("/")} />
+        <div className="mb-8">
+          <img src={tailorLogo} className="mx-auto cursor-pointer" alt="Tailor logo" onClick={() => navigate("/")}/>
+        </div>
+      
         <div className="privacy-policy-container">
           <h1 className="privacy-policy-title">Privacy Policy</h1>
     
@@ -34,7 +38,7 @@ const Privacy = () => {
             <h2 className="section-title">How We Use Your Information</h2>
             <p className="section-content">We use Pinterest data to:</p>
             <ul className="section-list">
-              <h4>Populate mood boards based on the user’s selected aesthetic.</h4>
+              <h4>Populate mood boards based on the user's selected aesthetic.</h4>
               <h4>Analyze images using the Cohere API to enhance recommendations and content insights.</h4>
               <h4>Improve user experience by curating relevant mood board content.</h4>
             </ul>
