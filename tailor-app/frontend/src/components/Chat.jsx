@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { getBackendUrl } from '../utils/env';
+import { getBackendUrl } from '../utils/env.js';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const API_URL = getBackendUrl();
+  console.log(API_URL)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
