@@ -11,27 +11,32 @@ jest.mock("../components/Chat", () => {
 });
 
 // Mock the fetch API
-(window as any).fetch = jest.fn(() => 
+window.fetch = jest.fn(() => 
     Promise.resolve({
       json: () => Promise.resolve({ status: 'ok' }),
     })
 );
 
 // Import App after the mocks are set up
-import App from "../App";
+import Home from "../pages/Home";
+import { BrowserRouter as Router } from "react-router-dom";
 
-describe('App Component', () => {
+describe('Home Component', () => {
   test('demo', () => {
     expect(true).toBe(true);
   });
 
   test("Renders the main page", async () => {
     await act(async () => {
-      render(<App />);
+        render(
+            <Router>
+              <Home />
+            </Router>
+          );
     });
 
-    expect(screen.getByText("Hello World!")).toBeInTheDocument();
     // Test if the mocked Chat component is present
     expect(screen.getByTestId("chat-component")).toBeInTheDocument();
+    expect(screen.getByTitle("privacy")).toBeInTheDocument();
   });
 });
