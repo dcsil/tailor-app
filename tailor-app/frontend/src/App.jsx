@@ -20,21 +20,23 @@ import Privacy from "./pages/Privacy"
 
 function App() {
   return (
-    <Router>
-      <Header/>
+    <div className="flex flex-col min-h-screen justify-between">
+      <Router>
+        <Header/>
 
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/moodboardresult" element={<MoodboardPage />} />
-        <Route path="/mychat" element={<MyChat />} />
-        {/* chelsea: /moodboard will be removed */}
-        <Route path="/moodboard" element={<Moodboard />}/> 
-        <Route path="/privacy" element={<Privacy />} />
-        {/* <Route path="/terms" element={<... />} /> */}
-      </Routes>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/moodboardresult" element={<MoodboardPage />} />
+          <Route path="/mychat" element={<MyChat />} />
+          {/* chelsea: /moodboard will be removed */}
+          <Route path="/moodboard" element={<Moodboard />}/> 
+          <Route path="/privacy" element={<Privacy />} />
+          {/* <Route path="/terms" element={<... />} /> */}
+        </Routes>
 
-      <Footer/>
-    </Router>
+        <Footer/>
+      </Router>
+    </div>
   )
 }
 

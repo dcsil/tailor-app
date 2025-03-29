@@ -9,7 +9,7 @@ import PromptInput from '../components/PromptInput'
 
 function HomePage() {
     return (
-      <div className="flex flex-col min-h-screen bg-black text-white">
+      <div>
         <div className="mb-8">
           <img src={tailorLogo} className="mx-auto" alt="Tailor logo" />
         </div>

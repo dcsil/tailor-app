@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const Header = () => {
     return (
-        <div className="w-full p-2 font-mono text-gray-300 text-sm flex justify-between items-center border-b-1 border-white">
+        <div className="w-full p-2 font-mono text-gray-300 text-sm flex justify-between items-center border-b-1 border-white mt-6">
             <NavLink to="/" className="text-l text-white"> 
             <h1>
                 T<span className="font-extrabold">AI</span>LOR

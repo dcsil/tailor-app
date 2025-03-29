@@ -10,8 +10,8 @@ import Board from '../components/Board'
 
 function MoodboardPage (){
 
-    return(
-        <div className="flex flex-col min-h-screen bg-black text-white">
+    return (
+        <div>
         <Board/>
         </div>
 

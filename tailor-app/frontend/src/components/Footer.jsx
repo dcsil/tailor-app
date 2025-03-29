@@ -4,7 +4,7 @@ const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="p-4 text-center text-gray-400 text-sm mt-10">
+    <footer className="p-4 text-center text-gray-400 text-sm mt-10 mb-6">
       <p>
         Tailor{' '}
 
