@@ -183,10 +183,3 @@
   box-sizing: border-box;
   cursor: se-resize;
 }
-
-a {
-  cursor: pointer;
-  position: relative;
-  top: 2rem;
-  bottom: 2rem;
-}

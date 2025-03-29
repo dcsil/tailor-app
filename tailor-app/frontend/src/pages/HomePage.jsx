@@ -6,7 +6,6 @@ import '../App.css'
 
 // Components
 import PromptInput from '../components/PromptInput'
-import Footer from '../components/Footer'
 
 function HomePage() {
     return (
@@ -15,7 +14,6 @@ function HomePage() {
           <img src={tailorLogo} className="mx-auto" alt="Tailor logo" />
         </div>
         <PromptInput/>
-        <Footer/>
       </div>
   )
 }
