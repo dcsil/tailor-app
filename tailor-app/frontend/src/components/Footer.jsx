@@ -1,11 +1,28 @@
+import { useNavigate } from "react-router-dom";
+
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
-    <footer className="p-4 text-center text-gray-400 text-sm mt-auto">
+    <footer className="p-4 text-center text-gray-400 text-sm mt-10 mb-6">
       <p>
         Tailor{' '}
-        <a href="#" className="underline hover:text-white">Terms & Conditions</a>
+
+        <span 
+          onClick={() => navigate("/terms")}
+          className="underline hover:text-white cursor-pointer"
+        >
+          Terms & Conditions
+        </span>
+
         {' '}and our{' '}
-        <a href="#" className="underline hover:text-white">Privacy Policy</a>
+
+        <span 
+          onClick={() => navigate("/privacy")}
+          className="underline hover:text-white cursor-pointer"
+        >
+          Privacy Policy
+        </span>
       </p>
     </footer>
   );

@@ -5,8 +5,6 @@ import React, { useState, useEffect } from 'react';
 import '../App.css'
 
 // Components
-import Header from '../components/Header'
-import Footer from '../components/Footer'
 import ChatHistoryList from '../components/ChatHistoryList'
 
 function MyChat (){
@@ -17,8 +15,7 @@ function MyChat (){
       ];
 
     return(
-        <div className="flex flex-col justify-center items-center min-h-screen bg-black text-white">
-            <Header/>
+        <div className="flex flex-col justify-center items-center min-h-screen text-white">
             <div className="w-[70%] flex flex-col m-10">
                 <div className="flex flex-row justify-between">
                     <h1 className="text-xl">Prompt History</h1>
@@ -26,7 +23,6 @@ function MyChat (){
                 </div>
                 <ChatHistoryList chatHistory={chatHistory} />
             </div>
-            <Footer/>
         </div>
     );
 }

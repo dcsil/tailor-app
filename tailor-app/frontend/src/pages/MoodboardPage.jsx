@@ -9,13 +9,10 @@ import Header from '../components/Header'
 import Board from '../components/Board'
 
 function MoodboardPage (){
-
-    return(
-        <div className="flex flex-col min-h-screen text-white">
-        <Header/>
-        <Board/>
+    return (
+        <div>
+          <Board/>
         </div>
-
     );
 }
 export default MoodboardPage
