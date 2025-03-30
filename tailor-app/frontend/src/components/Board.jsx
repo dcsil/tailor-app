@@ -2,20 +2,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from './Image';
 import { getBackendUrl } from '../utils/env.js';
+import html2canvas from 'html2canvas-pro';
 
 // images
-// import activity from '../assets/UI placeholders/activity.jpeg';
-// import fabric from '../assets/UI placeholders/fabric.jpeg';
-// import fabric1 from '../assets/UI placeholders/fabric1.jpeg';
-// import hair from '../assets/UI placeholders/hair.jpeg';
-// import interior from '../assets/UI placeholders/interior.jpeg';
-// import palette from '../assets/UI placeholders/palette.jpeg';
-// import scenery from '../assets/UI placeholders/scenery.jpeg';
-// import style from '../assets/UI placeholders/style.jpeg';
-// import runway from '../assets/UI placeholders/runway.jpeg';
-// import runway2 from '../assets/UI placeholders/runway2.jpeg';
-// import runway3 from '../assets/UI placeholders/runway3.jpeg';
-// import runway4 from '../assets/UI placeholders/runway4.jpeg';
+import activity from '../assets/UI placeholders/activity.jpeg';
+import fabric from '../assets/UI placeholders/fabric.jpeg';
+import fabric1 from '../assets/UI placeholders/fabric1.jpeg';
+import hair from '../assets/UI placeholders/hair.jpeg';
+import interior from '../assets/UI placeholders/interior.jpeg';
+import palette from '../assets/UI placeholders/palette.jpeg';
+import scenery from '../assets/UI placeholders/scenery.jpeg';
+import style from '../assets/UI placeholders/style.jpeg';
+import runway from '../assets/UI placeholders/runway.jpeg';
+import runway2 from '../assets/UI placeholders/runway2.jpeg';
+import runway3 from '../assets/UI placeholders/runway3.jpeg';
+import runway4 from '../assets/UI placeholders/runway4.jpeg';
 
 const BoardTest = (props) => {
     
@@ -75,8 +76,32 @@ const BoardTest = (props) => {
     }
 
     const handleExport = () => {
-
-    }
+      html2canvas(boardRef.current).then(async (canvas) => {
+        canvas.toBlob(async (blob) => {
+          const formData = new FormData();
+          formData.append('file', blob, 'board.png');
+          const userId = '123'; // TODO: temporary, fix later
+          formData.append('user_id', userId);
+          formData.append('image_ids', ids); 
+          formData.append('prompt', prompt);
+    
+          const uploadPromise = fetch(`${API_URL}/api/boards/upload`, {
+            method: 'POST',
+            body: formData, 
+          });
+    
+          const imageUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = imageUrl;
+          link.download = 'board.png';  
+          link.click();
+    
+          // Wait for upload to complete
+          await uploadPromise;
+        }, 'board/png');
+      });
+    };
+    
     // const handleResize = (id, width, height) => {
     //   const currentZ = nextZIndex.current;
     //   setImages(images.map(img => 

@@ -28,34 +28,37 @@ def insert_moodboard():
     """
     try:
         # Check if all required fields are present
-        if 'board' not in request.files:
+        if 'file' not in request.files:
             return jsonify({"error": "No board provided"}), 400
         
-        board = request.files['board']
+        board = request.files['file']
+        logger.warning(board)
+        logger.warning(request)
+        logger.warning(request.form)
         
         # Check if the board is empty
-        if board.boardname == '':
+        if board.filename == '':
             return jsonify({"error": "No selected board"}), 400
         
         # Check for valid board type
-        if not allowed_file(board.boardname):
+        if not allowed_file(board.filename):
             return jsonify({"error": f"Board type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"}), 400
         
         # Get other form data
         user_id = request.form.get('user_id')
-        image_ids = request.image_ids
-        prompt = request.prompt
+        image_ids = request.form.get('image_ids')
+        prompt = request.form.get('prompt')
         
         if not user_id:
             return jsonify({"error": "User ID is required"}), 400
             
         # Secure the filename
-        secure_name = secure_filename(board.boardname)
+        secure_name = secure_filename(board.filename)
         
         # Upload to Azure Blob Storage
         upload_result = blob_storage.upload_file(
-            board_data=board.read(),
-            original_boardname=secure_name
+            file_data=board.read(),
+            original_filename=secure_name
         )
 
         # Prepare document for MongoDB
@@ -78,8 +81,8 @@ def insert_moodboard():
         upload_result["original_boardname"] = secure_name
 
         # delete the temporary board
-        temp_board_id = list(find_documents(user_id, "temp_boards", {"prompt": prompt}))[0]
-        delete_document(user_id, "temp_boards", temp_board_id)
+        temp_board = list(find_documents(user_id, "temp_boards", {"prompt": prompt}))[0]
+        delete_document(user_id, "temp_boards", str(temp_board["_id"]))
         
         return jsonify({
             "success": True,
