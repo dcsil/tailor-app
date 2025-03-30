@@ -15,7 +15,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  background-color: black;
+  background-color: rgb(15, 15, 15);
   min-height: fit-content;
 }
 
