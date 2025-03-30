@@ -7,12 +7,23 @@ import { getBackendUrl } from '../utils/env.js';
 
 // Components
 import Image from '../components/Image';
+import UploadModal from '../components/UploadModal';
+
 
 function MyCollection (){
     const API_URL = getBackendUrl();
     const [uploads, setUploads] = useState([]);
     const [boards, setBoards] = useState([]);
     const userId = '123';
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const closeModal = () => {
+      setIsModalOpen(false);
+    };
 
     useEffect(() => {
         if (uploads.length === 0) {
@@ -59,6 +70,8 @@ function MyCollection (){
 
     return(
         <div className="flex flex-col justify-center items-center min-h-screen text-white">
+        <button className="px-4 py-2 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2" onClick={openModal}>Upload</button>
+
             <div className="w-[70%] flex flex-col m-10">
                 <div className="flex flex-row justify-between">
                     <h1 className="text-xl">Uploads</h1>
@@ -90,6 +103,11 @@ function MyCollection (){
                 </div>
             ))}
             </div>
+            <UploadModal 
+                isOpen={isModalOpen} 
+                onClose={closeModal} 
+                userId="123" // Replace with actual user ID from auth system
+            />
         </div>
     );
 }
