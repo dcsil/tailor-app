@@ -7,9 +7,7 @@ const Privacy = () => {
 
     return (
       <>
-        <div className="mb-8">
-          <img src={tailorLogo} className="mx-auto cursor-pointer" alt="Tailor logo" onClick={() => navigate("/")}/>
-        </div>
+        <img src={tailorLogo} className="mx-auto cursor-pointer" alt="Tailor logo" onClick={() => navigate("/")}/>
       
         <div className="privacy-policy-container">
           <h1 className="privacy-policy-title">Privacy Policy</h1>
