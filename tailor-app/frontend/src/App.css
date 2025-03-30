@@ -1,11 +1,18 @@
 @import 'tailwindcss';
 
 :root {
-  --color-gray-dark: #1f2937;
+  --color-gray-dark: #191818;
   --color-gray-medium: #4b5563;
   --color-gray-light: #9ca3af;
   --color-orange: #d97706;
   --color-orange-hover: #b45309;
+
+  /* custom title variables */
+  --tiger-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/tiger-uppercut.gif);
+  --texture-image: url(https://media.giphy.com/media/wdfxqCQVGHDlC/giphy.gif);
+  --h1-font-size: 30vmin;
+  --primary-color: rgb(245, 102, 0);
+  --secondary-color: rgb(230, 96, 0);
 }
 
 #root {
@@ -15,7 +22,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  background-color: rgb(15, 15, 15);
+  background-color: var(--color-gray-dark);
   min-height: fit-content;
 }
 
@@ -183,4 +190,36 @@
   background-color: white;
   box-sizing: border-box;
   cursor: se-resize;
+}
+
+/* custom animations */
+.masked-text {
+  font-size: 10rem;
+  font-weight: 800;
+  letter-spacing: 15px;
+  color: transparent;
+  text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.5);
+  background-image: url('https://media.licdn.com/dms/image/v2/D5622AQEW3TDqkP-fbg/feedshare-shrink_800/feedshare-shrink_800/0/1716899554594?e=2147483647&v=beta&t=ZjPzKAcUG55hvfAFi8OU_Wf9wsQUlXbrQ1qv4B9xFfM'); 
+  background-size: 50%; /* Enlarged for smooth animation */
+  background-position: 0 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animate-background 10s infinite linear;
+}
+
+@keyframes animate-background {
+  0% {
+      background-position: 100% 50%;
+  }
+  100% {
+      background-position: 0% 50%;
+  }
+}
+
+a {
+  cursor: pointer;
+  position: relative;
+  top: 2rem;
+  bottom: 2rem;
 }
