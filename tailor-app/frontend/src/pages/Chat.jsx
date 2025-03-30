@@ -15,7 +15,7 @@ function MyChat (){
       ];
 
     return(
-        <div className="flex flex-col justify-center items-center min-h-screen bg-black text-white">
+        <div className="flex flex-col justify-center items-center min-h-screen text-white">
             <div className="w-[70%] flex flex-col m-10">
                 <div className="flex flex-row justify-between">
                     <h1 className="text-xl">Prompt History</h1>

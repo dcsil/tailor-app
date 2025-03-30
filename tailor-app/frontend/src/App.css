@@ -217,7 +217,7 @@
   }
 }
 
-a {
+.header a {
   cursor: pointer;
   position: relative;
   top: 2rem;
