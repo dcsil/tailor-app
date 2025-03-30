@@ -35,7 +35,7 @@ def search_database(files_collection, prompt, postfilter = {},excluded_ids=[],to
             vs_query["filter"]["_id"] = {"$nin": [ObjectId(i) for i in excluded_ids]}  # Convert IDs to ObjectId
 
         new_search_query = {"$vectorSearch": vs_query}
-        project = {"$project": {"score": {"$meta": "vectorSearchScore"},"_id": 1,"description": 1}}
+        project = {"$project": {"score": {"$meta": "vectorSearchScore"},"_id": 1, "blob_url": 1}}
 
         if len(postfilter.keys())>0:
             postFilter = {"$match":postfilter}
@@ -43,7 +43,12 @@ def search_database(files_collection, prompt, postfilter = {},excluded_ids=[],to
         else:
             res = list(files_collection.aggregate([new_search_query, project]))
 
-        return [str(r["_id"]) for r in res]
+        ids, urls = [], []
+        for r in res:
+            ids.append(str(r["_id"]))
+            urls.append(r["blob_url"])
+        
+        return ids, urls
 
     except Exception as e:
         logger.warning(e)

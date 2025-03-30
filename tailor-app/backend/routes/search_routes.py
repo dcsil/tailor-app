@@ -19,11 +19,11 @@ def search_prompt():
     try:
         user_id = get_user_id()
         files_collection = get_user_collection(user_id, "files")
-        image_ids = search_database(files_collection, prompt, postfilter={"score": {"$gt":0}})
+        image_ids, blob_urls = search_database(files_collection, prompt, postfilter={"score": {"$gt":0}})
         temp_board_document = {
             "prompt": prompt,
-            "curr_image_ids": image_ids, # The images that have already been generated on the board
-            "queue_image_ids": [],   # Queue to store generated images
+            "curr_images": [[image_ids[i], blob_urls[i]] for i in range(len(image_ids))], # The images that have already been generated on the board
+            "queue_images": [],   # Queue to store generated images
         }
         
         # Store temp board metadata in MongoDB to keep track of the current image ids (that are subject to change)
@@ -31,6 +31,7 @@ def search_prompt():
 
         return jsonify({
             'image_ids': image_ids,
+            'blob_urls': blob_urls,
             'user_id': user_id
         })
 
@@ -52,31 +53,31 @@ def regenerate_search():
         files_collection = get_user_collection(user_id, "files")
         temp_board = list(find_documents(user_id, "temp_boards", {"prompt": prompt}))[0]
         temp_board_id = temp_board["_id"]
-        image_queue = temp_board["queue_image_ids"]
-        curr_image_ids = temp_board["curr_image_ids"]
+        queue_images = temp_board["queue_images"]
+        curr_images = temp_board["curr_images"]
         
-        if not image_queue:
+        if not queue_images:
             # Have the database NOT search among the already generated image ids 
-            image_ids = search_database(files_collection, prompt,
+            image_ids, blob_urls = search_database(files_collection, prompt,
                                         postfilter={"score": {"$gt": 0}},
-                                        excluded_ids=curr_image_ids)
+                                        excluded_ids=[img[0] for img in curr_images])
 
             if not image_ids:
-                return jsonify({'image_ids': image_ids, "success": "No new relevant images found"})
+                return jsonify({'image_ids': image_ids, 'blob_urls': blob_urls, 'success': "No new relevant images found"})
 
             # Add new unique images to queue
-            for img in image_ids[:10]:  
-                image_queue.append(img)
-            
-        next_image = image_queue.pop(0)
-        curr_image_ids.append(next_image)  
-        temp_board["queue_image_ids"] = image_queue
-        temp_board["curr_image_ids"] = curr_image_ids
+            for i in range(10):
+                queue_images.append([image_ids[i], blob_urls[i]])
+
+        next_image_id, next_image_url = queue_images.pop(0)
+        curr_images.append([next_image_id, next_image_url])  
+        temp_board["queue_images"] = queue_images
+        temp_board["curr_images"] = curr_images
         update_document(user_id, "temp_boards", temp_board_id, temp_board)
 
         return jsonify({
-            'next_image': next_image,
-            'remaining_queue_size': len(image_queue),
+            'next_image': [next_image_id, next_image_url],
+            'remaining_queue_size': len(queue_images),
             'user_id': user_id
         })
 
