@@ -66,7 +66,7 @@ def regenerate_search():
                 return jsonify({'image_ids': image_ids, 'blob_urls': blob_urls, 'success': "No new relevant images found"})
 
             # Add new unique images to queue
-            for i in range(10):
+            for i in range(min(len(image_ids), 10)):
                 queue_images.append([image_ids[i], blob_urls[i]])
 
         next_image_id, next_image_url = queue_images.pop(0)

@@ -1,6 +1,6 @@
 from io import BytesIO
 from unittest.mock import patch
-
+from bson import ObjectId
 
 def create_test_file(filename='test.jpg', content=b'Test content'):
     return (BytesIO(content), filename)
@@ -65,12 +65,13 @@ def test_get_user_files_success(mock_find_documents, client):
 @patch("routes.file_routes.blob_storage.delete_blob")
 @patch("routes.file_routes.delete_document")
 def test_delete_file_success(mock_delete_document, mock_delete_blob, mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
     mock_find_documents.return_value = [
-        {"_id": "123", "filename": "test.jpg", "blob_name": "blob123", "container": "container1", "class": "nature", "colour": "blue"}
+        {"_id": file_id, "filename": "test.jpg", "blob_name": "blob123", "container": "container1", "class": "nature", "colour": "blue"}
     ]
     mock_delete_blob.return_value = True  
 
-    response = client.delete("/api/files/1/123")
+    response = client.delete(f"/api/files/1/{file_id}")
 
     assert response.status_code == 200
 
@@ -78,9 +79,9 @@ def test_delete_file_success(mock_delete_document, mock_delete_blob, mock_find_d
     assert response_json['success'] == True
     assert response_json['message'] == "File deleted successfully"
 
-    mock_find_documents.assert_called_once_with("1", "files", {"_id": "123"})
+    mock_find_documents.assert_called_once_with("1", "files", {"_id": ObjectId(file_id)})
     mock_delete_blob.assert_called_once_with("blob123", "container1")
-    mock_delete_document.assert_called_once_with("1", "files", "123")
+    mock_delete_document.assert_called_once_with("1", "files", file_id)
 
 
 @patch("routes.file_routes.find_documents")
@@ -88,9 +89,10 @@ def test_delete_file_success(mock_delete_document, mock_delete_blob, mock_find_d
 @patch("routes.file_routes.update_document")
 @patch("routes.file_routes.co.embed")
 def test_update_file_success(mock_embed, mock_update_document, mock_update_blob, mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
     mock_find_documents.return_value = [
         {
-            "_id": "123", 
+            "_id": file_id, 
             "filename": "test.jpg", 
             "blob_name": "blob123", 
             "container": "container1", 
@@ -102,7 +104,7 @@ def test_update_file_success(mock_embed, mock_update_document, mock_update_blob,
     mock_update_blob.return_value = True  
     mock_embed.return_value.embeddings.float = [[0.1, 0.2, 0.3]]
     mock_update_document.return_value = {
-        "_id": "123", 
+        "_id": file_id, 
         "filename": "test.jpg", 
         "description": "New description",
         "class": "street style photograph",
@@ -111,7 +113,7 @@ def test_update_file_success(mock_embed, mock_update_document, mock_update_blob,
     }
 
     response = client.patch(
-        "/api/files/1/123", 
+        f"/api/files/1/{file_id}",
         data={
             "description": "New description",
             "class": "street style photograph",
@@ -125,10 +127,10 @@ def test_update_file_success(mock_embed, mock_update_document, mock_update_blob,
     assert response_json['success'] == True
     assert response_json['message'] == "File updated successfully"
 
-    mock_find_documents.assert_called_once_with("1", "files", {"_id": "123"})
+    mock_find_documents.assert_called_once_with("1", "files", {"_id": ObjectId(file_id)})
     
     expected_updated_doc = {
-        "_id": "123", 
+        "_id": file_id, 
         "filename": "test.jpg", 
         "blob_name": "blob123", 
         "container": "container1", 
@@ -139,7 +141,7 @@ def test_update_file_success(mock_embed, mock_update_document, mock_update_blob,
     }
     
     mock_update_blob.assert_called_once_with("blob123", expected_updated_doc, "container1")
-    mock_update_document.assert_called_once_with("1", "files", "123", expected_updated_doc)
+    mock_update_document.assert_called_once_with("1", "files", file_id, expected_updated_doc)
     mock_embed.assert_called_once_with(texts=["New description", "street style photograph", "white"], model="embed-english-v3.0", input_type="search_document", embedding_types=["float"])
 
 
@@ -170,9 +172,10 @@ def test_upload_file_invalid_class(mock_insert_document, mock_embed, mock_upload
 
 @patch("routes.file_routes.find_documents")
 def test_update_file_invalid_class(mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
     mock_find_documents.return_value = [
         {
-            "_id": "123", 
+            "_id": file_id, 
             "filename": "test.jpg", 
             "blob_name": "blob123", 
             "container": "container1", 
@@ -183,7 +186,7 @@ def test_update_file_invalid_class(mock_find_documents, client):
     ]
 
     response = client.patch(
-        "/api/files/1/123", 
+       f"/api/files/1/{file_id}", 
         data={
             "class": "invalid_class"  
         }

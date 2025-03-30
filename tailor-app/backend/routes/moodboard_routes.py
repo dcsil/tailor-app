@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from bson.objectid import ObjectId
 import os
 from datetime import datetime
 import logging
@@ -32,9 +33,6 @@ def insert_moodboard():
             return jsonify({"error": "No board provided"}), 400
         
         board = request.files['file']
-        logger.warning(board)
-        logger.warning(request)
-        logger.warning(request.form)
         
         # Check if the board is empty
         if board.filename == '':
@@ -134,7 +132,7 @@ def delete_moodboard(user_id, board_id):
     """
     try:
         # Find the board document first to get the blob name
-        board_docs = list(find_documents(user_id, "boards", {"_id": board_id}))
+        board_docs = list(find_documents(user_id, "boards", {"_id": ObjectId(board_id)}))
         
         if not board_docs:
             return jsonify({"error": "Board not found"}), 404

@@ -5,11 +5,23 @@ import { getBackendUrl } from '../utils/env.js';
 // Assets
 import { Search, Paperclip, Send, Scissors, Loader2 } from 'lucide-react';
 
+// Components
+import UploadModal from './UploadModal';
+
 const PromptInput = () => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const API_URL = getBackendUrl();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleSend = async () => {
     if (!prompt.trim()) return;
@@ -54,11 +66,11 @@ const PromptInput = () => {
           
           {/* Action Buttons */}
           <div className="flex justify-end mt-4 space-x-2">
-            <button className="px-4 py-2 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2">
+            <button className="px-4 py-2 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2" onClick={openModal}>
               <Paperclip className="w-5 h-5" />
               <span>Attach</span>
             </button>
-
+            
             {/* Send prompt */}
             <button 
               onClick={handleSend}
@@ -68,6 +80,11 @@ const PromptInput = () => {
               {isLoading ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Send className="w-5 h-5 text-white" />}
             </button>
           </div>
+          <UploadModal 
+            isOpen={isModalOpen} 
+            onClose={closeModal} 
+            userId="123" // Replace with actual user ID from auth system
+          />
         </div>
   );
 };

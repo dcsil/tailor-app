@@ -14,6 +14,7 @@ import Header from './components/Header';
 //pages
 import MoodboardPage from './pages/MoodboardPage'
 import MyChat from './pages/Chat'
+import MyCollection from './pages/Collection'
 import HomePage from './pages/HomePage'
 import Privacy from "./pages/Privacy"
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/moodboardresult" element={<MoodboardPage />} />
           <Route path="/mychat" element={<MyChat />} />
+          <Route path="/mycollection" element={<MyCollection />} />
           {/* chelsea: /moodboard will be removed */}
           <Route path="/moodboard" element={<Moodboard />}/> 
           <Route path="/privacy" element={<Privacy />} />

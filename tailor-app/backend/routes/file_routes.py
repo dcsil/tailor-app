@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from bson.objectid import ObjectId
 import os
 from datetime import datetime
 import logging
@@ -164,7 +165,7 @@ def delete_file(user_id, file_id):
     """
     try:
         # Find the file document first to get the blob name
-        file_docs = list(find_documents(user_id, "files", {"_id": file_id}))
+        file_docs = list(find_documents(user_id, "files", {"_id": ObjectId(file_id)}))
         
         if not file_docs:
             return jsonify({"error": "File not found"}), 404
@@ -202,7 +203,7 @@ def update_file(user_id, file_id):
     """
     try:
         # Find the file document first
-        file_docs = list(find_documents(user_id, "files", {"_id": file_id}))
+        file_docs = list(find_documents(user_id, "files", {"_id":  ObjectId(file_id)}))
         
         if not file_docs:
             return jsonify({"error": "File not found"}), 404
