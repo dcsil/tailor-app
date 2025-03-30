@@ -7,12 +7,15 @@ import '../App.css'
 // Components
 import PromptInput from '../components/PromptInput'
 import Footer from '../components/Footer'
+import Header from '../components/Header'
 
 function HomePage() {
     return (
-      <div className="flex flex-col min-h-screen bg-black text-white">
-        <div className="mb-8">
-          <img src={tailorLogo} className="mx-auto" alt="Tailor logo" />
+      <div className="flex flex-col items-center min-h-screen text-white">
+        <Header/>
+        <div className="mb-16 mt-20 masking-container">
+          <h1 className="masked-text">TAILOR</h1>
+          {/* <img src={tailorLogo} className="mx-auto" alt="Tailor logo" /> */}
         </div>
         <PromptInput/>
         <Footer/>

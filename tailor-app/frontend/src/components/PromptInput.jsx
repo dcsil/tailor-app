@@ -39,7 +39,7 @@ const PromptInput = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-[70vw]">
           {/* Text Input Area */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
