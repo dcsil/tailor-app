@@ -8,6 +8,7 @@ import '../App.css'
 // Components
 import Header from '../components/Header'
 import Board from '../components/Board'
+import MoodboardTitle from '../components/MoodboardTitle'
 
 function MoodboardPage (){
   const location = useLocation();
@@ -16,7 +17,19 @@ function MoodboardPage (){
   
     return (
         <div>
-          <Board prompt={prompt} ids={img_ids} urls={img_urls}/>
+          {/* Top margin */}
+          <div className="py-8">
+          </div>
+
+          {/* Mood board component */}
+          <div className="flex flex-col bg-[var(--color-beige)] rounded-md px-3 pb-6">
+            
+              <MoodboardTitle/>
+            <div>
+              <Board prompt={prompt} ids={img_ids} urls={img_urls}/>
+            </div>
+          </div>
+
         </div>
     );
 }
