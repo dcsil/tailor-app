@@ -9,7 +9,7 @@ import PromptInput from '../components/PromptInput'
 
 function HomePage() {
     return (
-      <div className="flex flex-col items-center min-h-screen text-white">
+      <div className="flex flex-col items-center text-white">
         <div className="mb-16 mt-20 masking-container">
           <h1 className="masked-text">TAILOR</h1>
           {/* <img src={tailorLogo} className="mx-auto" alt="Tailor logo" /> */}
