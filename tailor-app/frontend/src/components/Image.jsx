@@ -53,6 +53,7 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
         height: `${dimensions.height}px`,
         left: `${position.x}px`,
         top: `${position.y}px`,
+        position: 'absolute',
       }}
     >
       {CustomComponent ? (
