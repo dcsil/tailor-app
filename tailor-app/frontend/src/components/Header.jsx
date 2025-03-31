@@ -10,7 +10,7 @@ const Header = () => {
             </h1>
             </NavLink>
             <nav>
-                <NavLink to="/mychat" className={({ isActive }) => `px-5 hover:text-white ${isActive ? "font-bold text-white" : ""}`}>Chats</NavLink>
+                <NavLink to="/mychat" state={{ fetchData: true }}  className={({ isActive }) => `px-5 hover:text-white ${isActive ? "font-bold text-white" : ""}`}>Chats</NavLink>
                 <NavLink to="/mycollection" className={({ isActive }) => `px-5 hover:text-white ${isActive ? "font-bold text-white" : ""}`}>Collections</NavLink>
                 <NavLink to="/about" className={({ isActive }) => `px-5 hover:text-white ${isActive ? "font-bold text-white" : ""}`}>Account</NavLink>
             </nav>

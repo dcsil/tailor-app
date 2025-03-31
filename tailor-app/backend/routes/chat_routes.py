@@ -45,8 +45,11 @@ def generate_response():
 
 @chat_bp.route('/api/history', methods=['GET'])
 def get_history():
-    user_id = get_user_id()
-    conversations = list(find_documents(user_id, "conversations", {}).sort("timestamp", -1).limit(10))
-    for conv in conversations:
-        conv["_id"] = str(conv["_id"])
-    return jsonify(conversations)
+    try: 
+        user_id = get_user_id()
+        conversations = list(find_documents(user_id, "conversations", {}).sort("timestamp", -1).limit(10))
+        for conv in conversations:
+            conv["_id"] = str(conv["_id"])
+        return jsonify(conversations)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

@@ -1,6 +1,8 @@
 /* eslint-disable */
 import React, { useState, useRef, useEffect } from 'react';
 import Image from './Image';
+import { getBackendUrl } from '../utils/env.js';
+import html2canvas from 'html2canvas-pro';
 
 // images
 import activity from '../assets/UI placeholders/activity.jpeg';
@@ -16,22 +18,26 @@ import runway2 from '../assets/UI placeholders/runway2.jpeg';
 import runway3 from '../assets/UI placeholders/runway3.jpeg';
 import runway4 from '../assets/UI placeholders/runway4.jpeg';
 
-const BoardTest = () => {
+const BoardTest = (props) => {
     
-    const [images, setImages] = useState([
-        { id: 1, src: activity, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
-        { id: 2, src: fabric, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 2 },
-        { id: 3, src: runway2, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 3},
-        { id: 4, src: hair, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 4 },
-        { id: 5, src: style, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 5 },
-        { id: 6, src: palette, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 6},
-        { id: 7, src: runway3, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 7 },
-        { id: 8, src: interior, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 8 },
-        { id: 9, src: runway, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 9 },
-        { id: 10, src: fabric1, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 10 },
-        { id: 11, src: scenery, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 11 },
-        { id: 12, src: runway4, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 12 },
-      ]);
+    // const [images, setImages] = useState([
+    //     { id: 1, src: activity, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 1 },
+    //     { id: 2, src: fabric, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 2 },
+    //     { id: 3, src: runway2, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 3},
+    //     { id: 4, src: hair, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 4 },
+    //     { id: 5, src: style, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 5 },
+    //     { id: 6, src: palette, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 6},
+    //     { id: 7, src: runway3, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 7 },
+    //     { id: 8, src: interior, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 8 },
+    //     { id: 9, src: runway, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 9 },
+    //     { id: 10, src: fabric1, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 10 },
+    //     { id: 11, src: scenery, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 11 },
+    //     { id: 12, src: runway4, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 12 },
+    //   ]);
+    const API_URL = getBackendUrl();
+    const [prompt, setPrompt] = useState(props.prompt)
+    const [ids, setIds] = useState(props.ids);
+    const [images, setImages] = useState(props.urls);
     
     const [selectedId, setSelectedId] = useState(null);
     const boardRef = useRef(null);
@@ -55,6 +61,47 @@ const BoardTest = () => {
       return;
     }
 
+    const handleAddImage = async () => {
+      const response = await fetch(`${API_URL}/api/regenerate-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt.trim() }),
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      const [next_image_id, next_image_url] = data.next_image;
+      setIds((prevIds) => [...prevIds, next_image_id]); 
+      setImages((prevImages) => [...prevImages, next_image_url]); 
+    }
+
+    const handleExport = () => {
+      html2canvas(boardRef.current).then(async (canvas) => {
+        canvas.toBlob(async (blob) => {
+          const formData = new FormData();
+          formData.append('file', blob, 'board.png');
+          const userId = '123'; // TODO: temporary, fix later
+          formData.append('user_id', userId);
+          formData.append('image_ids', ids); 
+          formData.append('prompt', prompt);
+    
+          const uploadPromise = fetch(`${API_URL}/api/boards/upload`, {
+            method: 'POST',
+            body: formData, 
+          });
+    
+          const imageUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = imageUrl;
+          link.download = 'board.png';  
+          link.click();
+    
+          // Wait for upload to complete
+          await uploadPromise;
+        }, 'board/png');
+      });
+    };
+    
     // const handleResize = (id, width, height) => {
     //   const currentZ = nextZIndex.current;
     //   setImages(images.map(img => 
@@ -90,12 +137,12 @@ const BoardTest = () => {
             className="relative w-full grid grid-cols-6 grid-rows-2 max-w-6xl h-[85vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
             onClick={handleBoardClick}
           >
-            {images.map(img => (
-                <div key={img.id} className="col-span-1 row-span-1">
+            {images.map((img, index) => (
+                <div key={ids[index]} className="col-span-1 row-span-1">
                     <Image
                     className="w-full h-full object-cover"
-                        id={img.id}
-                        src={img.src}
+                        id={ids[index]}
+                        src={img}
                         initialX={0}
                         initialY={0}
                         initialWidth={200}
@@ -114,12 +161,13 @@ const BoardTest = () => {
           <div className="flex flex-col justify-start mb-2 mx-5">
             <button
               className="px-10 py-2 border-1 my-3 text-white rounded-3xl shadow-md shadow-gray-600 hover:bg-gray-300 focus:outline-none"
-              //onClick={handleAddImage}
+              onClick={handleAddImage}
             >
               Generate
             </button>
             <button
               className="px-10 py-2 border-1 my-3 text-white rounded-3xl shadow-md shadow-gray-600 hover:bg-gray-300 focus:outline-none"
+              onClick={handleExport}
             >
               Export
             </button>

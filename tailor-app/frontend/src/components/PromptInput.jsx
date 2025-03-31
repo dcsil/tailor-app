@@ -5,6 +5,8 @@ import { getBackendUrl } from '../utils/env.js';
 // Assets
 import { Search, Paperclip, Send, Scissors, Loader2 } from 'lucide-react';
 
+// Components
+
 const PromptInput = () => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +19,7 @@ const PromptInput = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/generate`, {
+      const response = await fetch(`${API_URL}/api/search-prompt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: prompt.trim(), template: 'basic_chat' }),
@@ -27,11 +29,11 @@ const PromptInput = () => {
       if (data.error) throw new Error(data.error);
 
       // Navigate to moodboard page 
-      navigate('/moodboard', { state: { prompt: prompt.trim(), response: data.response } });
+      navigate('/moodboardresult', { state: { prompt: prompt.trim(), response: data } });
 
     } catch (error) {
       console.error('Error:', error);
-      navigate('/moodboard', { state: { prompt: prompt.trim(), response: 'Error processing request.' } });
+      navigate('/moodboardresult', { state: { prompt: prompt.trim(), response: 'Error processing request.' } });
 
     } finally {
       setIsLoading(false);
@@ -58,7 +60,7 @@ const PromptInput = () => {
               <Paperclip className="w-5 h-5" />
               <span>Attach</span>
             </button>
-
+            
             {/* Send prompt */}
             <button 
               onClick={handleSend}
