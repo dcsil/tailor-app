@@ -77,7 +77,7 @@ function MyCollection (){
                     <h1 className="text-xl">Uploads</h1>
                 </div>
                 {uploads.map((upload, index) => (
-                <div key={uploads[index]} className="col-span-1 row-span-1">
+                <div key={upload._id} className="col-span-1 row-span-1">
                     <Image
                     className="w-full h-full object-cover"
                         id={upload["_id"]}
@@ -93,7 +93,7 @@ function MyCollection (){
                     <h1 className="text-xl">Boards</h1>
                 </div>
                 {boards.map((board, index) => (
-                <div key={boards[index]} className="col-span-1 row-span-1">
+                <div key={board._id} className="col-span-1 row-span-1">
                     <Image
                     className="w-full h-full object-cover"
                         id={board["_id"]}
