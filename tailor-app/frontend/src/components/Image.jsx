@@ -4,7 +4,11 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 
 
+<<<<<<< HEAD
 const Image = ({id, src, initialX, initialY, initialWidth, initialHeight,imageSelected, handleDelete, handleSelect, bringToFront, boardRef, zIndex}) => {
+=======
+const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, initialHeight, boardClick, imageSelected, handleDelete, handleSelect, bringToFront}) => {
+>>>>>>> 9f12f36f40d40fe5707a205fa95f686605b7a892
 
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [dimensions, setDimensions] = useState({ width: initialWidth, height: initialHeight });
@@ -37,10 +41,23 @@ const Image = ({id, src, initialX, initialY, initialWidth, initialHeight,imageSe
   }
 
   // conditionally wrap with Draggable & ResizableBox if selected
+  // const content = (
+  //   <img
+  //     src={src}
+  //     alt="Selectable"
+  //     onClick={onClick}
+  //     style={{
+  //       width: `${dimensions.width}px`,
+  //       height: `${dimensions.height}px`,
+  //       left: `${position.x}px`,
+  //       top: `${position.y}px`,}}
+  //   />
+  // );
+
+  // conditionally wrap with Draggable & ResizableBox if selected
+  // + choose either CustomComponent or Image
   const content = (
-    <img
-      src={src}
-      alt="Selectable"
+    <div
       onClick={onClick}
       style={{
         position: 'relative',
@@ -48,14 +65,37 @@ const Image = ({id, src, initialX, initialY, initialWidth, initialHeight,imageSe
         height: `${dimensions.height}px`,
         left: `${position.x}px`,
         top: `${position.y}px`,
+<<<<<<< HEAD
         // 
         }}
     />
+=======
+        position: 'absolute',
+      }}
+    >
+      {CustomComponent ? (
+        // Render the custom React component
+        <CustomComponent />
+      ) : (
+        // Render the image if no CustomComponent is provided
+        <img
+          src={src}
+          alt="Selectable"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      )}
+    </div>
+>>>>>>> 9f12f36f40d40fe5707a205fa95f686605b7a892
   );
 
   return  (
     <div style={{ zIndex: zIndex }}>
       <Draggable 
+<<<<<<< HEAD
       cancel=".react-resizable-handle"
       onDragEnd={onDrag}
       disabled={!isSelected}
@@ -86,15 +126,23 @@ const Image = ({id, src, initialX, initialY, initialWidth, initialHeight,imageSe
                 stroke="white" 
                 strokeWidth="2" 
                 strokeLinecap="round" 
+=======
+        cancel=".react-resizable-handle"
+        onDragEnd={onDrag}
+        disabled={!imageSelected}
+      >
+        <ResizableBox 
+          height={dimensions.height}
+          width={dimensions.width}
+          onResize={onResize}
+          resizeHandles={imageSelected ? ["se"] : []}
+>>>>>>> 9f12f36f40d40fe5707a205fa95f686605b7a892
         >
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-        </div>
-      )}
-
-      </div>
-      </ResizableBox>
+          <div>
+          {content}
+          {imageSelected && deleteButton}
+          </div>
+        </ResizableBox>
       </Draggable>
       </div>
   );

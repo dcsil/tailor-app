@@ -12,8 +12,8 @@ import UploadModal from '../components/UploadModal';
 
 function MyCollection (){
     const API_URL = getBackendUrl();
-    const [uploads, setUploads] = useState([]);
-    const [boards, setBoards] = useState([]);
+    const [uploads, setUploads] = useState(null);
+    const [boards, setBoards] = useState(null);
     const userId = '123';
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -26,13 +26,17 @@ function MyCollection (){
     };
 
     useEffect(() => {
-        if (uploads.length === 0) {
+        if (uploads === null) {
             fetchUploads();
         }
-        if (boards.length === 0) {
+    }, [uploads]);
+    
+    useEffect(() => {
+        if (boards === null) {
             fetchMoodboards();
         }
-    }, [uploads, boards]);
+    }, [boards]);
+    
 
     async function fetchUploads() {
         const response = await fetch(`${API_URL}/api/files/user/${userId}`);
@@ -76,12 +80,12 @@ function MyCollection (){
                 <div className="flex flex-row justify-between">
                     <h1 className="text-xl">Uploads</h1>
                 </div>
-                {uploads.map((upload, index) => (
-                <div key={uploads[index]} className="col-span-1 row-span-1">
+                {uploads && uploads.map(upload => (
+                <div key={upload._id} className="col-span-1 row-span-1">
                     <Image
                     className="w-full h-full object-cover"
-                        id={upload["_id"]}
-                        src={upload["blob_url"]}
+                        id={upload._id}
+                        src={upload.blob_url}
                     />
                     {/* TODO: handleUploadDelete(upload["_id"]  Add delete icon besides each uploaded file */}
                 </div>
@@ -92,12 +96,12 @@ function MyCollection (){
                 <div className="flex flex-row justify-between">
                     <h1 className="text-xl">Boards</h1>
                 </div>
-                {boards.map((board, index) => (
-                <div key={boards[index]} className="col-span-1 row-span-1">
+                {boards && boards.map(board => (
+                <div key={boards._id} className="col-span-1 row-span-1">
                     <Image
                     className="w-full h-full object-cover"
-                        id={board["_id"]}
-                        src={board["blob_url"]}
+                        id={board._id}
+                        src={board.blob_url}
                     />
                     {/* {/* TODO: handleUploadDelete(board["_id"] Add delete icon besides each board */}
                 </div>
