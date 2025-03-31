@@ -4,6 +4,8 @@ import Image from './Image';
 import { getBackendUrl } from '../utils/env.js';
 import html2canvas from 'html2canvas-pro';
 
+import ColourPalette from './ColourPalette.jsx';
+
 // images
 import activity from '../assets/UI placeholders/activity.jpeg';
 import fabric from '../assets/UI placeholders/fabric.jpeg';
@@ -154,6 +156,22 @@ const BoardTest = (props) => {
                     />
                 </div>
             ))}
+
+            <div key={1000} className="col-span-1 row-span-1">
+              <Image
+              className="w-full h-full object-cover"
+                  id={1000}
+                  CustomComponent={ColourPalette}
+                  initialX={0}
+                  initialY={0}
+                  initialWidth={200}
+                  initialHeight={320}
+                  imageSelected={1000 === selectedId}
+                  handleDelete={handleDelete}
+                  handleSelect={handleSelect}
+                  bringToFront={bringToFront}
+              />
+          </div>
            
           </div>
     
