@@ -181,41 +181,41 @@ const BoardTest = (props) => {
             onClick={handleBoardClick}
           >
             {images.map((img, index) => (
-                    <Image
-                    className="col-span-1 row-span-1 object-fill"
-                        key={ids[index]}
-                        id={ids[index]}
-                        // CustomComponent={ColourPalette}
-                        src={img}
-                        initialX={0}
-                        initialY={0}
-                        initialWidth={170}
-                        initialHeight={300}
-                        imageSelected={selectedId}
-                        handleDelete={handleDelete}
-                        handleSelect={handleSelect}
-                        bringToFront={bringToFront}
-                        boardRef={boardRef}
-                        zIndex={zIndexMap[ids[index]] || 1}
-                    />
+              <Image
+                className="col-span-1 row-span-1 object-fill"
+                key={ids[index]}
+                id={ids[index]}
+                src={img}
+                initialX={0}
+                initialY={0}
+                initialWidth={170}
+                initialHeight={300}
+                imageSelected={selectedId}
+                handleDelete={handleDelete}
+                handleSelect={handleSelect}
+                bringToFront={bringToFront}
+                boardRef={boardRef}
+                zIndex={zIndexMap[ids[index]] || 1}
+              />
             ))}
             
-            <div key={1000} className="col-span-1 row-span-1">
-              <Image
+            <Image
               className="w-full h-full object-cover"
-                  id={1000}
-                  CustomComponent={<ColourPalette />}
-                  initialX={0}
-                  initialY={0}
-                  initialWidth={200}
-                  initialHeight={320}
-                  imageSelected={1000 === selectedId}
-                  handleDelete={handleDelete}
-                  handleSelect={handleSelect}
-                  bringToFront={bringToFront}
-                  urls={images}
-              />
-            </div>
+              key={100}
+              id={100}
+              CustomComponent={<ColourPalette />}
+              initialX={0}
+              initialY={0}
+              initialWidth={170}
+              initialHeight={300}
+              imageSelected={selectedId}
+              handleDelete={handleDelete}
+              handleSelect={handleSelect}
+              bringToFront={bringToFront}
+              boardRef={boardRef}
+              zIndex={100}
+              urls={images}
+            />
           </div>
     
 
