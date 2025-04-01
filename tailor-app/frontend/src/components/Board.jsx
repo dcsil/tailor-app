@@ -161,7 +161,7 @@ const BoardTest = (props) => {
               <Image
               className="w-full h-full object-cover"
                   id={1000}
-                  CustomComponent={ColourPalette}
+                  CustomComponent={<ColourPalette />}
                   initialX={0}
                   initialY={0}
                   initialWidth={200}
@@ -170,9 +170,9 @@ const BoardTest = (props) => {
                   handleDelete={handleDelete}
                   handleSelect={handleSelect}
                   bringToFront={bringToFront}
+                  urls={images}
               />
-          </div>
-           
+            </div>
           </div>
     
 

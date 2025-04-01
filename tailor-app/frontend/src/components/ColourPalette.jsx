@@ -3,11 +3,12 @@ import namer from "color-namer";
 
 import frankenpet from '../assets/frankenpet.png';
 
-const images = [frankenpet, frankenpet, frankenpet, frankenpet, frankenpet, frankenpet];
+// const images = [frankenpet, frankenpet, frankenpet, frankenpet, frankenpet, frankenpet];
 
-const ColourPalette = () => {
+const ColourPalette = ({ urls }) => {
   // Extract colors for all images
-  const extractedColors = images.map((image) =>
+  console.log("Image URLs:", urls);
+  const extractedColors = urls.map((image) =>
     useExtractColors(image, {
       maxColors: 10,
       format: "hex",
@@ -15,6 +16,11 @@ const ColourPalette = () => {
       orderBy: "dominance",
     })
   );
+
+  
+
+  // Wait for colors to load
+  if (extractedColors.some((res) => res.loading)) return <p>Loading colour palette...</p>;
 
   // Collect all colors into one array 
   let allColors = extractedColors.flatMap(({ colors }) => colors);
