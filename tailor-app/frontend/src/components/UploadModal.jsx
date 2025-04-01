@@ -52,11 +52,38 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
   ];
 
   // Handle file selection
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
     setUploadSuccess(false);
     setErrorMessage('');
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/api/files/analyze", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const parsedAnalysis = JSON.parse(data.analysis);
+          const description = parsedAnalysis[0];
+          const classification = parsedAnalysis[1];
+          const colors = parsedAnalysis[2];
+          console.log("Description:", description);
+          console.log("Classification:", classification);
+          console.log("Colors:", colors);
+          setDescription(description);
+          setFileClass(classification);
+          setColour(colors);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+    }
   };
 
   // Handle description change
@@ -89,13 +116,13 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('description', description);
+    // formData.append('description', description);
     formData.append('user_id', userId);
-    formData.append('class', fileClass);
-    formData.append('colour', colour);
+    // formData.append('class', fileClass);
+    // formData.append('colour', colour);
 
     try {
-      const response = await fetch(`${API_URL}/api/files/upload`, {
+      const response = await fetch('http://127.0.0.1:5000/api/files/upload', {
         method: 'POST',
         body: formData,
         // No need to set Content-Type header as fetch sets it correctly with boundary for FormData
@@ -108,6 +135,10 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
       }
 
       const data = await response.json();
+
+      if (data.description) setDescription(data.description);
+      if (data.class) setFileClass(data.class);
+      if (data.colour) setColour(data.colour);
 
       setIsUploading(false);
       setUploadSuccess(true);
