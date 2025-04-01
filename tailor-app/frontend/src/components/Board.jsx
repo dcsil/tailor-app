@@ -20,6 +20,11 @@ import runway2 from '../assets/UI placeholders/runway2.jpeg';
 import runway3 from '../assets/UI placeholders/runway3.jpeg';
 import runway4 from '../assets/UI placeholders/runway4.jpeg';
 
+// icons
+import UndoIcon from '../utils/SVG Icons/UndoIcon'
+import ExportIcon from '../utils/SVG Icons/ExportIcon'
+import AddIcon from '../utils/SVG Icons/AddIcon'
+
 const BoardTest = (props) => {
     
     // const [images, setImages] = useState([
@@ -40,11 +45,30 @@ const BoardTest = (props) => {
     const [prompt, setPrompt] = useState(props.prompt)
     const [ids, setIds] = useState(props.ids);
     const [images, setImages] = useState(props.urls);
-    
+    const [zIndexMap, setZIndexMap] = useState({}); 
+    const [highestZIndex, setHighestZIndex] = useState(0);
+
     const [selectedId, setSelectedId] = useState(null);
     const boardRef = useRef(null);
-    const nextId = useRef(13);
-    const nextZIndex = useRef(13);
+
+    useEffect(() => {
+      if (props.ids.length > 0) {
+        let maxZ = 0;
+        const initialZIndexMap = props.ids.reduce((acc, id, index) => {
+          const zIndex = index + 1; // Set z-index in order of appearance
+          acc[id] = zIndex
+          maxZ = Math.max(maxZ, zIndex);
+          return acc;
+        }, {});
+
+        console.log(JSON.stringify(initialZIndexMap, null, 2));
+        console.log('max Z: '+maxZ);
+
+        setZIndexMap(initialZIndexMap);
+        setHighestZIndex(maxZ);
+      }
+    }, [props.ids]); // Runs when ids change
+    
 
     // Deselect on click
     const handleBoardClick = () => {
@@ -53,15 +77,27 @@ const BoardTest = (props) => {
 
     // Select on click 
     const handleSelect = (id) => {
-      bringToFront(id);
       setSelectedId(id);
+      console.log("selected ID in board:  " + id)
     };
 
+
     const handleDelete = (id) => {
-      setImages(images.filter(img => img.id !== id));
+
+      setIds((prevIds) => {
+        const indexToDelete = prevIds.indexOf(id);
+        console.log(indexToDelete);
+        if (indexToDelete == -1) return prevIds;
+
+        setImages((prevImages) => prevImages.filter((_,idx)=>idx!==indexToDelete));
+
+        return prevIds.filter((currentId) => currentId!==indexToDelete);
+      });
+      
       setSelectedId(null);
       return;
     }
+
 
     const handleAddImage = async () => {
       const response = await fetch(`${API_URL}/api/regenerate-search`, {
@@ -103,93 +139,70 @@ const BoardTest = (props) => {
         }, 'board/png');
       });
     };
-    
-    // const handleResize = (id, width, height) => {
-    //   const currentZ = nextZIndex.current;
-    //   setImages(images.map(img => 
-    //     { if (img.id === id) {
-    //       return { ...img, width, height, zIndex: currentZ };
-    //     }
-    //     return img;}
 
-    //   ));
-    //   nextZIndex.current += 1;
-    //   setSelectedId(id);
-    // };
-  
     const bringToFront = (id) => {
-      const currentZ = nextZIndex.current;
-      setImages(images.map(img => 
-            { if (img.id === id) {
-              console.log(img.zIndex);
-              return { ...img, zIndex: currentZ };
-              
-            }
-            return img;}
-    
-          ));
-      nextZIndex.current += 1;
-      setSelectedId(id);
+      console.log('bring to front');
+      setZIndexMap((prev) => ({
+        ...prev,
+        [id]: highestZIndex + 1,
+      }));
+      setHighestZIndex((prev) => prev + 1);
     };
 
     return (
-        <div className="flex flex-row p-4">
+        <div className="flex flex-col p-1 max-w-5xl">
+
+          <div className="flex flex-row justify-start gap-3 mb-4 mx-5">
+
+            <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
+            onClick={handleExport}> 
+            <ExportIcon/>
+            Download
+            </button>
+
+            <button className="flex items-center gap-3 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer" 
+            onClick={handleAddImage}
+            >
+            <AddIcon/>
+            Add
+            </button>
+
+            <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"> 
+            <UndoIcon/>
+            Undo
+            </button>
+
+        </div>
+
+
           <div
             ref={boardRef}
-            className="relative w-full grid grid-cols-6 grid-rows-2 max-w-6xl h-[85vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
+            className="relative w-full grid grid-cols-6 grid-rows-2 max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
             onClick={handleBoardClick}
           >
             {images.map((img, index) => (
-                <div key={ids[index]} className="col-span-1 row-span-1">
                     <Image
-                    className="w-full h-full object-cover"
+                    className="col-span-1 row-span-1 object-fill"
+                        key={ids[index]}
                         id={ids[index]}
+                        // CustomComponent={ColourPalette}
                         src={img}
                         initialX={0}
                         initialY={0}
-                        initialWidth={200}
-                        initialHeight={320}
-                        imageSelected={img.id === selectedId}
+                        initialWidth={170}
+                        initialHeight={300}
+                        imageSelected={selectedId}
                         handleDelete={handleDelete}
                         handleSelect={handleSelect}
                         bringToFront={bringToFront}
+                        boardRef={boardRef}
+                        zIndex={zIndexMap[ids[index]] || 1}
                     />
-                </div>
             ))}
-
-            <div key={1000} className="col-span-1 row-span-1">
-              <Image
-              className="w-full h-full object-cover"
-                  id={1000}
-                  CustomComponent={ColourPalette}
-                  initialX={0}
-                  initialY={0}
-                  initialWidth={200}
-                  initialHeight={320}
-                  imageSelected={1000 === selectedId}
-                  handleDelete={handleDelete}
-                  handleSelect={handleSelect}
-                  bringToFront={bringToFront}
-              />
-          </div>
-           
           </div>
     
 
-          <div className="flex flex-col justify-start mb-2 mx-5">
-            <button
-              className="px-10 py-2 border-1 my-3 text-white rounded-3xl shadow-md shadow-gray-600 hover:bg-gray-300 focus:outline-none"
-              onClick={handleAddImage}
-            >
-              Generate
-            </button>
-            <button
-              className="px-10 py-2 border-1 my-3 text-white rounded-3xl shadow-md shadow-gray-600 hover:bg-gray-300 focus:outline-none"
-              onClick={handleExport}
-            >
-              Export
-            </button>
-          </div>
+  
     
         </div>
     );
