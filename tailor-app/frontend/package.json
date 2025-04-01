@@ -12,6 +12,7 @@
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
+    "@material-tailwind/react": "^2.1.10",
     "@sentry/react": "^9.3.0",
     "@sentry/vite-plugin": "^3.2.2",
     "@tailwindcss/vite": "^4.0.14",

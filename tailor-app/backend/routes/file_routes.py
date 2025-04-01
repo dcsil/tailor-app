@@ -8,6 +8,7 @@ from init_mongo import insert_document, find_documents, delete_document, update_
 from werkzeug.utils import secure_filename
 from utils.helpers import allowed_file, ALLOWED_EXTENSIONS
 import cohere
+import base64
 
 co = cohere.ClientV2()
 # Configure logging
@@ -32,6 +33,51 @@ VALID_CLASSES = {
     'texture'
 }
 
+@file_bp.route('/api/files/analyze', methods=['POST'])
+def analyze_file():
+    """
+    Endpoint to analyze an uploaded image using Cohere AI.
+
+    Request:
+    - file: The image file to analyze.
+
+    Response:
+    - success (bool): Whether the request was processed successfully.
+    - analysis (str): A JSON string containing:
+        - A brief description of the image's vibe.
+        - The classification from a predefined list.
+        - The main colors present in the image.
+    """
+    try:
+        # Check if file is included
+        if 'file' not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+
+        file = request.files['file']
+        # Convert image to base64 for Cohere API
+        image_base64 = base64.b64encode(file.read()).decode("utf-8")
+        image_url = f"data:image/png;base64,{image_base64}"
+        # Construct the AI prompt
+        messages = [
+            {"role": "user", "content": [
+                {"type": "text", "text": "Can you return your answer as a list, with square brackets and quotations but without the indenting and formatting:"},
+                {"type": "text", "text": "1. The general vibe in a brief sentence."},
+                {"type": "text", "text": "2. The classification from this list: ('fabric', 'fashion illustration', 'garment', 'historical photograph', 'location photograph', 'nature', 'runway', 'street style photograph', 'texture')."},
+                {"type": "text", "text": "3. The main colors in the image, separated by commas."},
+                {"type": "image_url", "image_url": {"url": image_url}}
+            ]}
+        ]
+
+        # Call Cohere AI
+        response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
+        # Extract response
+        return jsonify({
+            "success": True,
+            "analysis": response.message.content[0].text
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @file_bp.route('/api/files/upload', methods=['POST'])
 def upload_file():
