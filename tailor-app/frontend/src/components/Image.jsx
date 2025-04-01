@@ -4,11 +4,7 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 
 
-<<<<<<< HEAD
-const Image = ({id, src, initialX, initialY, initialWidth, initialHeight,imageSelected, handleDelete, handleSelect, bringToFront, boardRef, zIndex}) => {
-=======
-const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, initialHeight, boardClick, imageSelected, handleDelete, handleSelect, bringToFront}) => {
->>>>>>> 9f12f36f40d40fe5707a205fa95f686605b7a892
+const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, initialHeight,imageSelected, handleDelete, handleSelect, bringToFront, boardRef, zIndex}) => {
 
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [dimensions, setDimensions] = useState({ width: initialWidth, height: initialHeight });
@@ -65,11 +61,6 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
         height: `${dimensions.height}px`,
         left: `${position.x}px`,
         top: `${position.y}px`,
-<<<<<<< HEAD
-        // 
-        }}
-    />
-=======
         position: 'absolute',
       }}
     >
@@ -89,13 +80,35 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
         />
       )}
     </div>
->>>>>>> 9f12f36f40d40fe5707a205fa95f686605b7a892
+  );
+
+  const deleteButton = (
+    <div
+      className="absolute top-0 right-0 w-4 h-4 bg-red-500 bg-opacity-60 cursor-pointer flex items-center justify-center hover:bg-opacity-80"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleDelete(id);
+      }}
+    >
+    <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="10" 
+                height="10" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="white" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+    >
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+    </div>
   );
 
   return  (
     <div style={{ zIndex: zIndex }}>
       <Draggable 
-<<<<<<< HEAD
       cancel=".react-resizable-handle"
       onDragEnd={onDrag}
       disabled={!isSelected}
@@ -126,23 +139,15 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
                 stroke="white" 
                 strokeWidth="2" 
                 strokeLinecap="round" 
-=======
-        cancel=".react-resizable-handle"
-        onDragEnd={onDrag}
-        disabled={!imageSelected}
-      >
-        <ResizableBox 
-          height={dimensions.height}
-          width={dimensions.width}
-          onResize={onResize}
-          resizeHandles={imageSelected ? ["se"] : []}
->>>>>>> 9f12f36f40d40fe5707a205fa95f686605b7a892
         >
-          <div>
-          {content}
-          {imageSelected && deleteButton}
-          </div>
-        </ResizableBox>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        </div>
+      )}
+
+      </div>
+      </ResizableBox>
       </Draggable>
       </div>
   );
