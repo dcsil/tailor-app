@@ -5,8 +5,9 @@ import Image from './Image';
 import { getBackendUrl } from '../utils/env.js';
 import html2canvas from 'html2canvas-pro';
 
+// Components
 import ColourPalette from './ColourPalette.jsx';
-
+import SuccessBanner from './SuccessBanner.jsx';
 import MoodboardTitle from './MoodboardTitle.jsx';
 // images
 import activity from '../assets/UI placeholders/activity.jpeg';
@@ -53,6 +54,8 @@ const BoardTest = (props) => {
     const [highestZIndex, setHighestZIndex] = useState(0);
 
     const [selectedId, setSelectedId] = useState(null);
+    const [showPalette, setShowPalette] = useState(true);
+    const [successExport, setSuccessExport] = useState(false);
     const boardRef = useRef(null);
 
     useEffect(() => {
@@ -123,7 +126,9 @@ const BoardTest = (props) => {
         return;
       }
       setSelectedId(null);
-    
+      setShowPalette(false);
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       try {
         const canvas = await html2canvas(boardRef.current, {
           useCORS: true,
@@ -161,7 +166,8 @@ const BoardTest = (props) => {
         document.body.removeChild(link);
     
         await uploadPromise; 
-    
+        setSuccessExport(true);
+        await new Promise(resolve => setTimeout(resolve, 2000));
         navigate("/"); 
       } catch (error) {
         console.error("Error capturing moodboard:", error);
@@ -229,7 +235,7 @@ const BoardTest = (props) => {
               />
             ))}
             
-            <Image
+            {showPalette && <Image
               className="w-full h-full object-cover"
               key={100}
               id={100}
@@ -245,7 +251,10 @@ const BoardTest = (props) => {
               boardRef={boardRef}
               zIndex={100}
               urls={images}
-            />
+            />}
+
+            {successExport && <SuccessBanner message="Upload was successful!" />}
+            
           </div>
         </div>
         </>
