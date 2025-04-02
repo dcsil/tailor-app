@@ -24,8 +24,7 @@ export function EditIcon(props) {
   };
   
 
-const MoodboardTitle = () => {
-    const [title, setTitle] = useState(" My Moodboard");
+const MoodboardTitle = ({ title, setTitle }) => {
     const [isEditing, setIsEditing] = useState(false);
 
     return (

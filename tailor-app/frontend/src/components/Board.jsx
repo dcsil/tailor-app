@@ -1,11 +1,13 @@
 /* eslint-disable */
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Image from './Image';
 import { getBackendUrl } from '../utils/env.js';
 import html2canvas from 'html2canvas-pro';
 
 import ColourPalette from './ColourPalette.jsx';
 
+import MoodboardTitle from './MoodboardTitle.jsx';
 // images
 import activity from '../assets/UI placeholders/activity.jpeg';
 import fabric from '../assets/UI placeholders/fabric.jpeg';
@@ -42,9 +44,11 @@ const BoardTest = (props) => {
     //     { id: 12, src: runway4, x: 50, y: 50, width: 90, height: 50, selected: false, zIndex: 12 },
     //   ]);
     const API_URL = getBackendUrl();
+    const navigate = useNavigate();
     const [prompt, setPrompt] = useState(props.prompt)
     const [ids, setIds] = useState(props.ids);
     const [images, setImages] = useState(props.urls);
+    const [title, setTitle] = useState("My Moodboard");
     const [zIndexMap, setZIndexMap] = useState({}); 
     const [highestZIndex, setHighestZIndex] = useState(0);
 
@@ -112,32 +116,56 @@ const BoardTest = (props) => {
       setIds((prevIds) => [...prevIds, next_image_id]); 
       setImages((prevImages) => [...prevImages, next_image_url]); 
     }
-
-    const handleExport = () => {
-      html2canvas(boardRef.current).then(async (canvas) => {
-        canvas.toBlob(async (blob) => {
-          const formData = new FormData();
-          formData.append('file', blob, 'board.png');
-          const userId = '123'; // TODO: temporary, fix later
-          formData.append('user_id', userId);
-          formData.append('image_ids', ids); 
-          formData.append('prompt', prompt);
     
-          const uploadPromise = fetch(`${API_URL}/api/boards/upload`, {
-            method: 'POST',
-            body: formData, 
-          });
+    const handleExport = async () => {
+      if (!boardRef.current) {
+        console.error("Error: boardRef is null.");
+        return;
+      }
+      setSelectedId(null);
     
-          const imageUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = imageUrl;
-          link.download = 'board.png';  
-          link.click();
+      try {
+        const canvas = await html2canvas(boardRef.current, {
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null, 
+          logging: true, 
+        });
     
-          // Wait for upload to complete
-          await uploadPromise;
-        }, 'board/png');
-      });
+        const blob = await new Promise((resolve) =>
+          canvas.toBlob(resolve, "image/png") 
+        );
+    
+        if (!blob) {
+          console.error("Failed to generate image blob.");
+          return;
+        }
+  
+        const formData = new FormData();
+        formData.append("file", blob, `${title}.png`);
+        formData.append("user_id", "123"); // TODO: Replace with actual user ID
+        formData.append("image_ids", ids);
+        formData.append("prompt", prompt);
+    
+        const uploadPromise = fetch(`${API_URL}/api/boards/upload`, {
+          method: "POST",
+          body: formData,
+        });
+    
+        const imageUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = `${title}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    
+        await uploadPromise; 
+    
+        navigate("/"); 
+      } catch (error) {
+        console.error("Error capturing moodboard:", error);
+      }
     };
 
     const bringToFront = (id) => {
@@ -150,6 +178,8 @@ const BoardTest = (props) => {
     };
 
     return (
+      <>
+      <MoodboardTitle title={title} setTitle={setTitle}/>
         <div className="flex flex-col p-1 max-w-5xl">
 
           <div className="flex flex-row justify-start gap-3 mb-4 mx-5">
@@ -200,11 +230,8 @@ const BoardTest = (props) => {
                     />
             ))}
           </div>
-    
-
-  
-    
         </div>
+        </>
     );
 
 }

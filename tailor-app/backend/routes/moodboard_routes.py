@@ -162,3 +162,32 @@ def delete_moodboard(user_id, board_id):
             "error": str(e)
         }), 500
     
+@board_bp.route('/api/temp_boards/<user_id>/<prompt>', methods=['DELETE'])
+def delete_temp_moodboard(user_id, prompt):
+    """
+    Endpoint to delete a temporary board (from MongoDB)
+    """
+    try:
+        # Find the board document first to get the blob name
+        temp_boards = list(find_documents(user_id, "temp_boards", {"prompt": prompt}))
+        if not temp_boards:
+            return jsonify({"message": "No temp boards to delete."})
+
+        temp_board = temp_boards[0]
+        if not temp_board:
+            return jsonify({"error": "Board not found"}), 404
+
+        delete_document(user_id, "temp_boards", str(temp_board["_id"]))
+
+        return jsonify({
+            "success": True,
+            "message": "Temp board deleted successfully",
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error deleting temp bord: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+    
