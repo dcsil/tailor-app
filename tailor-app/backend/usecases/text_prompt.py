@@ -79,7 +79,7 @@ def search_database(files_collection, prompt, postfilter = {},excluded_ids=[],to
     """
     # Define class groups and their allocations
     class_groups = {
-        "fashion_specific": {
+        "garment": {
             "classes": ["garment"],
             "allocation": 0.2
         },
