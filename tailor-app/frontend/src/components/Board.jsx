@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Image from './Image';
 import { getBackendUrl } from '../utils/env.js';
-import html2canvas from 'html2canvas-pro';
+import { toBlob } from 'html-to-image';
 
 // Components
 import ColourPalette from './ColourPalette.jsx';
@@ -120,59 +120,62 @@ const BoardTest = (props) => {
       setImages((prevImages) => [...prevImages, next_image_url]); 
     }
     
-    const handleExport = async () => {
-      if (!boardRef.current) {
-        console.error("Error: boardRef is null.");
-        return;
-      }
-      setSelectedId(null);
-      setShowPalette(false);
-      await new Promise(resolve => setTimeout(resolve, 100));
 
-      try {
-        const canvas = await html2canvas(boardRef.current, {
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null, 
-          logging: true, 
-        });
-    
-        const blob = await new Promise((resolve) =>
-          canvas.toBlob(resolve, "image/png") 
-        );
-    
-        if (!blob) {
-          console.error("Failed to generate image blob.");
-          return;
-        }
-  
-        const formData = new FormData();
-        formData.append("file", blob, `${title}.png`);
-        formData.append("user_id", "123"); // TODO: Replace with actual user ID
-        formData.append("image_ids", ids);
-        formData.append("prompt", prompt);
-    
-        const uploadPromise = fetch(`${API_URL}/api/boards/upload`, {
-          method: "POST",
-          body: formData,
-        });
-    
-        const imageUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = imageUrl;
+const handleExport = async () => {
+  if (!boardRef.current) {
+    console.error("Export failed: Board reference not found");
+    return;
+  }
+
+  setSelectedId(null);
+  setShowPalette(false);
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    const blob = await toBlob(boardRef.current, {
+      quality: 1, 
+      pixelRatio: 2, 
+      backgroundColor: 'transparent',
+    });
+
+    if (!blob) {
+      throw new Error("Failed to generate image blob");
+    }
+
+    const formData = new FormData();
+    formData.append("file", blob, `${title}.png`);
+    formData.append("user_id", "123"); // TODO: fix later
+    formData.append("image_ids", ids);
+    formData.append("prompt", prompt);
+
+    await Promise.all([
+      fetch(`${API_URL}/api/boards/upload`, {
+        method: "POST",
+        body: formData,
+      }),
+      
+      (() => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
         link.download = `${title}.png`;
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
-    
-        await uploadPromise; 
-        setSuccessExport(true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        navigate("/"); 
-      } catch (error) {
-        console.error("Error capturing moodboard:", error);
-      }
-    };
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+      })()
+    ]);
+
+    setSuccessExport(true);
+    setTimeout(() => navigate("/"), 2000);
+
+  } catch (error) {
+    console.error("Export failed:", error);
+  }
+};
 
     const bringToFront = (id) => {
       console.log('bring to front');

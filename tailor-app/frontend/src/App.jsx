@@ -17,6 +17,8 @@ import MyChat from './pages/Chat'
 import MyCollection from './pages/Collection'
 import HomePage from './pages/HomePage'
 import Privacy from "./pages/Privacy"
+import UploadCollection from './pages/UploadCollection';
+import BoardCollection from './pages/BoardCollection';
 
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
           <Route path="/moodboardresult" element={<MoodboardPage />} />
           <Route path="/mychat" element={<MyChat />} />
           <Route path="/mycollection" element={<MyCollection />} />
+          <Route path="/mycollection/uploads" element={<UploadCollection />} />
+          <Route path="/mycollection/boards" element={<BoardCollection />} />
           {/* chelsea: /moodboard will be removed */}
           <Route path="/moodboard" element={<Moodboard />}/> 
           <Route path="/privacy" element={<Privacy />} />
