@@ -75,6 +75,8 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
             height: '100%',
             objectFit: 'cover',
           }}
+          draggable="false"
+          onDragStart={(e) => e.preventDefault()}
         />
       )}
     </div>
@@ -109,7 +111,7 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
       <Draggable 
       cancel=".react-resizable-handle"
       onDragEnd={onDrag}
-      disabled={!isSelected}
+      // disabled={!isSelected}
       >
       <ResizableBox 
         height={dimensions.height}
