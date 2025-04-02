@@ -9,7 +9,7 @@ import '../App.css'
 // Components
 import Header from '../components/Header'
 import Board from '../components/Board'
-// import MoodboardTitle from '../components/MoodboardTitle'
+import MoodboardTitle from '../components/MoodboardTitle'
 
 function MoodboardPage (){
   const userId = "123";
