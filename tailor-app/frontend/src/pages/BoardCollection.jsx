@@ -47,17 +47,17 @@ function BoardCollection () {
             {/* boards Grid */}
             <section className="w-full">
                 {files && files.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
                         {files.map(board => (
                             <article 
                                 key={board._id} 
-                                className="group relative flex flex-col h-full"
+                                className="group relative flex flex-col h-[70%]"
                             >
-                                <div className="relative aspect-square black rounded-t-lg overflow-hidden">
+                                <div className="relative aspect-square black overflow-hidden">
                                     <img
                                         id={board._id}
                                         src={board.blob_url}
-                                        className="max-w-full max-h-full object-contain"
+                                        className="max-w-full max-h-full object-cover"
                                         onClick={() => setSelectedImage(board)}
                                     />
                                     
