@@ -75,6 +75,8 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
             height: '100%',
             objectFit: 'cover',
           }}
+          draggable="false"
+          onDragStart={(e) => e.preventDefault()}
         />
       )}
     </div>
