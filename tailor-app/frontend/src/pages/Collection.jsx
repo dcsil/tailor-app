@@ -1,17 +1,19 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Assets and styling
 import '../App.css'
 import { getBackendUrl } from '../utils/env.js';
 
 // Components
-import Image from '../components/Image';
 import UploadModal from '../components/UploadModal';
+import CollectionItem from '../components/CollectionItem.jsx';
 
 
 function MyCollection (){
     const API_URL = getBackendUrl();
+    const navigate = useNavigate();
     const [uploads, setUploads] = useState(null);
     const [boards, setBoards] = useState(null);
     const userId = '123';
@@ -24,6 +26,22 @@ function MyCollection (){
     const closeModal = () => {
       setIsModalOpen(false);
     };
+    
+    async function fetchUploads() {
+        const response = await fetch(`${API_URL}/api/files/user/${userId}`);
+        const data = await response.json();
+
+        if (data.error) throw new Error(data.error);
+        setUploads(data.files);
+    }
+
+    async function fetchMoodboards() {
+        const response = await fetch(`${API_URL}/api/boards/user/${userId}`);
+        const data = await response.json();
+
+        if (data.error) throw new Error(data.error);
+        setBoards(data.boards);
+    }
 
     useEffect(() => {
         if (uploads === null) {
@@ -36,84 +54,42 @@ function MyCollection (){
             fetchMoodboards();
         }
     }, [boards]);
-    
 
-    async function fetchUploads() {
-        const response = await fetch(`${API_URL}/api/files/user/${userId}`);
-        const data = await response.json();
-
-        if (data.error) throw new Error(data.error);
-        setUploads(data.files);
-    }
-
-    async function handleUploadDelete(upload_id) {
-        const response = await fetch(`${API_URL}/api/files/${userId}/${upload_id}`,
-            { method: 'DELETE',}
-        );
-        const data = await response.json();
-
-        if (data.error) throw new Error(data.error);
-    }
-
-    async function fetchMoodboards() {
-        const response = await fetch(`${API_URL}/api/boards/user/${userId}`);
-        const data = await response.json();
-
-        if (data.error) throw new Error(data.error);
-        setBoards(data.boards);
-    }
-
-    async function handleBoardDelete(board_id) {
-        const response = await fetch(`${API_URL}/api/boards/${userId}/${board_id}`,
-            { method: 'DELETE',}
-        );
-        const data = await response.json();
-
-        if (data.error) throw new Error(data.error);
-    }
-
-    return(
-        <div className="flex flex-col justify-center items-center min-h-screen text-white">
-        <button className="px-4 py-2 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2" onClick={openModal}>Upload</button>
-
-            <div className="w-[70%] flex flex-col m-10">
-                <div className="flex flex-row justify-between">
-                    <h1 className="text-xl">Uploads</h1>
-                </div>
-                {uploads && uploads.map(upload => (
-                <div key={upload._id} className="col-span-1 row-span-1">
-                    <Image
-                    className="w-full h-full object-cover"
-                        id={upload._id}
-                        src={upload.blob_url}
-                    />
-                    {/* TODO: handleUploadDelete(upload["_id"]  Add delete icon besides each uploaded file */}
-                </div>
-            ))}
+    return (
+        <div className="flex flex-col min-h-screen text-white p-4">
+          <div className="flex justify-center w-full py-8">
+            <button 
+              className="px-6 py-3 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2 transition-colors duration-200 font-medium hover:cursor-pointer"
+              onClick={openModal}
+            >
+              <span>Upload</span>
+            </button>
+          </div>
+      
+        <div className="w-[50%]">
+            <div className="grid grid-cols-2 gap-4 justify-start">
+                <CollectionItem
+                title="Uploads"
+                files={uploads}
+                image={uploads?.[0]?.blob_url}
+                count={uploads?.length}
+                />
+                <CollectionItem
+                title="Moodboards"
+                files={boards}
+                image={boards?.[0]?.blob_url}
+                count={boards?.length}
+                />
             </div>
-
-            <div className="w-[70%] flex flex-col m-10">
-                <div className="flex flex-row justify-between">
-                    <h1 className="text-xl">Boards</h1>
-                </div>
-                {boards && boards.map(board => (
-                <div key={boards._id} className="col-span-1 row-span-1">
-                    <Image
-                    className="w-full h-full object-cover"
-                        id={board._id}
-                        src={board.blob_url}
-                    />
-                    {/* {/* TODO: handleUploadDelete(board["_id"] Add delete icon besides each board */}
-                </div>
-            ))}
-            </div>
-            <UploadModal 
-                isOpen={isModalOpen} 
-                onClose={closeModal} 
-                userId="123" // Replace with actual user ID from auth system
-            />
         </div>
-    );
+      
+          <UploadModal 
+            isOpen={isModalOpen} 
+            onClose={closeModal} 
+            userId="123"
+          />
+        </div>
+      );
 }
 
 export default MyCollection;
