@@ -91,6 +91,9 @@ def initialize_atlas_search(user_id, collection_type):
             {"mappings":
                 {"dynamic": True,
                 "fields": {
+                    "class": {
+                        "type": "token"
+                    },
                     "embedding" : {
                         "dimensions": 1024,
                         "similarity": "cosine",
