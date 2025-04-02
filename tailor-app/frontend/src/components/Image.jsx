@@ -54,7 +54,7 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
     <div
       onClick={onClick}
       style={{
-        position: 'relative',
+        // position: 'relative',
         width: `${dimensions.width}px`,
         height: `${dimensions.height}px`,
         left: `${position.x}px`,
