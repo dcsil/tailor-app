@@ -3,9 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Draggable from 'react-draggable'; 
 import { ResizableBox } from 'react-resizable';
 
-
-const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, initialHeight,imageSelected, handleDelete, handleSelect, bringToFront, boardRef, zIndex}) => {
-
+const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, initialHeight, imageSelected, handleDelete, handleSelect, bringToFront, boardRef, zIndex, urls}) => {
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [dimensions, setDimensions] = useState({ width: initialWidth, height: initialHeight });
   const [isSelected, setIsSelected]= useState(false);
@@ -66,7 +64,7 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
     >
       {CustomComponent ? (
         // Render the custom React component
-        <CustomComponent />
+        React.cloneElement(CustomComponent, { urls: urls })
       ) : (
         // Render the image if no CustomComponent is provided
         <img
