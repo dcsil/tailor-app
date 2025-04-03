@@ -36,5 +36,6 @@ jobs:
           ruff format --check backend/
 
       - name: Run Pylint on backend
-        cd tailor-app/backend
-        run: pylint --rcfile=.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
+        run: |
+          cd tailor-app/backend
+          pylint --rcfile=.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
