@@ -1,0 +1,41 @@
+name: Python Linting
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          cd tailor-app/backend
+          pip install -r requirements.txt
+
+      - name: Verify .pylintrc exists
+        run: |
+          echo "Checking for Pylint config file..."
+          cd tailor-app/backend
+          ls -la .pylintrc || echo "Warning: .pylintrc not found"
+
+      - name: Run Ruff
+        run: |
+          cd tailor-app/backend
+          ruff check .
+          ruff format --check .
+
+      - name: Run Pylint on backend
+        run: |
+          cd tailor-app/backend
+          pylint --rcfile=.pylintrc . --disable=R0903,R0917,R0911,R0914 || true

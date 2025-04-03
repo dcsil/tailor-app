@@ -1,11 +1,11 @@
+import os
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
 # connection string
-connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 
 # container client, either one of the following:
