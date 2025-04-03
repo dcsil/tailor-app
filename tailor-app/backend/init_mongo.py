@@ -177,7 +177,7 @@ def initialize_user(user_id):
     return {"user_id": user_id, "initialized": True, "collections": ["conversations"]}
 
 
-# Mock collection for testing
+# Mock collection for the testing
 class MockCollection:
     def __init__(self, name):
         self.name = name
