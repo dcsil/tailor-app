@@ -188,7 +188,6 @@ def test_update_file_success(
 
 
 @patch("routes.file_routes.blob_storage.upload_file")
-@patch("routes.file_routes.cohere.ClientV2.embed")
 @patch("routes.file_routes.insert_document")
 def test_upload_file_invalid_class(mock_insert_document, mock_upload_file, client):
     file, filename = create_test_file()
@@ -203,7 +202,7 @@ def test_upload_file_invalid_class(mock_insert_document, mock_upload_file, clien
     response = client.post(
         "/api/files/upload", data=data, content_type="multipart/form-data"
     )
-
+    print(response)
     assert response.status_code == 400
     response_json = response.get_json()
     assert "error" in response_json

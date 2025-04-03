@@ -197,17 +197,20 @@ class MockCollection:
     def find(self):
         return []
 
-    def update_one(self):
+    def update_one(self, filter_dict, update_dict):
         class Result:
             def __init__(self):
                 self.modified_count = 0
+                self.filter_dict = filter_dict
+                self.update_dict = update_dict
 
         return Result()
 
-    def delete_one(self):
+    def delete_one(self, filter_dict):
         class Result:
             def __init__(self):
                 self.deleted_count = 0
+                self.filter_dcit = filter_dict
 
         return Result()
 
