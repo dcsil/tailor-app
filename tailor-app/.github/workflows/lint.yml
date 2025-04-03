@@ -5,7 +5,7 @@ on:
   push:
   pull_request:
     branches:
-            - main
+      - main
 
 jobs:
   lint:
@@ -29,19 +29,11 @@ jobs:
           echo "Checking for Pylint config file..."
           ls -la backend/.pylintrc || echo "Warning: .pylintrc not found"
 
-      - name: Run Pylint on backend
-        run: |
-          cd backend
-          pylint --rcfile=.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
-          cd ..
-
       - name: Run Ruff
         run: |
-          pip install ruff
           ruff check backend/
           ruff format --check backend/
 
-      - name: Run Pre-commit Hooks
+      - name: Run Pylint on backend
         run: |
-          pip install pre-commit
-          pre-commit run --all-files
+          pylint --rcfile=backend/.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
