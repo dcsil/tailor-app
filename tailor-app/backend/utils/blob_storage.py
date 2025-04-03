@@ -1,9 +1,9 @@
-from azure.storage.blob import BlobServiceClient
-from dotenv import load_dotenv
 import os
 import logging
-from pathlib import Path
 import uuid
+from pathlib import Path
+from azure.storage.blob import BlobServiceClient
+from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -60,9 +60,7 @@ class AzureBlobStorage:
             blob_name = f"{uuid.uuid4()}{file_extension}"
 
             # Upload the file
-            container_client.upload_blob(
-                name=blob_name, data=file_data, overwrite=True
-            )
+            container_client.upload_blob(name=blob_name, data=file_data, overwrite=True)
 
             # Generate the URL for the uploaded blob
             blob_url = f"{container_client.url}/{blob_name}"

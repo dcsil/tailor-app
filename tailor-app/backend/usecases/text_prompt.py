@@ -2,12 +2,12 @@
 Search in the database for images most relevant to the text prompt based on the image descriptions and/or alt_text.
 """
 
-from bson.objectid import ObjectId
 import concurrent.futures
-import cohere
 import logging
 import random
 import math
+import cohere
+from bson.objectid import ObjectId
 
 co = cohere.ClientV2()
 
@@ -192,7 +192,7 @@ def search_database(
         remaining_slots = topK
 
         # First pass: Fill slots according to normalized allocations as much as possible
-        for group_name in class_groups.keys():
+        for group_name in class_groups:
             target_count = min(
                 math.floor(topK * normalized_allocations[group_name]),
                 len(all_results[group_name]),

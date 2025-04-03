@@ -1,11 +1,10 @@
+import os
+import os.path
+from pathlib import Path
 import sentry_sdk
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
-import os
 from dotenv import load_dotenv
-from azure.storage.blob import BlobServiceClient
-import os.path
-from pathlib import Path
 from routes.chat_routes import chat_bp
 from routes.file_routes import file_bp
 from routes.search_routes import search_bp
@@ -40,7 +39,7 @@ root_env = BASE_DIR.parent / ".env"
 load_dotenv(dotenv_path=root_env, override=True)
 
 # Initialize Flask app
-app = Flask(__name__, static_folder='../frontend/dist')
+app = Flask(__name__, static_folder="../frontend/dist")
 app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
 CORS(app)  # Enable CORS for development
 
@@ -52,28 +51,31 @@ app.register_blueprint(file_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(board_bp)
 
-@app.route('/health', methods=['GET'])
+
+@app.route("/health", methods=["GET"])
 def health_check():
-    return jsonify({'status': 'ok'})
+    return jsonify({"status": "ok"})
+
 
 @app.route("/error/test")
 def error_test():
-    1/0  # raises an error
+    # 1 / 0  # raises an error
     return "<p>This is a Sentry error test.</p>"
 
+
 # Serve static files from the React app
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
 def serve(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+    if not path and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory(app.static_folder, "index.html")
+
 
 if __name__ == "__main__":
     # Ensure database connection is initialized when running as a standalone app
     if mongo_client is None and mongo_db is None:
         initialize_mongo(force_connect=True)
-    
+
     port = int(os.environ.get("PORT", 8000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host="0.0.0.0", port=port)
