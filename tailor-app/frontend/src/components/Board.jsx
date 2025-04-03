@@ -54,7 +54,6 @@ const BoardTest = (props) => {
     const [highestZIndex, setHighestZIndex] = useState(0);
 
     const [selectedId, setSelectedId] = useState(null);
-    const [showPalette, setShowPalette] = useState(true);
     const [successExport, setSuccessExport] = useState(false);
     const boardRef = useRef(null);
 
@@ -128,7 +127,6 @@ const handleExport = async () => {
   }
 
   setSelectedId(null);
-  setShowPalette(false);
 
   try {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -238,7 +236,7 @@ const handleExport = async () => {
               />
             ))}
             
-            {showPalette && <Image
+             <Image
               className="w-full h-full object-cover"
               key={100}
               id={100}
@@ -254,7 +252,7 @@ const handleExport = async () => {
               boardRef={boardRef}
               zIndex={100}
               urls={images}
-            />}
+            />
 
             {successExport && <SuccessBanner message="Upload was successful!" />}
             
