@@ -1,4 +1,3 @@
----
 name: Python Linting
 
 on:
@@ -11,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
@@ -34,5 +33,4 @@ jobs:
           ruff format --check backend/
 
       - name: Run Pylint on backend
-        run: |
-          pylint --rcfile=backend/.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
+        run: pylint --rcfile=backend/.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
