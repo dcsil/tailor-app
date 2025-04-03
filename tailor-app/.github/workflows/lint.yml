@@ -4,6 +4,8 @@ name: Python Linting
 on:
   push:
   pull_request:
+    branches:
+            - main
 
 jobs:
   lint:
