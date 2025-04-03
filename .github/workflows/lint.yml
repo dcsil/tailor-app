@@ -32,8 +32,8 @@ jobs:
       - name: Run Ruff
         run: |
           cd tailor-app/backend
-          ruff check backend/
-          ruff format --check backend/
+          ruff check .
+          ruff format --check .
 
       - name: Run Pylint on backend
         run: |
