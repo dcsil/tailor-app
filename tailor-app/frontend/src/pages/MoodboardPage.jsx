@@ -7,9 +7,10 @@ import { getBackendUrl } from '../utils/env.js';
 import '../App.css'
 
 // Components
-import Header from '../components/Header'
 import Board from '../components/Board'
 import MoodboardTitle from '../components/MoodboardTitle'
+import AnalyzeImages from '../components/AnalyzeImages.jsx';
+import Chatbot from '../components/Chatbot.jsx';
 
 function MoodboardPage (){
   const userId = "123";
@@ -40,12 +41,14 @@ function MoodboardPage (){
     };
   }, []);
 
-  
   return (
     <div>
       {/* Top margin */}
       <div className="py-8">
       </div>
+      
+      <AnalyzeImages img_urls={img_urls} />
+      <Chatbot img_urls={img_urls} />
 
       {/* Mood board component */}
       <div className="flex flex-col bg-[var(--color-beige)] rounded-md px-3 pb-6">

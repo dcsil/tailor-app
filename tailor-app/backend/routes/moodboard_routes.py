@@ -8,6 +8,7 @@ from init_mongo import insert_document, find_documents, delete_document
 from werkzeug.utils import secure_filename
 from utils.helpers import allowed_file, ALLOWED_EXTENSIONS
 import cohere
+import base64
 
 co = cohere.ClientV2()
 # Configure logging
@@ -17,6 +18,62 @@ logger = logging.getLogger(__name__)
 # Create Blueprint
 board_bp = Blueprint('board_bp', __name__)
 
+
+@board_bp.route('/api/boards/analyze', methods=['POST'])
+def analyze_moodboard():
+    """
+    Endpoint to analyze the current moodboard using Cohere AI.
+
+    Request:
+    - files: The image file to analyze.
+
+    Response:
+    - success (bool): Whether the request was processed successfully.
+    - analysis (str): The analysis of the moodboard.
+    """
+    try:
+        # Check if file(s) are included
+        if 'files' not in request.files:
+            return jsonify({"error": "No files uploaded"}), 400
+
+        files = request.files.getlist('files')
+
+        if not files:
+            return jsonify({"error": "No files received"}), 400
+
+
+        image_urls = []
+        for file in files:
+            # Convert each image to Base64 URL format
+            image_data = file.read()
+            if not image_data:
+                return jsonify({"error": "Empty file received"}), 400
+            
+            
+            image_base64 = base64.b64encode(image_data).decode("utf-8")
+            image_url = f"data:image/png;base64,{image_base64}"
+            image_urls.append(image_url)
+        
+        # Construct the AI prompt
+        messages = [
+            {"role": "user", 
+             "content": [
+                {"type": "text", "text": "Provide an in-depth analysis of these images in a way that would be useful to a fashion designer."},
+                *[{"type": "image_url", "image_url": {"url": url}} for url in image_urls]
+                ]
+            }
+        ]
+
+        # Call Cohere AI
+        response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
+        # Extract response
+        return jsonify({
+            "success": True,
+            "analysis": response.message.content[0].text
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @board_bp.route('/api/boards/upload', methods=['POST'])
 def insert_moodboard():
