@@ -9,6 +9,7 @@ import '../App.css'
 // Components
 import Header from '../components/Header'
 import Board from '../components/Board'
+import ImageInspector from '../components/ImageInspector'
 import MoodboardTitle from '../components/MoodboardTitle'
 
 function MoodboardPage (){
@@ -44,8 +45,8 @@ function MoodboardPage (){
   return (
     <div>
       {/* Top margin */}
-      <div className="py-8">
-      </div>
+      {/* <div className="py-8">
+      </div> */}
 
       {/* Mood board component */}
       <div className="flex flex-col bg-[var(--color-beige)] rounded-md px-3 pb-6">
