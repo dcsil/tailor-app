@@ -1,0 +1,55 @@
+[MASTER]
+max-args = 12
+
+# Ignore these files/directories
+ignore =
+    migrations,
+    venv,
+    node_modules,
+    .git,
+    __pycache__
+
+# Naming regex patterns
+method-rgx = ^[a-z_][a-z0-9_]{2,}$
+function-rgx = ^[a-z_][a-z0-9_]{2,}$
+
+[MESSAGES CONTROL]
+# Disable these specific checks
+disable=
+    missing-docstring,  # C0114, C0115, C0116
+    too-few-public-methods,       # R0903
+    too-many-positional-arguments, # R0917
+    too-many-return-statements,   # R0911
+    too-many-locals,              # R0914
+    broad-except,  # W0718
+    line-too-long,  # C0301
+    invalid-name,  # C0103
+    consider-using-f-string,  # C0209
+    logging-fstring-interpolation,  # W1203
+    dangerous-default-value,  # W0102
+    too-many-arguments,  # R0913
+    duplicate-code,  # R0801
+    protected-access,  # W0212
+    fixme,  # W0511
+
+# Enable these categories
+enable =
+    design,
+    imports,
+    refactoring,
+    variables,
+    typecheck
+
+[FORMAT]
+# Max line length (should match your formatter)
+max-line-length = 120
+
+# Allow single-letter variable names in certain cases
+good-names =
+    i,j,k,
+    ex,
+    e,
+    _,
+    df,
+    x,y
+

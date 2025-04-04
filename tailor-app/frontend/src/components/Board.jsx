@@ -46,8 +46,6 @@ const BoardTest = (props) => {
     const [zIndexMap, setZIndexMap] = useState({}); 
 
     const [selectedId, setSelectedId] = useState(null);
-
-    const [showPalette, setShowPalette] = useState(false);
     const [successExport, setSuccessExport] = useState(false);
     const boardRef = useRef(null);
 
@@ -158,7 +156,6 @@ const BoardTest = (props) => {
   }
 
   setSelectedId(null);
-  setShowPalette(false);
 
   try {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -274,7 +271,7 @@ const BoardTest = (props) => {
               />
             ))}
             
-            {showPalette && <Image
+             <Image
               className="w-full h-full object-cover"
               key={100}
               id={100}
