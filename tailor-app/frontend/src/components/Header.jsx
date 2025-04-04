@@ -13,6 +13,7 @@ const Header = () => {
                 <NavLink to="/mychat" state={{ fetchData: true }}  className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}>Chats</NavLink>
                 <NavLink to="/mycollection" className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}>Collections</NavLink>
                 <NavLink to="/about" className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}>Account</NavLink>
+                <NavLink to="/login" className={({ isActive }) => `px-5 hover:text-white ${isActive ? "font-bold text-white" : ""}`}>Login</NavLink>
             </nav>
         </div>
     );
