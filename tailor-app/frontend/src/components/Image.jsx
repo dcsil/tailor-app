@@ -3,36 +3,67 @@ import React, { useState, useRef, useEffect } from 'react';
 import Draggable from 'react-draggable'; 
 import { ResizableBox } from 'react-resizable';
 
-const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, initialHeight, imageSelected, handleDelete, handleSelect, bringToFront, boardRef, zIndex, urls}) => {
-  const [position, setPosition] = useState({ x: initialX, y: initialY });
-  const [dimensions, setDimensions] = useState({ width: initialWidth, height: initialHeight });
+const Image = ({id, src, CustomComponent, properties, imageSelected, handleDelete, handleSelect, imageEdit,bringToFront, boardRef, urls}) => {
+  const [position, setPosition] = useState({ x: properties.get('x'), y: properties.get('y') });
+  const [dimensions, setDimensions] = useState({ width: properties.get('width'), height: properties.get('height') });
   const [isSelected, setIsSelected]= useState(false);
+  const [history, setHistory] = useState([]);
+
   const imageRef = useRef(null);
+
+  useEffect(()=>{
+    const rect = imageRef.current.getBoundingClientRect();
+    setDimensions({ width: rect.width, height: rect.height});
+    setPosition({x: rect.left, y:rect.top});
+    console.log(rect)
+  }, []);
 
   useEffect(() => {
     if (id == imageSelected){
       setIsSelected(true);
+      
     } else{ setIsSelected(false); }
   }, [imageSelected])
 
 
   // handle selection locally
   const onClick = (e) => {
-      e.stopPropagation();
-      handleSelect(id);
-      bringToFront(id);
+    const rect = imageRef.current.getBoundingClientRect();
+    console.log(rect)
+    setDimensions({ width: rect.width, height: rect.height});
+    setPosition({x: rect.left, y:rect.top});
+
+    e.stopPropagation();
+    handleSelect(id);
+    imageEdit(id, dimensions.width, dimensions.height, position.x, position.y);
+    bringToFront(id);
   };
 
   const onResize = (e, {node, size, handle}) => {
     e.stopPropagation();
     setDimensions({ width: size.width, height: size.height});
+    imageEdit(id, size.width, size.height, position.x, position.y);
     bringToFront(id);
   };
   
   const onDrag = (e, ui) => {
     bringToFront(id);
-    setPosition({x: x + ui.deltaX, y: y + ui.deltaY,}) 
+    setPosition({x: position.x + ui.deltaX, y: position.y + ui.deltaY,})
+    imageEdit(id, dimensions.width, dimensions.height, position.x + ui.deltaX, position.y + ui.deltaY);
   }
+
+  const undo = () => {
+    if (history.length > 0) {
+      const lastState = history[history.length - 1];
+      setDimensions(lastState.dimensions);
+      setPosition(lastState.position);
+
+      // Remove the last state from history after undoing
+      setHistory(history.slice(0, -1));
+    }
+  };
+
+
 
   // conditionally wrap with Draggable & ResizableBox if selected
   // const content = (
@@ -53,14 +84,16 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
   const content = (
     <div
       onClick={onClick}
-      style={{
-        // position: 'relative',
-        width: `${dimensions.width}px`,
-        height: `${dimensions.height}px`,
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        position: 'absolute',
-      }}
+      // style={{
+      //   // position: 'relative',
+      //   width: `${dimensions.width}px`,
+      //   height: `${dimensions.height}px`,
+      //   left: `${position.x}px`,
+      //   top: `${position.y}px`,
+      //   position: 'absolute',
+      //   pointerEvents: 'auto'
+      // }}
+      
     >
       {CustomComponent ? (
         // Render the custom React component
@@ -68,7 +101,8 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
       ) : (
         // Render the image if no CustomComponent is provided
         <img
-          src={src}
+        
+          src={properties.get('url')}
           alt="Selectable"
           style={{
             width: '100%',
@@ -107,7 +141,14 @@ const Image = ({id, src, CustomComponent, initialX, initialY, initialWidth, init
   );
 
   return  (
-    <div style={{ zIndex: zIndex }}>
+    <div ref={imageRef} style={{ zIndex: properties.get('zIndex'),
+      width: `${dimensions.width}px`,
+        height: `${dimensions.height}px`,
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        position: 'absolute',
+        pointerEvents: 'auto'
+    }}>
       <Draggable 
       cancel=".react-resizable-handle"
       onDragEnd={onDrag}
