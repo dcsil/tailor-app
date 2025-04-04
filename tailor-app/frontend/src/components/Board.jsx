@@ -10,21 +10,6 @@ import ColourPalette from './ColourPalette.jsx';
 import SuccessBanner from './SuccessBanner.jsx';
 import MoodboardTitle from './MoodboardTitle.jsx';
 import ImageInspector from './ImageInspector.jsx';
-
-// images
-import activity from '../assets/UI placeholders/activity.jpeg';
-import fabric from '../assets/UI placeholders/fabric.jpeg';
-import fabric1 from '../assets/UI placeholders/fabric1.jpeg';
-import hair from '../assets/UI placeholders/hair.jpeg';
-import interior from '../assets/UI placeholders/interior.jpeg';
-import palette from '../assets/UI placeholders/palette.jpeg';
-import scenery from '../assets/UI placeholders/scenery.jpeg';
-import style from '../assets/UI placeholders/style.jpeg';
-import runway from '../assets/UI placeholders/runway.jpeg';
-import runway2 from '../assets/UI placeholders/runway2.jpeg';
-import runway3 from '../assets/UI placeholders/runway3.jpeg';
-import runway4 from '../assets/UI placeholders/runway4.jpeg';
-
 // icons
 import UndoIcon from '../utils/SVG Icons/UndoIcon'
 import ExportIcon from '../utils/SVG Icons/ExportIcon'
@@ -32,23 +17,25 @@ import AddIcon from '../utils/SVG Icons/AddIcon'
 
 const BoardTest = (props) => {
     
+    // API stuff
     const API_URL = getBackendUrl();
     const navigate = useNavigate();
-    const [prompt, setPrompt] = useState(props.prompt)
+    const [prompt, setPrompt] = useState(props.prompt);
+    const [successExport, setSuccessExport] = useState(false);
+    
+    // Mood Board Properties
     const [ids, setIds] = useState(props.ids);
     const [images, setImages] = useState(props.urls);
     const [title, setTitle] = useState("My Moodboard");
-
     const [imageMap, setImageMap] = useState(new Map());
     const [zIndexCounter, setZIndexCounter] = useState(0);
-
-
     const [zIndexMap, setZIndexMap] = useState({}); 
-
     const [selectedId, setSelectedId] = useState(null);
-    const [successExport, setSuccessExport] = useState(false);
+    
     const boardRef = useRef(null);
 
+
+    // Create image map
     useEffect(() => {
       setImageMap((prevMap) => {
         const newImageData = new Map(prevMap);
@@ -64,6 +51,7 @@ const BoardTest = (props) => {
               ['x',  0],
               ['y', 0],
               ['zIndex', zIndexCounter + index],
+              ['isVisible', true],
             ]));
           }
         });
@@ -72,38 +60,10 @@ const BoardTest = (props) => {
       setZIndexCounter(zIndexCounter+ids.length);
     }, [ids]);
 
-
-    // useEffect(() => {
-    //   if (props.ids.length > 0) {
-    //     let maxZ = 0;
-    //     const initialZIndexMap = props.ids.reduce((acc, id, index) => {
-    //       const zIndex = index + 1; // Set z-index in order of appearance
-    //       acc[id] = zIndex
-    //       maxZ = Math.max(maxZ, zIndex);
-    //       return acc;
-    //     }, {});
-
-    //     console.log(JSON.stringify(initialZIndexMap, null, 2));
-    //     console.log('max Z: '+maxZ);
-
-    //     setZIndexMap(initialZIndexMap);
-    //     setHighestZIndex(maxZ);
-    //   }
-    // }, [props.ids]); // Runs when ids change
-    
-
-    // Deselect on click
-    const handleBoardClick = () => {
-      setSelectedId(null);
-    };
-
-    // Select on click 
-    const handleSelect = (id) => {
-      setSelectedId(id);
-      console.log("selected ID in board:  " + id)
-    };
-
-    const imageEdit = (id, width, height, x, y) => {
+    // Edit properties of an image -- called everytime an image is 
+    // clicked / dragged / resized / deleted
+    const imageEdit = (id, width, height, x, y, visibility) => {
+      
       setImageMap(prevMap => {
         const updatedMap = new Map(prevMap); 
         if (updatedMap.has(id)) {
@@ -112,6 +72,7 @@ const BoardTest = (props) => {
           image.set('height', height);
           image.set('x', x);
           image.set('y', y);
+          image.set('isVisible', visibility)
           updatedMap.set(id, image);
           return updatedMap;
         }
@@ -119,21 +80,45 @@ const BoardTest = (props) => {
       });
     };
 
-    const handleDelete = (id) => {
-
-      setImages((prevImages) => prevImages.filter((_, index) => index !== ids.indexOf(id)));
-      setIds((prevIds) => prevIds.filter((item) => item !== id));
+    // Bring to front when selected
+    const bringToFront = (id) => {
       setImageMap((prevData) => {
         const newData = new Map(prevData);
-        newData.delete(id);
+        const updatedImageData = new Map(newData.get(id));
+
+        updatedImageData.set('zIndex', zIndexCounter);
+        newData.set(id, updatedImageData);
+
         return newData;
       });
+      setZIndexCounter((prev) => prev + 1);
+    };
+
+    // Deselect on click
+    const handleBoardClick = () => {
+      setSelectedId(null);
+    };
+    
+    // Select on click 
+    const handleSelect = (id) => {
+      setSelectedId(id);
+    };
+
+    // Handle Delete Image
+    const handleDelete = (id) => {
+      // setImages((prevImages) => prevImages.filter((_, index) => index !== ids.indexOf(id)));
+      // setIds((prevIds) => prevIds.filter((item) => item !== id));
+      // setImageMap((prevData) => {
+      //   const newData = new Map(prevData);
+      //   newData.delete(id);
+      //   return newData;
+      // });
       
       setSelectedId(null);
       return;
     }
 
-
+    // Handle Add Image
     const handleAddImage = async () => {
       const response = await fetch(`${API_URL}/api/regenerate-search`, {
         method: 'POST',
@@ -148,39 +133,38 @@ const BoardTest = (props) => {
       setImages((prevImages) => [...prevImages, next_image_url]); 
     }
     
-
+    // Handle Export
     const handleExport = async () => {
-  if (!boardRef.current) {
-    console.error("Export failed: Board reference not found");
-    return;
-  }
+      if (!boardRef.current) {
+        console.error("Export failed: Board reference not found");
+        return;
+      }
+      setSelectedId(null);
 
-  setSelectedId(null);
+      try {
+        await new Promise(resolve => setTimeout(resolve, 300));
 
-  try {
-    await new Promise(resolve => setTimeout(resolve, 300));
+        const blob = await toBlob(boardRef.current, {
+        quality: 1, 
+        pixelRatio: 2, 
+        backgroundColor: 'transparent',
+      });
 
-    const blob = await toBlob(boardRef.current, {
-      quality: 1, 
-      pixelRatio: 2, 
-      backgroundColor: 'transparent',
-    });
+      if (!blob) {
+        throw new Error("Failed to generate image blob");
+      }
 
-    if (!blob) {
-      throw new Error("Failed to generate image blob");
-    }
+      const formData = new FormData();
+      formData.append("file", blob, `${title}.png`);
+      formData.append("user_id", "123"); // TODO: fix later
+      formData.append("image_ids", ids);
+      formData.append("prompt", prompt);
 
-    const formData = new FormData();
-    formData.append("file", blob, `${title}.png`);
-    formData.append("user_id", "123"); // TODO: fix later
-    formData.append("image_ids", ids);
-    formData.append("prompt", prompt);
-
-    await Promise.all([
-      fetch(`${API_URL}/api/boards/upload`, {
-        method: "POST",
-        body: formData,
-      }),
+      await Promise.all([
+        fetch(`${API_URL}/api/boards/upload`, {
+          method: "POST",
+          body: formData,
+        }),
       
       (() => {
         const url = URL.createObjectURL(blob);
@@ -194,28 +178,15 @@ const BoardTest = (props) => {
           URL.revokeObjectURL(url);
         }, 100);
       })()
-    ]);
+      ]);
 
-    setSuccessExport(true);
-    setTimeout(() => navigate("/"), 2000);
+      setSuccessExport(true);
+      setTimeout(() => navigate("/"), 2000);
 
-  } catch (error) {
-    console.error("Export failed:", error);
-  }
-    };
-
-    const bringToFront = (id) => {
-      setImageMap((prevData) => {
-        const newData = new Map(prevData);
-        const updatedImageData = new Map(newData.get(id));
-
-        updatedImageData.set('zIndex', zIndexCounter);
-        newData.set(id, updatedImageData);
-  
-        return newData;
-      });
-      setZIndexCounter((prev) => prev + 1);
-    };
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
+  };
 
     return (
       <>
@@ -248,30 +219,23 @@ const BoardTest = (props) => {
           <div
             ref={boardRef}
             className=" w-full relative grid grid-cols-6 grid-rows-2 max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
-            //rgrid grid-cols-6 grid-rows-2
             onClick={handleBoardClick}
           >
             {Array.from(imageMap).map(([key, innerMap]) => (
               <Image
-                //className="col-span-1 row-span-1 object-fill"
                 key={key}
                 id={key}
+                boardRef={boardRef}
                 properties={innerMap}
-                // initialX={0}
-                // initialY={0}
-                // initialWidth={170}
-                // initialHeight={300}
-                imageSelected={selectedId}
+                imageIdSelected={selectedId}
                 handleDelete={handleDelete}
                 handleSelect={handleSelect}
                 bringToFront={bringToFront}
                 imageEdit={imageEdit}
-                boardRef={boardRef}
-                // zIndex={zIndexMap[ids[index]] || 1}
               />
             ))}
             
-             <Image
+             {/* <Image
               className="w-full h-full object-cover"
               key={100}
               id={100}
@@ -288,7 +252,8 @@ const BoardTest = (props) => {
               boardRef={boardRef}
               zIndex={100}
               urls={images}
-            />}
+            /> */}
+
             {successExport && <SuccessBanner message="Export was successful!" />}
             </div>
             <div>
@@ -299,7 +264,6 @@ const BoardTest = (props) => {
         </div>
         </>
     );
-
 }
 
 
