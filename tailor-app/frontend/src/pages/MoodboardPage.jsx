@@ -46,7 +46,7 @@ function MoodboardPage (){
       </div>
       
       {/* Mood board component */}
-      <div className="flex flex-row bg-[var(--color-beige)] rounded-md px-3 pb-6">
+      <div className="flex flex-row bg-[var(--color-beige)] rounded-md px-3 pb-6 h-full">
         <div>
           <Board prompt={prompt} ids={img_ids} urls={img_urls} />
         </div>

@@ -179,7 +179,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
       {/* Panel */}
       <div
         className="relative overflow-y-scroll border border-gray-200 rounded p-4 mt-4"
-        style={{ height: 'calc(100% - 3.5rem)' }}
+        style={{ height: 'calc(87%)' }}
       >
         {/* Overlay Loader */}
         {isLoading && (
