@@ -1,14 +1,17 @@
 from unittest.mock import MagicMock, patch
+
 import pytest
-from usecases.text_prompt import search_database  
+from usecases.text_prompt import search_database
+
 
 @pytest.fixture
 def mock_files_collection():
     return MagicMock()
 
-@patch('usecases.text_prompt.co.embed')
+
+@patch("usecases.text_prompt.co.embed")
 def test_search_database_success(mock_embed, mock_files_collection):
-    mock_embed.return_value.embeddings.float = [0.1, 0.2, 0.3] 
+    mock_embed.return_value.embeddings.float = [0.1, 0.2, 0.3]
 
     group1 = [{"_id": "file1", "blob_url": "url1", "score": 0.9}]
     group2 = [{"_id": "file2", "blob_url": "url2", "score": 0.8}]
@@ -18,7 +21,12 @@ def test_search_database_success(mock_embed, mock_files_collection):
     group6 = [{"_id": "file5", "blob_url": "url5", "score": 0.5}]
 
     mock_files_collection.aggregate.side_effect = [
-        group1, group2, group3, group4, group5, group6
+        group1,
+        group2,
+        group3,
+        group4,
+        group5,
+        group6,
     ]
 
     prompt = "test prompt"
@@ -29,9 +37,10 @@ def test_search_database_success(mock_embed, mock_files_collection):
     assert set(ids) == {"file1", "file2", "file3", "file4", "file5"}
     assert set(urls) == {"url1", "url2", "url3", "url4", "url5"}
 
-@patch('usecases.text_prompt.co.embed')
+
+@patch("usecases.text_prompt.co.embed")
 def test_search_database_with_postfilter(mock_embed, mock_files_collection):
-    mock_embed.return_value.embeddings.float = [0.1, 0.2, 0.3]  
+    mock_embed.return_value.embeddings.float = [0.1, 0.2, 0.3]
 
     group1 = [{"_id": "file1", "blob_url": "url1", "score": 0.9}]
     group2 = [{"_id": "file2", "blob_url": "url2", "score": 0.8}]
@@ -41,7 +50,12 @@ def test_search_database_with_postfilter(mock_embed, mock_files_collection):
     group6 = [{"_id": "file5", "blob_url": "url5", "score": 0.5}]
 
     mock_files_collection.aggregate.side_effect = [
-        group1, group2, group3, group4, group5, group6
+        group1,
+        group2,
+        group3,
+        group4,
+        group5,
+        group6,
     ]
 
     prompt = "test prompt"
@@ -52,10 +66,10 @@ def test_search_database_with_postfilter(mock_embed, mock_files_collection):
 
     for call in mock_files_collection.aggregate.call_args_list:
         pipeline = call.args[0]
-        
+
         assert len(pipeline) >= 3
-        
-        if len(pipeline) == 3: 
+
+        if len(pipeline) == 3:
             assert "$match" in pipeline[2]
             assert pipeline[2]["$match"] == postfilter
 
