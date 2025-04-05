@@ -39,7 +39,7 @@ jobs:
             - name: back-end testing with coverage
               run: |
                 cd tailor-app/backend
-                python3 -m pytest tests/ --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=. | tee pytest-coverage.txt
+                python3 -m pytest tests/ --junitxml=pytest.xml --cov-report=term-missing --cov=. | tee pytest-coverage.txt
             - name: Add coverage comment to PR
               uses: MishaKav/pytest-coverage-comment@main
               with:
