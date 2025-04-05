@@ -7,10 +7,8 @@ from utils.helpers import allowed_file, ALLOWED_EXTENSIONS, MAX_IMAGE_SIZE
 import cohere
 import base64
 import json
-from werkzeug.utils import secure_filename
 from flask import Blueprint, request, jsonify
 from bson.objectid import ObjectId
-from init_mongo import insert_document, find_documents, delete_document
 
 co = cohere.ClientV2()
 # Configure logging
