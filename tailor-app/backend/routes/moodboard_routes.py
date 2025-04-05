@@ -6,7 +6,7 @@ import logging
 from utils.blob_storage import blob_storage
 from init_mongo import insert_document, find_documents, delete_document
 from werkzeug.utils import secure_filename
-from utils.helpers import allowed_file, ALLOWED_EXTENSIONS
+from utils.helpers import allowed_file, ALLOWED_EXTENSIONS, MAX_IMAGE_SIZE
 import cohere
 import base64
 import json
@@ -18,12 +18,6 @@ logger = logging.getLogger(__name__)
 
 # Create Blueprint
 board_bp = Blueprint('board_bp', __name__)
-
-MAX_IMAGE_SIZE = 20 * 1024 * 1024  # 20 MB in bytes
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @board_bp.route('/api/boards/analyze', methods=['POST'])
 def analyze_moodboardV2():
@@ -162,80 +156,6 @@ def analyze_moodboard():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-# def analyze_moodboard_batch():
-#     """
-#     Endpoint to analyze the current moodboard using Cohere AI.
-
-#     Request:
-#     - files: The image file to analyze.
-
-#     Response:
-#     - success (bool): Whether the request was processed successfully.
-#     - analysis (str): The analysis of the moodboard.
-#     """
-#     try:
-#         # Check if file(s) are included
-#         if 'files' not in request.files:
-#             return jsonify({"error": "No files uploaded"}), 400
-        
-#         files = request.files.getlist('files')
-
-#         if not files:
-#             return jsonify({"error": "No files received"}), 400
-
-#         image_urls = []
-#         for file in files:
-#             # Convert each image to Base64 URL format
-#             image_data = file.read()
-#             if not image_data:
-#                 return jsonify({"error": "Empty file received"}), 400
-            
-            
-#             image_base64 = base64.b64encode(image_data).decode("utf-8")
-#             image_url = f"data:image/png;base64,{image_base64}"
-#             image_urls.append(image_url)
-        
-#         # Construct the AI prompt, Batch processing because Aya only accepts 4 images
-#         batch_size = 4
-#         analyses = []
-
-#         for i in range(0, len(image_urls), batch_size):
-#             batch = image_urls[i:i + batch_size]
-#             messages = [
-#                 {"role": "user", 
-#                  "content": [
-#                      {"type": "text", "text": "Provide an in-depth analysis of these images in a way that would be useful to a fashion designer."},
-#                      *[{"type": "image_url", "image_url": {"url": url}} for url in batch]
-#                  ]
-#                 }
-#             ]
-
-#             # Call Cohere AI Part 1
-#             response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
-#             analyses.append(response.message.content[0].text)
-
-#         # Call Cohere AI Part 2 (summarize the batches)
-#         messages = [
-#             {"role": "user", 
-#                 "content": [
-#                     {"type": "text", "text": "Combine these analyses into one analysis."},
-#                     *[{"type": "text", "text": analysis} for analysis in analyses]
-#                 ]
-#             }
-#         ]
-
-#         response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
-#         final_analysis = response.message.content[0].text
-
-#         # Extract response
-#         return jsonify({
-#             "success": True,
-#             "analysis": final_analysis
-#         }), 200
-
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
 
 @board_bp.route('/api/boards/upload', methods=['POST'])
 def insert_moodboard():
