@@ -7,25 +7,33 @@ from bson import ObjectId
 def create_test_file(filename="test.jpg", content=b"Test content"):
     return (BytesIO(content), filename)
 
+
 @patch("routes.file_routes.co.chat")
 def test_analyze_file_success(mock_chat, client):
     mock_response = MagicMock()
-    mock_response.message.content = [MagicMock(text='["Vibrant street fashion", "street style photograph", "red, black, white"]')]
+    mock_response.message.content = [
+        MagicMock(
+            text='["Vibrant street fashion", "street style photograph", "red, black, white"]'
+        )
+    ]
     mock_chat.return_value = mock_response
-    
+
     file, filename = create_test_file()
-    
+
     response = client.post(
         "/api/files/analyze",
         data={"file": (file, filename)},
-        content_type="multipart/form-data"
+        content_type="multipart/form-data",
     )
-    
+
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["success"] is True
-    assert response_json["analysis"] == '["Vibrant street fashion", "street style photograph", "red, black, white"]'
-    
+    assert (
+        response_json["analysis"]
+        == '["Vibrant street fashion", "street style photograph", "red, black, white"]'
+    )
+
     mock_chat.assert_called_once()
     call_args = mock_chat.call_args[1]
     assert call_args["model"] == "c4ai-aya-vision-8b"
@@ -41,15 +49,15 @@ def test_analyze_file_no_file(client):
 @patch("routes.file_routes.co.chat")
 def test_analyze_file_exception(mock_chat, client):
     mock_chat.side_effect = Exception("Cohere API error")
-    
+
     file, filename = create_test_file()
-    
+
     response = client.post(
         "/api/files/analyze",
         data={"file": (file, filename)},
-        content_type="multipart/form-data"
+        content_type="multipart/form-data",
     )
-    
+
     assert response.status_code == 500
     response_json = response.get_json()
     assert "error" in response_json
@@ -105,7 +113,7 @@ def test_upload_file_empty_filename(client):
     response = client.post(
         "/api/files/upload",
         data={"file": (file, "")},
-        content_type="multipart/form-data"
+        content_type="multipart/form-data",
     )
     assert response.status_code == 400
     assert "No selected file" in response.get_json()["error"]
@@ -115,11 +123,8 @@ def test_upload_file_invalid_extension(client):
     file, filename = create_test_file(filename="test.xyz")
     response = client.post(
         "/api/files/upload",
-        data={
-            "file": (file, filename),
-            "user_id": "user_123"
-        },
-        content_type="multipart/form-data"
+        data={"file": (file, filename), "user_id": "user_123"},
+        content_type="multipart/form-data",
     )
     assert response.status_code == 400
     assert "File type not allowed" in response.get_json()["error"]
@@ -130,7 +135,7 @@ def test_upload_file_missing_user_id(client):
     response = client.post(
         "/api/files/upload",
         data={"file": (file, filename)},
-        content_type="multipart/form-data"
+        content_type="multipart/form-data",
     )
     assert response.status_code == 400
     assert "User ID is required" in response.get_json()["error"]
@@ -165,7 +170,7 @@ def test_upload_file_invalid_class(mock_insert_document, mock_upload_file, clien
 @patch("routes.file_routes.logger")
 def test_upload_file_exception(mock_logger, mock_upload_file, client):
     mock_upload_file.side_effect = Exception("Storage service unavailable")
-    
+
     file, filename = create_test_file()
     data = {
         "file": (file, filename),
@@ -174,18 +179,16 @@ def test_upload_file_exception(mock_logger, mock_upload_file, client):
         "class": "art and film",
         "colour": "blue",
     }
-    
+
     response = client.post(
-        "/api/files/upload", 
-        data=data, 
-        content_type="multipart/form-data"
+        "/api/files/upload", data=data, content_type="multipart/form-data"
     )
-    
+
     assert response.status_code == 500
     response_json = response.get_json()
     assert response_json["success"] is False
     assert "Storage service unavailable" in response_json["error"]
-    
+
     mock_logger.error.assert_called_once()
     assert "Error in file upload" in mock_logger.error.call_args[0][0]
     assert mock_logger.error.call_args[1]["exc_info"] is True
@@ -248,14 +251,14 @@ def test_get_user_files_timestamp_formatting(mock_find_documents, client):
             "colour": "blue",
         }
     ]
-    
+
     response = client.get("/api/files/user/user_123")
-    
+
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["success"] is True
     assert len(response_json["files"]) == 1
-    
+
     assert response_json["files"][0]["timestamp"] == "2025-03-15T10:30:45"
     assert isinstance(response_json["files"][0]["timestamp"], str)
 
@@ -316,7 +319,9 @@ def test_delete_file_exception(mock_find_documents, client):
 @patch("routes.file_routes.blob_storage.delete_blob")
 @patch("routes.file_routes.delete_document")
 @patch("routes.file_routes.logger")
-def test_delete_file_blob_storage_failure(mock_logger, mock_delete_document, mock_delete_blob, mock_find_documents, client):
+def test_delete_file_blob_storage_failure(
+    mock_logger, mock_delete_document, mock_delete_blob, mock_find_documents, client
+):
     file_id = "507f1f77bcf86cd799439011"
     mock_find_documents.return_value = [
         {
@@ -327,13 +332,13 @@ def test_delete_file_blob_storage_failure(mock_logger, mock_delete_document, moc
         }
     ]
     mock_delete_blob.return_value = False
-    
+
     response = client.delete(f"/api/files/user_123/{file_id}")
-    
+
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["success"] is True
-    
+
     mock_logger.warning.assert_called_once()
     assert "Could not delete blob" in mock_logger.warning.call_args[0][0]
 
@@ -449,7 +454,12 @@ def test_update_file_not_found(mock_find_documents, client):
 @patch("routes.file_routes.co.embed")
 @patch("routes.file_routes.logger")
 def test_update_file_blob_storage_failure(
-    mock_logger, mock_embed, mock_update_document, mock_update_blob, mock_find_documents, client
+    mock_logger,
+    mock_embed,
+    mock_update_document,
+    mock_update_blob,
+    mock_find_documents,
+    client,
 ):
     file_id = "507f1f77bcf86cd799439011"
     mock_find_documents.return_value = [
@@ -463,9 +473,9 @@ def test_update_file_blob_storage_failure(
             "colour": "black",
         }
     ]
-    
+
     mock_update_blob.return_value = False
-    
+
     mock_embed.return_value.embeddings.float = [[0.1, 0.2, 0.3]]
     mock_update_document.return_value = {
         "_id": file_id,
@@ -474,7 +484,7 @@ def test_update_file_blob_storage_failure(
         "class": "street style photograph",
         "colour": "white",
     }
-    
+
     response = client.patch(
         f"/api/files/user_123/{file_id}",
         data={
@@ -483,11 +493,11 @@ def test_update_file_blob_storage_failure(
             "colour": "white",
         },
     )
-    
+
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["success"] is True
-    
+
     mock_logger.warning.assert_called_once()
     assert "Could not update blob" in mock_logger.warning.call_args[0][0]
     assert "blob123" in mock_logger.warning.call_args[0][0]
@@ -499,7 +509,7 @@ def test_update_file_blob_storage_failure(
 def test_update_file_exception(mock_logger, mock_find_documents, client):
     file_id = "507f1f77bcf86cd799439011"
     mock_find_documents.side_effect = Exception("Database connection error")
-    
+
     response = client.patch(
         f"/api/files/user_123/{file_id}",
         data={
@@ -508,12 +518,12 @@ def test_update_file_exception(mock_logger, mock_find_documents, client):
             "colour": "white",
         },
     )
-    
+
     assert response.status_code == 500
     response_json = response.get_json()
     assert response_json["success"] is False
     assert "Database connection error" in response_json["error"]
-    
+
     mock_logger.error.assert_called_once()
     assert "Error updating file" in mock_logger.error.call_args[0][0]
     assert mock_logger.error.call_args[1]["exc_info"] is True

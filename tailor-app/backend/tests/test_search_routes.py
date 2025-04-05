@@ -168,7 +168,7 @@ def test_regenerate_search_no_images_found(
             "curr_images": [["image_1", "url_1"], ["image_2", "url_2"]],
         }
     ]
-    
+
     mock_search.return_value = ([], [])
 
     response = client.post("/api/regenerate-search", json={"prompt": "fashion"})
@@ -206,14 +206,14 @@ def test_regenerate_search_with_existing_queue(
             "_id": "1",
             "prompt": "fashion",
             "queue_images": [
-                ["image_3", "url_3"], 
-                ["image_4", "url_4"], 
-                ["image_5", "url_5"]
+                ["image_3", "url_3"],
+                ["image_4", "url_4"],
+                ["image_5", "url_5"],
             ],
             "curr_images": [["image_1", "url_1"], ["image_2", "url_2"]],
         }
     ]
-    
+
     expected_board_doc = {
         "_id": "1",
         "prompt": "fashion",

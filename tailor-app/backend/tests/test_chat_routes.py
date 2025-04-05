@@ -98,7 +98,7 @@ def test_get_history_success(mock_get_user_id, mock_find_documents, client):
     """Test the get_history endpoint when it successfully retrieves history."""
     # Mock the user ID
     mock_get_user_id.return_value = "test_user_123"
-    
+
     # Create mock conversations with MongoDB-like structure
     mock_conversations = [
         {
@@ -106,32 +106,32 @@ def test_get_history_success(mock_get_user_id, mock_find_documents, client):
             "prompt": "Hello, how are you?",
             "template": "basic_chat",
             "response": "I'm doing well, thanks for asking!",
-            "timestamp": 1617120000
+            "timestamp": 1617120000,
         },
         {
             "_id": "conv_id_2",
             "prompt": "How do I implement tests?",
             "template": "expert_mode",
             "response": "Here's how you implement tests...",
-            "timestamp": 1617110000
-        }
+            "timestamp": 1617110000,
+        },
     ]
-    
+
     # Set up the mock for find_documents to return a mock cursor
     mock_cursor = MagicMock()
     mock_cursor.sort.return_value.limit.return_value = mock_conversations
     mock_find_documents.return_value = mock_cursor
-    
+
     # Send request
     response = client.get("/api/history")
-    
+
     # Check response
     assert response.status_code == 200
     data = json.loads(response.data)
     assert len(data) == 2
     assert data[0]["_id"] == "conv_id_1"
     assert data[1]["_id"] == "conv_id_2"
-    
+
     # Verify our mocks were called correctly
     mock_get_user_id.assert_called_once()
     mock_find_documents.assert_called_once_with("test_user_123", "conversations", {})
@@ -145,24 +145,26 @@ def test_get_history_empty(mock_get_user_id, mock_find_documents, client):
     """Test the get_history endpoint when no conversations exist."""
     # Mock the user ID
     mock_get_user_id.return_value = "test_user_with_no_history"
-    
+
     # Set up the mock for find_documents to return an empty list
     mock_cursor = MagicMock()
     mock_cursor.sort.return_value.limit.return_value = []
     mock_find_documents.return_value = mock_cursor
-    
+
     # Send request
     response = client.get("/api/history")
-    
+
     # Check response
     assert response.status_code == 200
     data = json.loads(response.data)
     assert len(data) == 0
     assert isinstance(data, list)
-    
+
     # Verify our mocks were called correctly
     mock_get_user_id.assert_called_once()
-    mock_find_documents.assert_called_once_with("test_user_with_no_history", "conversations", {})
+    mock_find_documents.assert_called_once_with(
+        "test_user_with_no_history", "conversations", {}
+    )
 
 
 @patch("routes.chat_routes.find_documents")
@@ -171,16 +173,16 @@ def test_get_history_error(mock_get_user_id, mock_find_documents, client):
     """Test the get_history endpoint when an error occurs."""
     # Configure the mocks to raise exceptions
     mock_get_user_id.side_effect = Exception("User ID error")
-    
+
     # Send request
     response = client.get("/api/history")
-    
+
     # Check response
     assert response.status_code == 500
     data = json.loads(response.data)
     assert "error" in data
     assert "User ID error" in data["error"]
-    
+
     # Verify our mock was called
     mock_get_user_id.assert_called_once()
     # find_documents should not be called if get_user_id fails
@@ -193,19 +195,19 @@ def test_get_history_database_error(mock_get_user_id, mock_find_documents, clien
     """Test the get_history endpoint when a database error occurs."""
     # Mock the user ID
     mock_get_user_id.return_value = "test_user_123"
-    
+
     # Configure the mock to raise a database exception
     mock_find_documents.side_effect = Exception("Database connection error")
-    
+
     # Send request
     response = client.get("/api/history")
-    
+
     # Check response
     assert response.status_code == 500
     data = json.loads(response.data)
     assert "error" in data
     assert "Database connection error" in data["error"]
-    
+
     # Verify our mocks were called correctly
     mock_get_user_id.assert_called_once()
     mock_find_documents.assert_called_once_with("test_user_123", "conversations", {})
