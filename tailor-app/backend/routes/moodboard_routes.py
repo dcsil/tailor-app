@@ -11,8 +11,6 @@ from werkzeug.utils import secure_filename
 from flask import Blueprint, request, jsonify
 from bson.objectid import ObjectId
 from init_mongo import insert_document, find_documents, delete_document
-from utils.blob_storage import blob_storage
-from utils.helpers import ALLOWED_EXTENSIONS, allowed_file
 
 co = cohere.ClientV2()
 # Configure logging
