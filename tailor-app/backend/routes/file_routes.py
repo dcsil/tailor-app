@@ -302,3 +302,39 @@ def update_file(user_id, file_id):
             "success": False,
             "error": str(e)
         }), 500
+    
+@file_bp.route('/api/files/<user_id>/<file_id>', methods=['GET'])
+def get_file_metadata(user_id, file_id):
+    """
+    Endpoint to retrieve file metadata (description, class, colour) of file_id from MongoDB.
+    """
+    try:
+        # Find the file document
+        file_docs = list(find_documents(user_id, "files", {"_id": ObjectId(file_id)}))
+        
+        if not file_docs:
+            return jsonify({"error": "File not found"}), 404
+            
+        file_doc = file_docs[0]
+
+        # Prepare metadata to return
+        result = {
+            "_id": str(file_doc["_id"]),
+            "blob_name": file_doc.get("blob_name"),
+            "description": file_doc.get("description", ""),
+            "class": file_doc.get("class", ""),
+            "colour": file_doc.get("colour", ""),
+        }
+
+        return jsonify({
+            "success": True,
+            "file_data": result
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error retrieving file metadata: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+    

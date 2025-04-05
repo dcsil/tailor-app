@@ -8,9 +8,7 @@ import '../App.css'
 
 // Components
 import Board from '../components/Board'
-import MoodboardTitle from '../components/MoodboardTitle'
-import AnalyzeImages from '../components/AnalyzeImages.jsx';
-import Chatbot from '../components/Chatbot.jsx';
+import MoodboardTabs from '../components/MoodboardTabs.jsx';
 
 function MoodboardPage (){
   const userId = "123";
@@ -47,13 +45,13 @@ function MoodboardPage (){
       <div className="py-8">
       </div>
       
-      <AnalyzeImages img_urls={img_urls} />
-      <Chatbot img_urls={img_urls} />
-
       {/* Mood board component */}
-      <div className="flex flex-col bg-[var(--color-beige)] rounded-md px-3 pb-6">
+      <div className="flex flex-row bg-[var(--color-beige)] rounded-md px-3 pb-6">
         <div>
           <Board prompt={prompt} ids={img_ids} urls={img_urls} />
+        </div>
+        <div className="flex-grow flex items-stretch">
+          <MoodboardTabs prompt={prompt} img_ids={img_ids} img_urls={img_urls} />
         </div>
       </div>
 

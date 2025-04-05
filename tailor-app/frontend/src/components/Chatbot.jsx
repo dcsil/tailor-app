@@ -1,101 +1,104 @@
 import React, { useState } from 'react';
+import FormattedAnalysis from './FormattedAnalysis.jsx';
 import { Send, Loader2 } from 'lucide-react';
 import { getBackendUrl } from '../utils/env.js';
 
 
 const Chatbot = ({ img_urls }) => {
-    // Backend
     const API_URL = getBackendUrl();
     const [results, setResults] = useState([]);
-
-    // "Chatbot" stuff
     const [messages, setMessages] = useState([]);
     const [prompt, setPrompt] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-  
-    // Handle image analysis
-    const handleAnalyzeMoodboard = async () => {
-        setPrompt("Analyse Moodboard");
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: prompt, sender: 'user' },
-          ]);
-          setPrompt('');
-          setIsLoading(true);
 
+    const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+    // Fetch and validate images before sending to backend
+    const fetchAndValidateImage = async (img_url) => {
+        const response = await fetch(img_url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${response.statusText}`);
+        }
+    
+        const blob = await response.blob();
+
+        const filename = img_url.split('/').pop(); // Extract filename from URL
+        const extension = filename.split('.').pop().toLowerCase();
+        let mimeType;
+
+        switch (extension) {
+            case 'jpg':
+            case 'jpeg':
+                mimeType = 'image/jpeg';
+                break;
+            case 'png':
+                mimeType = 'image/png';
+                break;
+            case 'gif':
+                mimeType = 'image/gif';
+                break;
+            default:
+                throw new Error(`Unsupported file extension: ${extension}`);
+        }
+    
+        // Manually set the MIME type
+        const file = new File([blob], filename, { type: mimeType });
+
+        return file;
+    };
+    
+    const handleAnalyzeMoodboard = async () => {
+        setMessages((prevMessages) => [...prevMessages, { text: "Analyse Moodboard", sender: 'user' }]);
+        setIsLoading(true);
+    
         try {
             const formData = new FormData();
-
-            console.log(img_urls)
-
             for (const img_url of img_urls) {
-                const blobResponse = await fetch(img_url);
-                if (!blobResponse.ok) {
-                    throw new Error(`Failed to fetch file from Azure: ${blobResponse.statusText}`);
-                }
-
-                const blob = await blobResponse.blob();
-                const file = new File([blob], "moodboard-img.jpg", { type: blob.type });
-
-            
+                const file = await fetchAndValidateImage(img_url);
                 formData.append("files", file);
             }
-
+        
             const response = await fetch(`${API_URL}/api/boards/analyze`, {
                 method: "POST",
-                body: formData
+                body: formData,
             });
-
+    
             const data = await response.json();
-
+    
             if (data.success) {
-                const result = JSON.parse(data.analysis);
+                const result = data.analysis;
 
-                // Update state with new results (spread old ones)
                 setResults((prevResults) => [...prevResults, result]);
-
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { text: result, sender: 'bot' },
-                ]);
+                setMessages((prevMessages) => [...prevMessages, { text: result, sender: 'bot' }]);
             }
+
         } catch (error) {
             console.error("Error:", error);
+            setMessages((prevMessages) => [...prevMessages, { text: `Error: ${error.message}`, sender: 'bot' }]);
+            
         } finally {
             setIsLoading(false);
         }
     };
+    
 
     // Handle image analysis
     const handleAnalyzeImages = async () => {
-        setPrompt("Analyse Images");
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: prompt, sender: 'user' },
-          ]);
-          setPrompt('');
-          setIsLoading(true);
+        setMessages((prevMessages) => [...prevMessages, { text: "Analyse Images", sender: 'user' }]);
+        setIsLoading(true);
 
         const analyzeImage = async (img_url) => {
             try {
-                const blobResponse = await fetch(img_url);
-                if (!blobResponse.ok) {
-                    throw new Error(`Failed to fetch file from Azure: ${blobResponse.statusText}`);
-                }
-
-                const blob = await blobResponse.blob();
-                const file = new File([blob], "single-img.jpg", { type: blob.type });
-
+                const file = await fetchAndValidateImage(img_url);
                 const formData = new FormData();
                 formData.append("file", file);
 
                 const response = await fetch(`${API_URL}/api/files/analyze`, {
                     method: "POST",
-                    body: formData
+                    body: formData,
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
                     const parsedAnalysis = JSON.parse(data.analysis);
                     const result = {
@@ -104,26 +107,22 @@ const Chatbot = ({ img_urls }) => {
                         classification: parsedAnalysis[1],
                         colors: parsedAnalysis[2],
                     };
-                    console.log(result);
 
-                    // Update state with new results (spread old ones)
                     setResults((prevResults) => [...prevResults, result]);
-
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: result, sender: 'bot' },
-                    ]);
+                    setMessages((prevMessages) => [...prevMessages, { text: JSON.stringify(result), sender: 'bot' }]);
                 }
+
             } catch (error) {
                 console.error("Error:", error);
+                setMessages((prevMessages) => [...prevMessages, { text: `Error: ${error.message}`, sender: 'bot' }]);
+
             } finally {
                 setIsLoading(false);
             }
         };
 
         await Promise.all(img_urls.map(analyzeImage));
-  };
-
+    };
 
   // "CHATBOT" STUFF"
   const handleSend = () => {
@@ -172,7 +171,7 @@ const Chatbot = ({ img_urls }) => {
           disabled={isLoading}
           className="p-2 bg-gray-900 rounded-lg hover:bg-gray-700 outline-solid text-white"
       >
-        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Analyse Images"}
+        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Inspector"}
       </button>
 
       <button
@@ -183,13 +182,13 @@ const Chatbot = ({ img_urls }) => {
         {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Analyse Moodboard"}
       </button>
 
-      <button
+      {/* <button
           onClick={handleSend}
           disabled={isLoading}
           className="ml-4 p-2 bg-gray-900 rounded-lg hover:bg-gray-700 outline-solid text-white"
       >
         {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Get Citations"}
-      </button>
+      </button> */}
 
       {/* <div className="flex items-center">
         Text Input // COMMENT OUT
