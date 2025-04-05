@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 import pytest
 from bson.objectid import ObjectId
 
@@ -91,7 +91,7 @@ def test_search_class_group_with_excluded_ids(mock_files_collection):
         {"_id": "file1", "blob_url": "url1", "class": "garment"}
     ]
     
-    results = search_class_group(
+    _ = search_class_group(
         mock_files_collection,
         query_emb,
         group_name,

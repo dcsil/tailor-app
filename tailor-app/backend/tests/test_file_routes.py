@@ -1,8 +1,6 @@
 from io import BytesIO
 from unittest.mock import patch, MagicMock
 from datetime import datetime
-import base64
-import json
 from bson import ObjectId
 
 
