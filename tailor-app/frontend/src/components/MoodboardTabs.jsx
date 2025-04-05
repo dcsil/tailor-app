@@ -155,7 +155,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
   };
 
   return (
-    <div className="flex-grow ml-2 mt-29 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh]">
+    <div className="flex-grow ml-2 mt-29 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] max-w-[30vw]">
       {/* Tab Headers */}
       <div className="flex border-b border-gray-300">
         <button
@@ -172,7 +172,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
             tab === Tab.ANALYSIS ? 'bg-black text-gray-100' : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          Analyse Moodboard
+          Moodboard Analysis
         </button>
       </div>
 
