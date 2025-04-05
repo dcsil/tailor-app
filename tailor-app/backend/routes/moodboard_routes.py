@@ -16,17 +16,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Create Blueprint
-board_bp = Blueprint('board_bp', __name__)
+board_bp = Blueprint("board_bp", __name__)
 
-@board_bp.route('/api/boards/analyze', methods=['POST'])
+
+@board_bp.route("/api/boards/analyze", methods=["POST"])
 def analyze_moodboardV2():
     try:
         # Check if file is uploaded
-        if 'file' not in request.files:
+        if "file" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
 
-        file = request.files['file']
-        if not file or file.filename == '':
+        file = request.files["file"]
+        if not file or file.filename == "":
             return jsonify({"error": "No file selected"}), 400
 
         # Validate file format and size
@@ -41,7 +42,7 @@ def analyze_moodboardV2():
         image_url = f"data:image/png;base64,{image_base64}"
 
         # Get image descriptions
-        image_descriptions = request.form.get('image_descriptions', '[]')
+        image_descriptions = request.form.get("image_descriptions", "[]")
         try:
             image_descriptions = json.loads(image_descriptions)
         except json.JSONDecodeError:
@@ -52,10 +53,12 @@ def analyze_moodboardV2():
             return jsonify({"error": "image_descriptions must be a list"}), 400
 
         # Format descriptions into a string
-        descriptions_text = "\n".join([
-            f"Image {i+1}: {description}" 
-            for i, description in enumerate(image_descriptions)
-        ])
+        descriptions_text = "\n".join(
+            [
+                f"Image {i + 1}: {description}"
+                for i, description in enumerate(image_descriptions)
+            ]
+        )
 
         # Construct the AI prompt
         messages = [
@@ -64,46 +67,42 @@ def analyze_moodboardV2():
                 "content": [
                     {
                         "type": "text",
-                        "text": f"The image I gave you is a moodboard consisting of multiple images. Here are the descriptions of the images:\n{descriptions_text}\nFollow these steps, considering both the moodboard and provided image descriptions:"
+                        "text": f"The image I gave you is a moodboard consisting of multiple images. Here are the descriptions of the images:\n{descriptions_text}\nFollow these steps, considering both the moodboard and provided image descriptions:",
                     },
                     {
                         "type": "text",
-                        "text": "1. First, provide the overall theme and mood of the moodboard."},
+                        "text": "1. First, provide the overall theme and mood of the moodboard.",
+                    },
                     {
                         "type": "text",
-                        "text": "2. Second, provide an in-depth analysis of the moodboard in a way that would be useful to a fashion designer. Include topics like textures, fabrics, colours, and anything else that would be important to a fashion designer."},
+                        "text": "2. Second, provide an in-depth analysis of the moodboard in a way that would be useful to a fashion designer. Include topics like textures, fabrics, colours, and anything else that would be important to a fashion designer.",
+                    },
                     {
                         "type": "text",
-                        "text": "3. Do not mention anything about a fashion designer. Do not mention the images themselves, such as 'Image 1'."},
+                        "text": "3. Do not mention anything about a fashion designer. Do not mention the images themselves, such as 'Image 1'.",
+                    },
                     {
                         "type": "text",
-                        "text": "4. Use markdown to write your response in a very organized, easy-to-read format with headers and bold font where appropriate. The title must be related to the theme of the moodboard."},
-                    
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": image_url}
-                    }
-                ]
+                        "text": "4. Use markdown to write your response in a very organized, easy-to-read format with headers and bold font where appropriate. The title must be related to the theme of the moodboard.",
+                    },
+                    {"type": "image_url", "image_url": {"url": image_url}},
+                ],
             }
         ]
 
         # Call Cohere API
-        response = co.chat(
-            model="c4ai-aya-vision-8b",
-            messages=messages,
-            temperature=0
-        )
+        response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
 
-        return jsonify({
-            "success": True,
-            "analysis": response.message.content[0].text
-        }), 200
+        return jsonify(
+            {"success": True, "analysis": response.message.content[0].text}
+        ), 200
 
     except Exception as e:
         print(f"Unexpected Error: {e}")
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
-@board_bp.route('/api/boards/nodescriptionsanalyze', methods=['POST'])
+
+@board_bp.route("/api/boards/nodescriptionsanalyze", methods=["POST"])
 def analyze_moodboard():
     """
     Endpoint to analyze the current moodboard using Cohere AI.
@@ -116,49 +115,63 @@ def analyze_moodboard():
     - analysis (str): The analysis of the moodboard.
     """
     try:
-        if 'file' not in request.files:
+        if "file" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
-    
-        file = request.files['file']
+
+        file = request.files["file"]
 
         if not file:
             return jsonify({"error": "No file received"}), 400
-        
+
         if not allowed_file(file.filename):
             return jsonify({"error": "Unsupported file format"}), 400
 
         if file.content_length > MAX_IMAGE_SIZE:
             return jsonify({"error": "File size exceeds 20 MB"}), 400
-    
+
         # Convert image to base64 for Cohere API
         image_base64 = base64.b64encode(file.read()).decode("utf-8")
         image_url = f"data:image/png;base64,{image_base64}"
-        
+
         # Construct the AI prompt, Batch processing because Aya only accepts 4 images
         messages = [
-            {"role": "user", "content": [
-                {"type": "text", "text": "The image I gave you is a moodboard consisting of multiple images. Follow these steps:"},
-                {"type": "text", "text": "1. Provide the overall mood of the moodboard."},
-                {"type": "text", "text": "2. Provide an in-depth analysis of the moodboard in a way that would be useful to a fashion designer. Do not talk about the color palette. Do not say anything like 'a fashion designer's perspective'."},
-                {"type": "text", "text": "3. Use markdown to write your response in a very organized, easy-to-read format with appropriate headers."},
-                {"type": "image_url", "image_url": {"url": image_url}}
-            ]}
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "The image I gave you is a moodboard consisting of multiple images. Follow these steps:",
+                    },
+                    {
+                        "type": "text",
+                        "text": "1. Provide the overall mood of the moodboard.",
+                    },
+                    {
+                        "type": "text",
+                        "text": "2. Provide an in-depth analysis of the moodboard in a way that would be useful to a fashion designer. Do not talk about the color palette. Do not say anything like 'a fashion designer's perspective'.",
+                    },
+                    {
+                        "type": "text",
+                        "text": "3. Use markdown to write your response in a very organized, easy-to-read format with appropriate headers.",
+                    },
+                    {"type": "image_url", "image_url": {"url": image_url}},
+                ],
+            }
         ]
 
         response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
 
         # Extract response
-        return jsonify({
-            "success": True,
-            "analysis": response.message.content[0].text
-        }), 200
+        return jsonify(
+            {"success": True, "analysis": response.message.content[0].text}
+        ), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@board_bp.route('/api/boards/upload', methods=['POST'])
-def insert_moodboard():
 
+@board_bp.route("/api/boards/upload", methods=["POST"])
+def insert_moodboard():
     """
     Endpoint to insert (export) a moodboard to Azure Blob Storage and store metadata in MongoDB
 
