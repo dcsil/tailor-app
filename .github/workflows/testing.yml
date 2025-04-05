@@ -31,7 +31,12 @@ jobs:
               run: |
                 cd tailor-app/backend
                 python3 -m pip install -r requirements.txt
-            - name: back-end testing
+            - name: back-end testing with coverage
               run: |
                 cd tailor-app/backend
-                python3 -m pytest tests/
+                python3 -m pytest tests/ --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=. | tee pytest-coverage.txt
+            - name: Add coverage comment to PR
+              uses: MishaKav/pytest-coverage-comment@main
+              with:
+                pytest-coverage-path: ./tailor-app/backend/pytest-coverage.txt
+                junitxml-path: ./tailor-app/backend/pytest.xml
