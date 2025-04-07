@@ -67,9 +67,18 @@ def error_test():  # pragma: no cover
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve(path):  # pragma: no cover
-    if not path and os.path.exists(os.path.join(app.static_folder, path)):
+    app.logger.info(f"Requested path: {path}")
+    app.logger.info(f"Static folder: {app.static_folder}")
+    full_path = os.path.join(app.static_folder, path)
+    app.logger.info(f"Full path: {full_path}")
+    app.logger.info(f"Path exists: {os.path.exists(full_path)}")
+
+    if path and os.path.exists(full_path):
+        app.logger.info(f"Serving specific file: {path}")
         return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, "index.html")
+    else:
+        app.logger.info("Serving index.html")
+        return send_from_directory(app.static_folder, "index.html")
 
 
 if __name__ == "__main__":  # pragma: no cover
