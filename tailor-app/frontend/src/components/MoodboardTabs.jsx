@@ -156,7 +156,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
   };
 
   return (
-    <div className="flex-grow ml-2 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] max-w-[30vw]">
+    <div className="h-[80vh] ml-2 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] max-w-[30vw]">
       {/* Tab Headers */}
       <div className="flex border-b border-gray-300">
         <button

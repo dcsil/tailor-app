@@ -35,28 +35,73 @@ const BoardTest = (props) => {
     const [zIndexCounter, setZIndexCounter] = useState(0);
     const [zIndexMap, setZIndexMap] = useState({}); 
     const [selectedId, setSelectedId] = useState(null);
-    
+    const [refreshHistory, setRefreshHistory] = useState(false);
+    const [history, setHistory] = useState([]);
     const boardRef = useRef(null);
 
+    const createRandomPosition = () => {
+      const board = boardRef.current;
+      const boardRect = board.getBoundingClientRect();
+      const imageW = 170;
+      const imageH = 300;
+
+      const x = Math.random() * (boardRect.width - imageW)
+      const y = Math.random() * (boardRect.height - imageH)
+
+      return [[x, y]];
+    }
+
+    const createInitialPosition = () => {
+      const board = boardRef.current;
+      const boardRect = board.getBoundingClientRect();
+      const imageW = 170;
+      const imageH = 300;
+
+      const totalImages = 10;
+      const columns = 6;
+      const rows = 2;
+    
+      const cellWidth = boardRect.width / columns;
+      const cellHeight = boardRect.height / rows;
+    
+      const positions = Array.from({ length: totalImages }, (_, index) => {
+        const col = index % columns;
+        const row = Math.floor(index / columns);
+        const x = col * cellWidth;
+        const y = row * cellHeight;
+        return [x, y];
+      });
+    
+      return positions;
+    }
 
     // Create image map
     useEffect(() => {
       setImageMap((prevMap) => {
         const newImageData = new Map(prevMap);
-        
+        var pos = null;
+        // create initial grid like position
+        if (newImageData.size == 0){
+          pos = createInitialPosition();
+        }
+
         ids.forEach((id, index) => {
           // Check if the id already exists in the map
           if (!newImageData.has(id)) {
-            // If it doesn't exist, set it with the new values
+            // create random position for image
+            if (!pos){
+              pos = createRandomPosition();
+            }
             newImageData.set(id, new Map([
               ['url', images[index]],
               ['width', 170],
               ['height', 300],
-              ['x',  0],
-              ['y', 0],
+              ['x',  pos[0][0]],
+              ['y', pos[0][1]],
               ['zIndex', zIndexCounter + index],
               ['isVisible', true],
             ]));
+            pos.shift();
           }
         });
         return newImageData;
@@ -82,20 +127,6 @@ const BoardTest = (props) => {
         }
         return prevMap
       });
-
-      if (!visibility) {
-        const index = activeIds.indexOf(id);
-        if (index !== -1) {
-          const updatedIds = [...ids];
-          const updatedImages = [...images];
-          
-          updatedIds.splice(index, 1);
-          updatedImages.splice(index, 1);
-
-          setActiveIds(updatedIds);
-          setActiveImages(updatedImages);
-        }
-      }
     };
 
     // Bring to front when selected
@@ -131,9 +162,59 @@ const BoardTest = (props) => {
       //   newData.delete(id);
       //   return newData;
       // });
+
+      setImageMap(prevMap => {
+        const updatedMap = new Map(prevMap); 
+        if (updatedMap.has(id)) {
+          const image = updatedMap.get(id);
+          image.set('isVisible', false);
+          updatedMap.set(id, image);
+          return updatedMap;
+        }
+        return prevMap
+      });
+
+
+      const index = activeIds.indexOf(id);
+      if (index !== -1) {
+        const updatedIds = [...ids];
+        const updatedImages = [...images];
+          
+        updatedIds.splice(index, 1);
+        updatedImages.splice(index, 1);
+
+        setActiveIds(updatedIds);
+        setActiveImages(updatedImages);
+      }
       
       setSelectedId(null);
       return;
+    }
+
+    // Handle Undo
+    const handleUndo = () => {
+      
+      setHistory(prevHistory => {
+        if (prevHistory.length === 0) return prevHistory;
+    
+        const newHistory = [...prevHistory];
+        const lastState = newHistory.pop();
+        console.log(lastState);
+        setImageMap(lastState);
+        setRefreshHistory(true);
+        
+        return newHistory;
+      });
+      
+    }
+
+    const saveToHistory = () => {
+      console.log('saving state...');
+      setHistory(prevHistory => [...prevHistory, new Map(imageMap)]);
+    };
+
+    const historyDone = () =>{
+      setRefreshHistory(false);
     }
 
     // Handle Add Image
@@ -228,7 +309,8 @@ const BoardTest = (props) => {
             Add
             </button>
 
-            <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"> 
+            <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
+            onClick={handleUndo}> 
             <UndoIcon/>
             Undo
             </button>
@@ -238,7 +320,8 @@ const BoardTest = (props) => {
           <div className="flex flex-row gap-4">
             <div
               ref={boardRef}
-              className=" w-[70%] relative grid grid-cols-6 grid-rows-2 max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
+              //grid grid-cols-6 grid-rows-2
+              className=" w-[70vw] h-[80vh] relative  max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
               onClick={handleBoardClick}
             >
               {Array.from(imageMap).map(([key, innerMap]) => (
@@ -251,33 +334,17 @@ const BoardTest = (props) => {
                   handleDelete={handleDelete}
                   handleSelect={handleSelect}
                   bringToFront={bringToFront}
+                  saveToHistory={saveToHistory}
+                  isRefreshHistory={refreshHistory}
+                  historyDone={historyDone}
                   imageEdit={imageEdit}
                 />
               ))}
-              
-                {/* <Image
-                className="w-full h-full object-cover"
-                key={100}
-                id={100}
-                CustomComponent={<ColourPalette />}
-                initialX={0}
-                initialY={0}
-                initialWidth={170}
-                initialHeight={300}
-                imageSelected={selectedId}
-                handleDelete={handleDelete}
-                handleSelect={handleSelect}
-                imageEdit={imageEdit}
-                bringToFront={bringToFront}
-                boardRef={boardRef}
-                zIndex={100}
-                urls={images}
-              /> */}
 
               {successExport && <SuccessBanner message="Export was successful!" />}
             </div>
 
-            <div className="flex-grow flex items-stretch max-h-180">
+            <div className="flex flex-grow max-h-[80vh]">
               <MoodboardTabs prompt={props.prompt} img_ids={activeIds} img_urls={activeImages} properties={imageMap.get(selectedId)}/>
             </div>
         
