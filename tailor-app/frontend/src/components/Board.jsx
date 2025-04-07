@@ -28,6 +28,8 @@ const BoardTest = (props) => {
     // Mood Board Properties
     const [ids, setIds] = useState(props.ids);
     const [images, setImages] = useState(props.urls);
+    const [activeIds, setActiveIds] = useState(props.ids);
+    const [activeImages, setActiveImages] = useState(props.urls);
     const [title, setTitle] = useState("My Moodboard");
     const [imageMap, setImageMap] = useState(new Map());
     const [zIndexCounter, setZIndexCounter] = useState(0);
@@ -80,6 +82,20 @@ const BoardTest = (props) => {
         }
         return prevMap
       });
+
+      if (!visibility) {
+        const index = activeIds.indexOf(id);
+        if (index !== -1) {
+          const updatedIds = [...ids];
+          const updatedImages = [...images];
+          
+          updatedIds.splice(index, 1);
+          updatedImages.splice(index, 1);
+
+          setActiveIds(updatedIds);
+          setActiveImages(updatedImages);
+        }
+      }
     };
 
     // Bring to front when selected
@@ -132,7 +148,9 @@ const BoardTest = (props) => {
 
       const [next_image_id, next_image_url] = data.next_image;
       setIds((prevIds) => [...prevIds, next_image_id]); 
+      setActiveIds((prevIds) => [...prevIds, next_image_id]); 
       setImages((prevImages) => [...prevImages, next_image_url]); 
+      setActiveImages((prevImages) => [...prevImages, next_image_url]); 
     }
     
     // Handle Export
@@ -260,7 +278,7 @@ const BoardTest = (props) => {
             </div>
 
             <div className="flex-grow flex items-stretch max-h-180">
-              <MoodboardTabs prompt={props.prompt} img_ids={ids} img_urls={images} properties={imageMap.get(selectedId)}/>
+              <MoodboardTabs prompt={props.prompt} img_ids={activeIds} img_urls={activeImages} properties={imageMap.get(selectedId)}/>
             </div>
         
           </div>
