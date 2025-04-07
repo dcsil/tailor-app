@@ -527,3 +527,86 @@ def test_update_file_exception(mock_logger, mock_find_documents, client):
     mock_logger.error.assert_called_once()
     assert "Error updating file" in mock_logger.error.call_args[0][0]
     assert mock_logger.error.call_args[1]["exc_info"] is True
+
+
+@patch("routes.file_routes.find_documents")
+def test_get_file_metadata_success(mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
+    mock_find_documents.return_value = [
+        {
+            "_id": ObjectId(file_id),
+            "filename": "test.jpg",
+            "blob_name": "blob123",
+            "container": "container1",
+            "description": "Test file description",
+            "class": "street style photograph",
+            "colour": "red",
+        }
+    ]
+
+    response = client.get(f"/api/files/user_123/{file_id}")
+
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json["success"] is True
+    assert "file_data" in response_json
+
+    file_data = response_json["file_data"]
+    assert file_data["_id"] == file_id
+    assert file_data["blob_name"] == "blob123"
+    assert file_data["description"] == "Test file description"
+    assert file_data["class"] == "street style photograph"
+    assert file_data["colour"] == "red"
+
+
+@patch("routes.file_routes.find_documents")
+def test_get_file_metadata_not_found(mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
+    mock_find_documents.return_value = []
+
+    response = client.get(f"/api/files/user_123/{file_id}")
+
+    assert response.status_code == 404
+    response_json = response.get_json()
+    assert "error" in response_json
+    assert "File not found" in response_json["error"]
+
+
+@patch("routes.file_routes.find_documents")
+def test_get_file_metadata_exception(mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
+    mock_find_documents.side_effect = Exception("Database connection error")
+
+    response = client.get(f"/api/files/user_123/{file_id}")
+
+    assert response.status_code == 500
+    response_json = response.get_json()
+    assert response_json["success"] is False
+    assert "Database connection error" in response_json["error"]
+
+
+@patch("routes.file_routes.find_documents")
+def test_get_file_metadata_missing_fields(mock_find_documents, client):
+    file_id = "507f1f77bcf86cd799439011"
+    # Document with missing optional fields to test default values
+    mock_find_documents.return_value = [
+        {
+            "_id": ObjectId(file_id),
+            "filename": "test.jpg",
+            "blob_name": "blob123",
+            # Missing description, class, and colour
+        }
+    ]
+
+    response = client.get(f"/api/files/user_123/{file_id}")
+
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json["success"] is True
+
+    file_data = response_json["file_data"]
+    assert file_data["_id"] == file_id
+    assert file_data["blob_name"] == "blob123"
+    assert file_data["description"] == ""  # Default empty string
+    assert file_data["class"] == ""  # Default empty string
+    assert file_data["colour"] == ""  # Default empty string
