@@ -66,11 +66,7 @@ def error_test():  # pragma: no cover
 # Serve static files from the React app
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-<<<<<<< HEAD
-=======
-
->>>>>>> a8f2d97e54d9561716e838dfa7df9d2ceebbf795
-def serve(path): # pragma: no cover
+def serve(path):  # pragma: no cover
     app.logger.info(f"Requested path: {path}")
     app.logger.info(f"Static folder: {app.static_folder}")
     full_path = os.path.join(app.static_folder, path)
