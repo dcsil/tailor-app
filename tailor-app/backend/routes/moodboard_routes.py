@@ -102,7 +102,9 @@ def analyze_moodboard_with_desc():
         ]
 
         # Call Cohere API
-        response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0.3)
+        response = co.chat(
+            model="c4ai-aya-vision-8b", messages=messages, temperature=0.3
+        )
 
         return jsonify(
             {"success": True, "analysis": response.message.content[0].text}
