@@ -103,9 +103,11 @@ const BoardTest = (props) => {
             pos.shift();
           }
         });
+        setHistory(prevHistory => [...prevHistory, new Map(newImageData)]);
         return newImageData;
       }) 
       setZIndexCounter(zIndexCounter+ids.length);
+      
     }, [ids]);
 
     // Edit properties of an image -- called everytime an image is 
@@ -192,13 +194,13 @@ const BoardTest = (props) => {
 
     // Handle Undo
     const handleUndo = () => {
+
       
       setHistory(prevHistory => {
-        if (prevHistory.length === 0) return prevHistory;
+        if (prevHistory.length <= 1) return prevHistory;
     
         const newHistory = [...prevHistory];
-        const lastState = newHistory.pop();
-        console.log(lastState);
+        const lastState = newHistory[newHistory.length - 2];
         setImageMap(lastState);
         setRefreshHistory(true);
         
@@ -309,18 +311,19 @@ const BoardTest = (props) => {
             </button>
 
             <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
-            onClick={handleUndo}> 
+            // onClick={handleUndo}
+            > 
             <UndoIcon/>
             Undo
             </button>
 
           </div>
 
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-2">
             <div
               ref={boardRef}
               //grid grid-cols-6 grid-rows-2
-              className=" w-[70vw] h-[80vh] relative  max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
+              className=" w-[65vw] h-[80vh] relative  max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
               onClick={handleBoardClick}
             >
               {Array.from(imageMap).map(([key, innerMap]) => (
@@ -343,7 +346,7 @@ const BoardTest = (props) => {
               {successExport && <SuccessBanner message="Export was successful!" />}
             </div>
 
-            <div className="flex flex-grow max-h-[80vh]">
+            <div className="w-[28vw] flex max-h-[80vh]">
               <MoodboardTabs prompt={props.prompt} img_ids={activeIds} img_urls={activeImages} properties={imageMap.get(selectedId)}/>
             </div>
         

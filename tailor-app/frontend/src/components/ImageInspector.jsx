@@ -35,7 +35,7 @@ const ImageInspector =({urls, properties}) => {
 
     return (
     <div className="max-h-[80vh] rounded w-full bg-white">
-        <p className="mb-2">Image Properties</p>
+        <p className="mb-2 font-bold">Image Properties</p>
         <div className="grid grid-cols-4 grid-rows-2">
             <div className="flex flex-row col-span-2 my-2 mx-2"> Position </div>
             <div className="flex items-start my-2">x: {Math.round(properties?.get('x') ?? 0)}</div>
@@ -48,13 +48,14 @@ const ImageInspector =({urls, properties}) => {
             
         </div>
         <div>
-            <p className="m-3">Color Palette</p>
-            <ColourPalette urls={urls}/>
+            <p className="m-3 font-bold">Image Description</p>
+            <div className="overflow-auto flex items-start flex-wrap break-words">{description || "No description available."}</div>
         </div>
         <div>
-            <p className="m-3">Image Description</p>
-            <div className="flex items-start">{description || "No description available."}</div>
+            <p className="m-3 font-bold">Color Palette</p>
+            <ColourPalette urls={urls}/>
         </div>
+        
     </div>
     )
 }
