@@ -51,9 +51,9 @@ function MoodboardPage (){
         <div>
           <Board prompt={prompt} ids={img_ids} urls={img_urls} />
         </div>
-        <div className="flex-grow flex items-stretch max-h-180">
+        {/* <div className="flex-grow flex items-stretch max-h-180">
           <MoodboardTabs prompt={prompt} img_ids={img_ids} img_urls={img_urls} />
-        </div>
+        </div> */}
       </div>
 
     </div>

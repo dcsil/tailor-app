@@ -10,6 +10,8 @@ import ColourPalette from './ColourPalette.jsx';
 import SuccessBanner from './SuccessBanner.jsx';
 import MoodboardTitle from './MoodboardTitle.jsx';
 import ImageInspector from './ImageInspector.jsx';
+import MoodboardTabs from './MoodboardTabs.jsx';
+
 // icons
 import UndoIcon from '../utils/SVG Icons/UndoIcon'
 import ExportIcon from '../utils/SVG Icons/ExportIcon'
@@ -213,56 +215,58 @@ const BoardTest = (props) => {
             Undo
             </button>
 
-        </div>
+          </div>
 
-        <div className="flex flex-row gap-4">
-          <div
-            ref={boardRef}
-            className=" w-full relative grid grid-cols-6 grid-rows-2 max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
-            onClick={handleBoardClick}
-          >
-            {Array.from(imageMap).map(([key, innerMap]) => (
-              <Image
-                key={key}
-                id={key}
-                boardRef={boardRef}
-                properties={innerMap}
-                imageIdSelected={selectedId}
+          <div className="flex flex-row gap-4">
+            <div
+              ref={boardRef}
+              className=" w-[70%] relative grid grid-cols-6 grid-rows-2 max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
+              onClick={handleBoardClick}
+            >
+              {Array.from(imageMap).map(([key, innerMap]) => (
+                <Image
+                  key={key}
+                  id={key}
+                  boardRef={boardRef}
+                  properties={innerMap}
+                  imageIdSelected={selectedId}
+                  handleDelete={handleDelete}
+                  handleSelect={handleSelect}
+                  bringToFront={bringToFront}
+                  imageEdit={imageEdit}
+                />
+              ))}
+              
+                {/* <Image
+                className="w-full h-full object-cover"
+                key={100}
+                id={100}
+                CustomComponent={<ColourPalette />}
+                initialX={0}
+                initialY={0}
+                initialWidth={170}
+                initialHeight={300}
+                imageSelected={selectedId}
                 handleDelete={handleDelete}
                 handleSelect={handleSelect}
-                bringToFront={bringToFront}
                 imageEdit={imageEdit}
-              />
-            ))}
-            
-             {/* <Image
-              className="w-full h-full object-cover"
-              key={100}
-              id={100}
-              CustomComponent={<ColourPalette />}
-              initialX={0}
-              initialY={0}
-              initialWidth={170}
-              initialHeight={300}
-              imageSelected={selectedId}
-              handleDelete={handleDelete}
-              handleSelect={handleSelect}
-              imageEdit={imageEdit}
-              bringToFront={bringToFront}
-              boardRef={boardRef}
-              zIndex={100}
-              urls={images}
-            /> */}
+                bringToFront={bringToFront}
+                boardRef={boardRef}
+                zIndex={100}
+                urls={images}
+              /> */}
 
-            {successExport && <SuccessBanner message="Export was successful!" />}
+              {successExport && <SuccessBanner message="Export was successful!" />}
             </div>
-            <div>
-         <ImageInspector
-         properties={imageMap.get(selectedId)}/>
-        </div>
+
+            <div className="flex-grow flex items-stretch max-h-180">
+              <MoodboardTabs prompt={props.prompt} img_ids={props.ids} img_urls={props.urls} properties={imageMap.get(selectedId)}/>
+            </div>
+        
           </div>
+        
         </div>
-        </>
+      </>
     );
 }
 

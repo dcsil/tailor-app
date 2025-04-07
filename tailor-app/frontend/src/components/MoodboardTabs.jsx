@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import FormattedAnalysis from './FormattedAnalysis.jsx';
 import { Loader2 } from 'lucide-react';
 import { getBackendUrl } from '../utils/env.js';
+import ImageInspector from './ImageInspector.jsx';
 
-const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
+const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
   const API_URL = getBackendUrl();
   const [analysis, setAnalysis] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +156,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
   };
 
   return (
-    <div className="flex-grow ml-2 mt-29 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] max-w-[30vw]">
+    <div className="flex-grow ml-2 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] max-w-[30vw]">
       {/* Tab Headers */}
       <div className="flex border-b border-gray-300">
         <button
@@ -189,7 +190,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
         )}
 
         {/* TODO: Change null with Inspector component */}
-        {tab === Tab.ANALYSIS ? <FormattedAnalysis analysis={analysis} /> : null}
+        {tab === Tab.ANALYSIS ? <FormattedAnalysis analysis={analysis} /> : <ImageInspector urls={img_urls} properties={properties}/>}
       </div>
     </div>
   );
