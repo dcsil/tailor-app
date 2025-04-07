@@ -10,9 +10,14 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
 
   const imageRef = useRef(null);
 
-  // useEffect(()=>{
-  //   console.log(properties);
-  // }, []);
+  useEffect(() => {
+    if (imageRef.current) {
+      const rect = imageRef.current.getBoundingClientRect();
+      setPosition({x:rect.x, y:rect.y});
+      setDimensions({width: rect.width, height:rect.height});
+      imageEdit(id, Math.round(rect.width), Math.round(rect.height), Math.round(rect.x), Math.round(rect.y), true);
+    }
+  }, []);
 
   // check if current image is selected
   useEffect(() => {
@@ -29,7 +34,7 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
   };
 
   const onResize = (e, {node, size, handle}) => {
-    e.stopPropagation();
+    //e.stopPropagation();
     bringToFront(id);
     setDimensions({ width: size.width, height: size.height});
     imageEdit(id, size.width, size.height, position.x, position.y, true);
@@ -37,14 +42,16 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
   
   const onDrag = (e, ui) => {
     bringToFront(id);
+    const rect = imageRef.current.getBoundingClientRect();
     setPosition({x: position.x + ui.deltaX, y: position.y + ui.deltaY,})
-    imageEdit(id, dimensions.width, dimensions.height, position.x + ui.deltaX, position.y + ui.deltaY, true);
+    imageEdit(id, dimensions.width, dimensions.height, Math.round(rect.x), Math.round(rect.y), true);
   }
 
   // conditionally wrap with Draggable & ResizableBox if selected
   // + choose either CustomComponent or Image
   const content = (
     <div
+      ref={imageRef}
       onClick={onClick}
       style={{
         width: `${dimensions.width}px`,
@@ -76,7 +83,7 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
   );
 
   return  (
-    <div  style={{ zIndex: properties.get('zIndex'),
+    <div   style={{ zIndex: properties.get('zIndex'),
       // width: `${dimensions.width}px`,
       //   height: `${dimensions.height}px`,
       //   left: `${position.x}px`,
@@ -88,7 +95,7 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
     >
       <Draggable 
       cancel=".react-resizable-handle"
-      onDragEnd={onDrag}
+      onDrag={onDrag}
       disabled={!isSelected}
       >
       <ResizableBox 

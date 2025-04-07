@@ -19,13 +19,13 @@ const ImageInspector =({urls, properties}) => {
         <p className="mb-2">Image Properties</p>
         <div className="grid grid-cols-4 grid-rows-2">
             <div className="flex flex-row col-span-2 my-2 mx-2"> Position </div>
-            <div className="flex items-start my-2">x: {properties?.get('x') ?? 0}</div>
-            <div className="flex items-start my-2">y: {properties?.get('y') ?? 0}</div>
+            <div className="flex items-start my-2">x: {Math.round(properties?.get('x') ?? 0)}</div>
+            <div className="flex items-start my-2">y: {Math.round(properties?.get('y') ?? 0)}</div>
   
 
             <div className="flex flex-row col-span-2 mx-2"> Scale </div>
-            <div className="flex items-start">x: {properties?.get('width') ?? 0}</div>
-            <div className="flex items-start">y: {properties?.get('height') ?? 0}</div>
+            <div className="flex items-start">x: {Math.round(properties?.get('width') ?? 0)}</div>
+            <div className="flex items-start">y: {Math.round(properties?.get('height') ?? 0)}</div>
             
         </div>
         <div>
