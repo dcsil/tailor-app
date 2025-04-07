@@ -58,7 +58,7 @@ def health_check():
 
 
 @app.route("/error/test")
-def error_test():
+def error_test():  # pragma: no cover
     # 1 / 0  # raises an error
     return "<p>This is a Sentry error test.</p>"
 
@@ -66,7 +66,8 @@ def error_test():
 # Serve static files from the React app
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-def serve(path):
+
+def serve(path): # pragma: no cover
     app.logger.info(f"Requested path: {path}")
     app.logger.info(f"Static folder: {app.static_folder}")
     full_path = os.path.join(app.static_folder, path)
@@ -81,7 +82,7 @@ def serve(path):
         return send_from_directory(app.static_folder, "index.html")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     # Ensure database connection is initialized when running as a standalone app
     if mongo_client is None and mongo_db is None:
         initialize_mongo(force_connect=True)
