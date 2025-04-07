@@ -7,10 +7,9 @@ import { getBackendUrl } from '../utils/env.js';
 import '../App.css'
 
 // Components
-import Header from '../components/Header'
 import Board from '../components/Board'
 import ImageInspector from '../components/ImageInspector'
-import MoodboardTitle from '../components/MoodboardTitle'
+import MoodboardTabs from '../components/MoodboardTabs.jsx';
 
 function MoodboardPage (){
   const userId = "123";
@@ -41,7 +40,6 @@ function MoodboardPage (){
     };
   }, []);
 
-  
   return (
     <div>
       {/* Top margin */}
@@ -49,9 +47,12 @@ function MoodboardPage (){
       </div> */}
 
       {/* Mood board component */}
-      <div className="flex flex-col bg-[var(--color-beige)] rounded-md px-3 pb-6">
+      <div className="flex flex-row bg-[var(--color-beige)] rounded-md px-3 pb-6 h-full">
         <div>
           <Board prompt={prompt} ids={img_ids} urls={img_urls} />
+        </div>
+        <div className="flex-grow flex items-stretch max-h-180">
+          <MoodboardTabs prompt={prompt} img_ids={img_ids} img_urls={img_urls} />
         </div>
       </div>
 
