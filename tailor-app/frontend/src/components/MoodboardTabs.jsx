@@ -160,7 +160,7 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
       {/* Tab Headers */}
       <div className="flex border-b border-gray-300">
         <button
-          onClick={() => setTab(Tab.INSPECTOR)} // TODO: CHANGE
+          onClick={() => setTab(Tab.INSPECTOR)}
           className={`flex-1 py-2 px-4 text-center text-sm font-medium ${
             tab === Tab.INSPECTOR ? 'bg-black text-gray-100' : 'text-gray-500 hover:text-gray-700'
           }`}
