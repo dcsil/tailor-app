@@ -20,7 +20,18 @@ board_bp = Blueprint("board_bp", __name__)
 
 
 @board_bp.route("/api/boards/analyze", methods=["POST"])
-def analyze_moodboardV2():
+def analyze_moodboard_with_desc():
+    """
+    Endpoint to analyze the current moodboard using Cohere AI.
+
+    Request:
+    - file: The image file to analyze.
+    - image_descriptions: A list of descriptions of images in the moodboard.
+
+    Response:
+    - success (bool): Whether the request was processed successfully.
+    - analysis (str): The analysis of the moodboard.
+    """
     try:
         # Check if file is uploaded
         if "file" not in request.files:
@@ -91,7 +102,7 @@ def analyze_moodboardV2():
         ]
 
         # Call Cohere API
-        response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0)
+        response = co.chat(model="c4ai-aya-vision-8b", messages=messages, temperature=0.3)
 
         return jsonify(
             {"success": True, "analysis": response.message.content[0].text}
@@ -103,7 +114,7 @@ def analyze_moodboardV2():
 
 
 @board_bp.route("/api/boards/nodescriptionsanalyze", methods=["POST"])
-def analyze_moodboard():
+def analyze_moodboard_no_desc():
     """
     Endpoint to analyze the current moodboard using Cohere AI.
 
