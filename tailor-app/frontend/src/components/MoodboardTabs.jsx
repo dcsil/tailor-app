@@ -189,7 +189,6 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
           </div>
         )}
 
-        {/* TODO: Change null with Inspector component */}
         {tab === Tab.ANALYSIS ? <FormattedAnalysis analysis={analysis} /> : <ImageInspector urls={img_urls} properties={properties}/>}
       </div>
     </div>

@@ -10,16 +10,6 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
 
   const divRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (divRef.current) {
-  //     const rect = divRef.current.getBoundingClientRect();
-      // setPosition({x:rect.x, y:rect.y});
-      // setDimensions({width: rect.width, height:rect.height});
-      // imageEdit(id, Math.round(rect.width), Math.round(rect.height), Math.round(rect.x), Math.round(rect.y), true);
-      //saveToHistory();
-  //   }
-  // }, []);
-
   // check if current image is selected
   useEffect(() => {
     if (id == imageIdSelected){
@@ -75,7 +65,7 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
   return  (
       <Draggable 
       cancel=".react-resizable-handle"
-      onStart={saveToHistory}
+      onStop={saveToHistory}
       onDrag={onDrag}
       disabled={!isSelected}
       >
@@ -95,7 +85,7 @@ const Image = ({id, CustomComponent, properties, imageIdSelected, handleDelete, 
             height={dimensions.height}
             width={dimensions.width}
             onResize={onResize}
-            onResizeStart={saveToHistory}
+            onResizeStop={saveToHistory}
             resizeHandles={isSelected ? ["se"] : []}
           >
           <div style={{

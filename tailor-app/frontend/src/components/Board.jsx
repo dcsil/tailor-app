@@ -104,9 +104,11 @@ const BoardTest = (props) => {
             pos.shift();
           }
         });
+        setHistory(prevHistory => [...prevHistory, new Map(newImageData)]);
         return newImageData;
       }) 
       setZIndexCounter(zIndexCounter+ids.length);
+      
     }, [ids]);
 
     // Edit properties of an image -- called everytime an image is 
@@ -193,13 +195,13 @@ const BoardTest = (props) => {
 
     // Handle Undo
     const handleUndo = () => {
+
       
       setHistory(prevHistory => {
-        if (prevHistory.length === 0) return prevHistory;
+        if (prevHistory.length <= 1) return prevHistory;
     
         const newHistory = [...prevHistory];
-        const lastState = newHistory.pop();
-        console.log(lastState);
+        const lastState = newHistory[newHistory.length - 2];
         setImageMap(lastState);
         setRefreshHistory(true);
         
@@ -310,7 +312,8 @@ const BoardTest = (props) => {
             </button>
 
             <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
-            onClick={handleUndo}> 
+            // onClick={handleUndo}
+            > 
             <UndoIcon/>
             Undo
             </button>
