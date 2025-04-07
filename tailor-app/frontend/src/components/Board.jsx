@@ -319,11 +319,11 @@ const BoardTest = (props) => {
 
           </div>
 
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-2">
             <div
               ref={boardRef}
               //grid grid-cols-6 grid-rows-2
-              className=" w-[70vw] h-[80vh] relative  max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
+              className=" w-[65vw] h-[80vh] relative  max-h-[80vh] border-2 border-gray-300 rounded bg-white overflow-hidden"
               onClick={handleBoardClick}
             >
               {Array.from(imageMap).map(([key, innerMap]) => (
@@ -346,7 +346,7 @@ const BoardTest = (props) => {
               {successExport && <SuccessBanner message="Export was successful!" />}
             </div>
 
-            <div className="flex flex-grow max-h-[80vh]">
+            <div className="w-[28vw] flex max-h-[80vh]">
               <MoodboardTabs prompt={props.prompt} img_ids={activeIds} img_urls={activeImages} properties={imageMap.get(selectedId)}/>
             </div>
         
