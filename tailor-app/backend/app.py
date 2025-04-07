@@ -72,7 +72,7 @@ def serve(path):
     full_path = os.path.join(app.static_folder, path)
     app.logger.info(f"Full path: {full_path}")
     app.logger.info(f"Path exists: {os.path.exists(full_path)}")
-    
+
     if path and os.path.exists(full_path):
         app.logger.info(f"Serving specific file: {path}")
         return send_from_directory(app.static_folder, path)
