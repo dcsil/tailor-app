@@ -1,19 +1,38 @@
 /* eslint-disable */
 import React, { useState, useRef, useEffect } from 'react';
-import Draggable from 'react-draggable'; 
-import { ResizableBox } from 'react-resizable';
+import { getBackendUrl } from '../utils/env.js';
+
 import ColourPalette from './ColourPalette.jsx';
 
 const ImageInspector =({urls, properties}) => {
-    //const [position, setPosition] = useState({ x: properties?.get('x') ?? 0, y: properties?.get('y') ?? 0 });
-    //const [dimensions, setDimensions] = useState({ width: properties?.get('width') ?? 0, height: properties?.get('height') ?? 0 });
-   useEffect(() => {
-    
-    return () => {
-        console.log(urls);
-        
-    };
-   }, []);
+
+    const API_URL = getBackendUrl();
+    const [description, setDescription] = useState("");
+    const id = properties?.get('id');
+    const user_id = '123';
+
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchDescription = async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/files/${user_id}/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        setDescription(data.file_data.description);
+                    }
+                } else {
+                    console.error("Failed to fetch description");
+                }
+            } catch (error) {
+                console.error(`Error fetching description for ID ${id}:`, error);
+            }
+        };
+
+        fetchDescription();
+    }, [id]);
+
     return (
     <div className="max-h-[80vh] rounded w-full bg-white">
         <p className="mb-2">Image Properties</p>
@@ -31,6 +50,10 @@ const ImageInspector =({urls, properties}) => {
         <div>
             <p className="m-3">Color Palette</p>
             <ColourPalette urls={urls}/>
+        </div>
+        <div>
+            <p className="m-3">Image Description</p>
+            <div className="flex items-start">{description || "No description available."}</div>
         </div>
     </div>
     )

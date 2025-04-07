@@ -6,10 +6,8 @@ import { getBackendUrl } from '../utils/env.js';
 import { toBlob } from 'html-to-image';
 
 // Components
-import ColourPalette from './ColourPalette.jsx';
 import SuccessBanner from './SuccessBanner.jsx';
 import MoodboardTitle from './MoodboardTitle.jsx';
-import ImageInspector from './ImageInspector.jsx';
 import MoodboardTabs from './MoodboardTabs.jsx';
 
 // icons
@@ -100,6 +98,7 @@ const BoardTest = (props) => {
               ['y', pos[0][1]],
               ['zIndex', zIndexCounter + index],
               ['isVisible', true],
+              ['id', id],
             ]));
             pos.shift();
           }
