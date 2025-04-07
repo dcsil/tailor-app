@@ -260,7 +260,7 @@ const BoardTest = (props) => {
             </div>
 
             <div className="flex-grow flex items-stretch max-h-180">
-              <MoodboardTabs prompt={props.prompt} img_ids={props.ids} img_urls={props.urls} properties={imageMap.get(selectedId)}/>
+              <MoodboardTabs prompt={props.prompt} img_ids={ids} img_urls={images} properties={imageMap.get(selectedId)}/>
             </div>
         
           </div>
