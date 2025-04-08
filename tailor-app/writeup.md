@@ -33,7 +33,7 @@ Below is a natural flow of the available use cases along with their descriptions
     `ruff check` and `ruff format --check` check if the code adheres to the linting or formatting standards, but do not fix any issues.
     `pylint --rcfile=.pylintrc` generates a detailed report to analyze code quality and code smells, and track improvements over time.
     It also provides a score (out of 10) for the code, which can be a good metric for tracking progress.
-    A CI example run: 
+    A CI example run: https://github.com/dcsil/tailor-app/actions/runs/14338584008/job/40191946329?pr=75
 
 
 
