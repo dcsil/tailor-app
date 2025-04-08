@@ -42,3 +42,11 @@ Below is a natural flow of the available use cases along with their descriptions
 - #### Frontend:
 
 ### Code coverage:
+
+#### Design Goal
+Our main goal for evaluating code coverage was to ensure that our backend, which contains our core business logic, was adequately tested. We implemented pytest-coverage-comment to manage our MVP's code coverage tracking. This lightweight, free, open-source solution generates coverage comments directly on PRs through GitHub Actions based on the reports created by pytest.
+
+Since we introduced coverage tracking relatively late in the development process, we prioritized ease of setup and use. pytest-coverage-comment fit our needs well due to its straightforward implementation, seamless pytest integration, and lack of external service dependencies. While we considered alternatives like Codecov and Code Climate, their more sophisticated configurations and feature sets exceeded what we needed for our MVP at this stage. The primary limitations of our chosen solution are its minimal historical tracking capabilities, absence of visualization dashboards for trend analysis, and support limited to Python. However, these tradeoffs were acceptable given our current requirements and development phase.
+
+#### Viewing Code Coverage Reports
+Code coverage reports are added as comments to all PRs after the backend unit testing completes. The comment includes statements, misses and coverage percentage for backend python files. If there are misses, the comment also includes a reference to the lines with missing coverage. You can view an example Coverage Report at: https://github.com/dcsil/tailor-app/pull/75
