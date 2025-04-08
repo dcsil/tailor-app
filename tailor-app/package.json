@@ -2,13 +2,23 @@
     "name": "tailor-app",
     "version": "1.0.0",
     "engines": {
-      "node": "18.x",
-      "npm": "9.x"
+        "node": "18.x",
+        "npm": "9.x"
     },
     "scripts": {
-      "heroku-postbuild": "cd frontend && npm install --include=dev --no-optional && npm install @rollup/rollup-linux-x64-gnu --no-save && ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 npm run build",
-      "test": "(cd frontend && npm test) && (cd backend && pytest tests/)",
-      "pylint": "docker-compose run --rm backend sh -c 'cd /app && ruff check --fix /app & pylint --rcfile=/app/.pylintrc .'"
+        "heroku-postbuild": "cd frontend && npm install --include=dev --no-optional && npm install @rollup/rollup-linux-x64-gnu --no-save && ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 npm run build",
+        "test": "(cd frontend && npm test) && (cd backend && pytest tests/)",
+        "pylint": "docker-compose run --rm backend sh -c 'cd /app && ruff check --fix /app & pylint --rcfile=/app/.pylintrc .'"
     },
-    "cacheDirectories": ["frontend/node_modules"]
+    "cacheDirectories": [
+        "frontend/node_modules"
+    ],
+    "devDependencies": {
+        "eslint": "^9.24.0",
+        "eslint-config-prettier": "^10.1.1",
+        "eslint-plugin-prettier": "^5.2.6",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^5.2.0",
+        "prettier": "^3.5.3"
+    }
 }
