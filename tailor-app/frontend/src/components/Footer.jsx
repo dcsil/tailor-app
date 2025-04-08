@@ -8,14 +8,14 @@ const Footer = () => {
       <p>
         Tailor{' '}
 
-        <span 
+        {/* <span 
           onClick={() => navigate("/terms")}
           className="underline hover:text-white cursor-pointer"
         >
           Terms & Conditions
-        </span>
+        </span> */}
 
-        {' '}and our{' '}
+        {/* {' '}and our{' '} */}
 
         <span 
           onClick={() => navigate("/privacy")}

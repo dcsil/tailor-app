@@ -57,6 +57,7 @@ function UploadCollection () {
                                     <img
                                         id={upload._id}
                                         src={upload.blob_url}
+                                        alt={upload.filename}
                                         className="w-full h-full object-contain"
                                         onClick={() => setSelectedImage(upload)}
                                     />
@@ -98,6 +99,7 @@ function UploadCollection () {
           <div className="relative max-w-full max-h-full" onClick={e => e.stopPropagation()}>
             <img
               src={selectedImage.blob_url}
+              alt={selectedImage.filename}
               width={'auto'}
               height={'auto'}
             />

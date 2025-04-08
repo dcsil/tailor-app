@@ -1,6 +1,8 @@
 /* eslint-disable */
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
+import html2pdf from 'html2pdf.js';
 import Image from './Image';
 import { getBackendUrl } from '../utils/env.js';
 import { toBlob } from 'html-to-image';
@@ -235,8 +237,27 @@ const BoardTest = (props) => {
       setActiveImages((prevImages) => [...prevImages, next_image_url]); 
     }
     
-    // Handle Export
-    const handleExport = async () => {
+    const handleAnalysisDownload = () => {
+      try {
+        const element = document.querySelector('.markdown-body');  
+        const options = {
+          filename: 'analysis.pdf',         
+          html2canvas: { scale: 2 },  
+          margin: [20, 10, 20, 10],    
+          pagebreak: { mode: 'avoid-all'},            
+          jsPDF: { 
+            unit: 'mm',                    
+            format: 'a4',                    
+            orientation: 'portrait',
+          }
+        };
+        html2pdf().from(element).set(options).save();
+      } catch (error) {
+        console.error("Analysis PDF export failed:", error);
+      }
+    };
+
+    const handleBoardDownload = async () => {
       if (!boardRef.current) {
         console.error("Export failed: Board reference not found");
         return;
@@ -250,44 +271,51 @@ const BoardTest = (props) => {
         quality: 1, 
         pixelRatio: 2, 
         backgroundColor: 'transparent',
-      });
+        });
 
-      if (!blob) {
-        throw new Error("Failed to generate image blob");
+        if (!blob) {
+          throw new Error("Failed to generate image blob");
+        }
+
+        const formData = new FormData();
+        formData.append("file", blob, `${title}.png`);
+        formData.append("user_id", "123"); // TODO: fix later
+        formData.append("image_ids", ids);
+        formData.append("prompt", prompt);
+
+        await Promise.all([
+          fetch(`${API_URL}/api/boards/upload`, {
+            method: "POST",
+            body: formData,
+          }),
+        
+        (() => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${title}.png`;
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }, 100);
+        })()
+        ]);
+
+        setSuccessExport(true);
+        setTimeout(() => navigate("/"), 2000);
+
+      } catch (error) {
+        console.error("Board export failed:", error);
       }
-
-      const formData = new FormData();
-      formData.append("file", blob, `${title}.png`);
-      formData.append("user_id", "123"); // TODO: fix later
-      formData.append("image_ids", ids);
-      formData.append("prompt", prompt);
-
-      await Promise.all([
-        fetch(`${API_URL}/api/boards/upload`, {
-          method: "POST",
-          body: formData,
-        }),
-      
-      (() => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${title}.png`;
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(() => {
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        }, 100);
-      })()
-      ]);
-
-      setSuccessExport(true);
-      setTimeout(() => navigate("/"), 2000);
-
-    } catch (error) {
-      console.error("Export failed:", error);
     }
+
+    // Handle Export
+    const handleExport = async () => {
+      handleBoardDownload();
+      handleAnalysisDownload();
+      
   };
 
     return (
@@ -298,17 +326,18 @@ const BoardTest = (props) => {
           <div className="flex flex-row justify-start gap-3 mb-4 mx-5">
 
             <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
-            onClick={handleExport}> 
+            onClick={handleExport} data-tip="Export board and analysis"> 
             <ExportIcon/>
             Download
             </button>
 
             <button className="flex items-center gap-3 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer" 
-            onClick={handleAddImage}
+            onClick={handleAddImage} data-tip="Regenerate image"
             >
             <AddIcon/>
             Add
             </button>
+              <ReactTooltip place="top" type="dark" effect="solid" />
 
             <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
             // onClick={handleUndo}

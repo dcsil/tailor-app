@@ -57,6 +57,7 @@ function BoardCollection () {
                                     <img
                                         id={board._id}
                                         src={board.blob_url}
+                                        alt={board.boardname}
                                         className="max-w-full max-h-full object-cover"
                                         onClick={() => setSelectedImage(board)}
                                     />
@@ -97,6 +98,7 @@ function BoardCollection () {
           <div className="relative max-w-full max-h-full" onClick={e => e.stopPropagation()}>
             <img
               src={selectedImage.blob_url}
+              alt={selectedImage.boardname}
               width={'auto'}
               height={'auto'}
             />
