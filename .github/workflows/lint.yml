@@ -39,3 +39,22 @@ jobs:
         run: |
           cd tailor-app/backend
           pylint --rcfile=.pylintrc . --disable=R0903,R0917,R0911,R0914 || true
+    
+      - name: Install frontend dependencies
+        working-directory: tailor-app/frontend
+        run: npm ci
+
+      - name: Install all required dev dependencies
+        working-directory: tailor-app/frontend
+        run: |
+          npm install --save-dev eslint prettier \
+            eslint-config-prettier eslint-plugin-prettier \
+            eslint-plugin-react eslint-plugin-react-hooks
+
+      - name: Run linter
+        working-directory: tailor-app/frontend
+        run: npm run lint
+
+      - name: Run formatter
+        working-directory: tailor-app/frontend
+        run: npm run format:check
