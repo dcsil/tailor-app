@@ -50,3 +50,6 @@ Since we introduced coverage tracking relatively late in the development process
 
 #### Viewing Code Coverage Reports
 Code coverage reports are added as comments to all PRs after the backend unit testing completes. The comment includes statements, misses and coverage percentage for backend python files. If there are misses, the comment also includes a reference to the lines with missing coverage. You can view an example Coverage Report at: https://github.com/dcsil/tailor-app/pull/75
+
+#### Code Coverage Performance
+Overall we achieved 99% coverage on the backend. Missing coverage is primarily in init_mongo.py which presented special testing difficulties, as it attempts to connect to MongoDB Atlas when imported. Although mocking and controlling testing environment variables was able to mitigate this difficulty, there were some functions we were unable to implement tests for before the deadline. 
