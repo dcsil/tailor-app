@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 // Assets and styling
 import tailorLogo from '../assets/tailor-white-logo.png'
@@ -8,14 +8,14 @@ import '../App.css'
 import PromptInput from '../components/PromptInput'
 
 function HomePage() {
-    return (
-      <div className="flex flex-col items-center text-white">
-        <div className="mb-16 mt-5 masking-container">
-          <h1 className="masked-text">TAILOR</h1>
-          {/* <img src={tailorLogo} className="mx-auto" alt="Tailor logo" /> */}
-        </div>
-        <PromptInput/>
+  return (
+    <div className='flex flex-col items-center text-white'>
+      <div className='mb-16 mt-20 masking-container'>
+        <h1 className='masked-text'>TAILOR</h1>
+        {/* <img src={tailorLogo} className="mx-auto" alt="Tailor logo" /> */}
       </div>
+      <PromptInput />
+    </div>
   )
 }
 
