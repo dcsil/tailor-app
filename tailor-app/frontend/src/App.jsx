@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 
 
 // Assets and styling
@@ -23,13 +23,16 @@ import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
 
 function App() {
+  const isAuthenticated = localStorage.getItem("isAuthenticated");
+
   return (
     <div className="flex flex-col min-h-screen justify-between">
       <Router>
         <Header/>
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/"  element = {isAuthenticated ? <HomePage /> : <Navigate to="/login"  />} />
+          <Route path="/home"  element = {<HomePage /> } />
           <Route path="/moodboardresult" element={<MoodboardPage />} />
           <Route path="/mychat" element={<MyChat />} />
           <Route path="/mycollection" element={<MyCollection />} />

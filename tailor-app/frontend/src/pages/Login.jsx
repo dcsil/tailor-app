@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const handleLogin = () => {
+    localStorage.setItem("isAuthenticated", "true"); 
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#191818] overflow-hidden">
@@ -32,7 +35,7 @@ export default function Login() {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
             />
           </div>
-          <Link to="/" className="w-full block">
+          <Link onClick={handleLogin} to="/home" className="w-full block">
             <button className="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
               Login
             </button>      
