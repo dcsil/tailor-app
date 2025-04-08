@@ -7,6 +7,7 @@ import ImageInspector from './ImageInspector.jsx';
 const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
   const API_URL = getBackendUrl();
   const [analysis, setAnalysis] = useState("");
+  const [reanalyse, setReanalyse] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [descriptions, setDescriptions] = useState({}); // dict of image id : description
   const user_id = '123';
@@ -155,8 +156,13 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
     await handleAnalyzeMoodboard();
   };
 
+  const reanalyseMoodboard = async () => {
+    setAnalysis("");
+    await handleAnalyzeMoodboard();
+  }
+
   return (
-    <div className="h-[80vh] ml-2 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] w-full">
+    <div className="h-[80vh] ml-2 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] w-full mr-4">
       {/* Tab Headers */}
       <div className="flex border-b border-gray-300">
         <button
@@ -189,7 +195,19 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
           </div>
         )}
 
-        {tab === Tab.ANALYSIS ? <FormattedAnalysis analysis={analysis} /> : <ImageInspector urls={img_urls} properties={properties}/>}
+        {tab === Tab.ANALYSIS ? 
+          <div>
+            <FormattedAnalysis analysis={analysis} />
+            {!isLoading && 
+              <button 
+                onClick={reanalyseMoodboard}
+                className="px-4 py-2 bg-black text-white rounded-full hover:bg-gray-600"
+              >
+                Reanalyse
+              </button>
+            }
+          </div> 
+          : <ImageInspector urls={img_urls} properties={properties}/>}
       </div>
     </div>
   );
