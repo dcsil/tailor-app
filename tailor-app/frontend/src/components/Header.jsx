@@ -14,7 +14,8 @@ const Header = () => {
                 <NavLink to="/mycollection"
                         className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}
                         data-tip="Go to uploads and boards">Collections</NavLink>
-                <NavLink to="/about" className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}>Account</NavLink>
+                {/* <NavLink to="/about" className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}>Account</NavLink> */}
+                <NavLink to="/login" className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? "font-bold text-white" : ""}`}>Account</NavLink>
             </nav>
             <ReactTooltip place="top" type="dark" effect="solid" />
         </div>

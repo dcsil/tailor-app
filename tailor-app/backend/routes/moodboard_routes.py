@@ -1,14 +1,14 @@
 from datetime import datetime
 import logging
-from utils.blob_storage import blob_storage
-from init_mongo import insert_document, find_documents, delete_document
-from werkzeug.utils import secure_filename
-from utils.helpers import allowed_file, ALLOWED_EXTENSIONS, MAX_IMAGE_SIZE
-import cohere
 import base64
 import json
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
+import cohere
 from bson.objectid import ObjectId
+from init_mongo import insert_document, find_documents, delete_document
+from utils.blob_storage import blob_storage
+from utils.helpers import allowed_file, ALLOWED_EXTENSIONS, MAX_IMAGE_SIZE
 
 co = cohere.ClientV2()
 # Configure logging
@@ -38,7 +38,7 @@ def analyze_moodboard_with_desc():
             return jsonify({"error": "No file uploaded"}), 400
 
         file = request.files["file"]
-        if not file or file.filename == "":
+        if not file or not file.filename:
             return jsonify({"error": "No file selected"}), 400
 
         # Validate file format and size

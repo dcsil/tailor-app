@@ -151,7 +151,7 @@ class TestInitMongo(unittest.TestCase):
             self.mock_client.reset_mock()
             self.mock_admin.reset_mock()
 
-            client, db = init_mongo.initialize_mongo(force_connect=True)
+            init_mongo.initialize_mongo(force_connect=True)
 
             # Should create a client when force_connect=True
             self.mock_client.assert_called_once()

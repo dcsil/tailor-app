@@ -19,7 +19,8 @@ import HomePage from './pages/HomePage'
 import Privacy from "./pages/Privacy"
 import UploadCollection from './pages/UploadCollection';
 import BoardCollection from './pages/BoardCollection';
-
+import Login from "./pages/Login";
+import Signup from "./pages/SignUp";
 
 function App() {
   return (
@@ -37,6 +38,9 @@ function App() {
           {/* chelsea: /moodboard will be removed */}
           <Route path="/moodboard" element={<Moodboard />}/> 
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
           {/* <Route path="/terms" element={<... />} /> */}
         </Routes>
 
