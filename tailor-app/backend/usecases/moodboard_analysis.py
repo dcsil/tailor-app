@@ -2,12 +2,12 @@
 Search in the database for images most relevant to the text prompt based on the image descriptions and/or alt_text.
 """
 
-from bson.objectid import ObjectId
-import concurrent.futures
-import cohere
 import logging
 import random
 import math
+import concurrent.futures
+from bson.objectid import ObjectId
+import cohere
 
 co = cohere.ClientV2()
 

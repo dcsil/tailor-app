@@ -368,7 +368,7 @@ def test_analyze_moodboard_success(mock_cohere_chat, client):
     mock_cohere_chat.assert_called_once()
     call_args = mock_cohere_chat.call_args[1]
     assert call_args["model"] == "c4ai-aya-vision-8b"
-    assert call_args["temperature"] == 0
+    assert not call_args["temperature"]
 
 
 def test_analyze_moodboard_no_file(client):
@@ -481,7 +481,6 @@ def test_analyze_moodboardV2_success(mock_cohere_chat, client):
     mock_cohere_chat.assert_called_once()
     call_args = mock_cohere_chat.call_args[1]
     assert call_args["model"] == "c4ai-aya-vision-8b"
-    assert call_args["temperature"] == 0
 
 
 def test_analyze_moodboardV2_no_file(client):

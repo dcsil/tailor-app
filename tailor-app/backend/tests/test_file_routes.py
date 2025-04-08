@@ -37,7 +37,7 @@ def test_analyze_file_success(mock_chat, client):
     mock_chat.assert_called_once()
     call_args = mock_chat.call_args[1]
     assert call_args["model"] == "c4ai-aya-vision-8b"
-    assert call_args["temperature"] == 0
+    assert not call_args["temperature"]
 
 
 def test_analyze_file_no_file(client):
@@ -607,6 +607,6 @@ def test_get_file_metadata_missing_fields(mock_find_documents, client):
     file_data = response_json["file_data"]
     assert file_data["_id"] == file_id
     assert file_data["blob_name"] == "blob123"
-    assert file_data["description"] == ""  # Default empty string
-    assert file_data["class"] == ""  # Default empty string
-    assert file_data["colour"] == ""  # Default empty string
+    assert not file_data["description"]  # Default empty string
+    assert not file_data["class"]  # Default empty string
+    assert not file_data["colour"]  # Default empty string
