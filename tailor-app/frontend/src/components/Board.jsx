@@ -241,7 +241,7 @@ const BoardTest = (props) => {
       try {
         const element = document.querySelector('.markdown-body');  
         const options = {
-          filename: 'analysis.pdf',         
+          filename: title + '_analysis.pdf',         
           html2canvas: { scale: 2 },  
           margin: [20, 10, 20, 10],    
           pagebreak: { mode: 'avoid-all'},            
