@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import FormattedAnalysis from './FormattedAnalysis.jsx';
 import { Loader2 } from 'lucide-react';
 import { getBackendUrl } from '../utils/env.js';
+import ImageInspector from './ImageInspector.jsx';
 
-const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
+const MoodboardTabs = ({ img_urls, img_ids, prompt, properties }) => {
   const API_URL = getBackendUrl();
   const [analysis, setAnalysis] = useState("");
+  const [reanalyse, setReanalyse] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [descriptions, setDescriptions] = useState({}); // dict of image id : description
   const user_id = '123';
@@ -154,12 +156,17 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
     await handleAnalyzeMoodboard();
   };
 
+  const reanalyseMoodboard = async () => {
+    setAnalysis("");
+    await handleAnalyzeMoodboard();
+  }
+
   return (
-    <div className="flex-grow ml-2 mt-29 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] max-w-[30vw]">
+    <div className="h-[80vh] ml-2 p-4 bg-white border-2 border-gray-300 rounded overflow-hidden max-h-[80vh] w-full mr-4">
       {/* Tab Headers */}
       <div className="flex border-b border-gray-300">
         <button
-          onClick={() => setTab(Tab.INSPECTOR)} // TODO: CHANGE
+          onClick={() => setTab(Tab.INSPECTOR)}
           className={`flex-1 py-2 px-4 text-center text-sm font-medium ${
             tab === Tab.INSPECTOR ? 'bg-black text-gray-100' : 'text-gray-500 hover:text-gray-700'
           }`}
@@ -188,8 +195,19 @@ const MoodboardTabs = ({ img_urls, img_ids, prompt }) => {
           </div>
         )}
 
-        {/* TODO: Change null with Inspector component */}
-        {tab === Tab.ANALYSIS ? <FormattedAnalysis analysis={analysis} /> : null}
+        {tab === Tab.ANALYSIS ? 
+          <div>
+            <FormattedAnalysis analysis={analysis} />
+            {!isLoading && 
+              <button 
+                onClick={reanalyseMoodboard}
+                className="px-4 py-2 bg-black text-white rounded-full hover:bg-gray-600"
+              >
+                Reanalyse
+              </button>
+            }
+          </div> 
+          : <ImageInspector urls={img_urls} properties={properties}/>}
       </div>
     </div>
   );
