@@ -46,10 +46,15 @@ jobs:
 
       - name: Install all required dev dependencies
         working-directory: tailor-app/frontend
-        run: |
-          npm install --save-dev eslint prettier \
-            eslint-config-prettier eslint-plugin-prettier \
-            eslint-plugin-react eslint-plugin-react-hooks
+        run: npm install --save-dev eslint prettier
+
+      - name: Install all required dev dependencies
+        working-directory: tailor-app/frontend
+        run: npm install --save-dev eslint-config-prettier eslint-plugin-prettier 
+      
+      - name: Install all required dev dependencies
+        working-directory: tailor-app/frontend
+        run: npm install --save-dev eslint-plugin-react eslint-plugin-react-hooks 
 
       - name: Run linter
         working-directory: tailor-app/frontend

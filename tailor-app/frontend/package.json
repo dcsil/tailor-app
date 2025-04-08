@@ -8,6 +8,7 @@
     "build": "ROLLUP_SKIP_LOAD_NATIVE_PLUGIN=1 vite build",
     "lint": "eslint  --fix src/**/*.{js,jsx}",
     "format": "prettier src/**/*.{js,jsx} --write --config ./.prettierrc",
+    "format:check": "prettier src/**/*.{js,jsx} --check --config ./.prettierrc",
     "preview": "vite preview",
     "test": "jest",
     "heroku-postbuild": "npm run build"
