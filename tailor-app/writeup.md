@@ -34,6 +34,8 @@ Below is a natural flow of the available use cases along with their descriptions
     `pylint --rcfile=.pylintrc` generates a detailed report to analyze code quality and code smells, and track improvements over time.
     It also provides a score (out of 10) for the code, which can be a good metric for tracking progress.
     A CI example run: https://github.com/dcsil/tailor-app/actions/runs/14338584008/job/40191946329?pr=75
+  
+   **Note:** The Pylint report identified a few minor style issues, such as too-many-positional-arguments, too-many-return-statements, and import-outside-toplevel. These can be safely ignored for now, as our primary focus for the MVP was on core functionality. Given that the overall score was high (9.8/10), we plan to address these stylistic concerns during future refactoring as needed.
 
 
 
