@@ -12,7 +12,9 @@ const ColourPicker = () => {
   })
 
   const colorPalette = colors.map((color) => (
-    <div key={color} style={{ backgroundColor: color }}>{color}</div>
+    <div key={color} style={{ backgroundColor: color }}>
+      {color}
+    </div>
   ))
   return (
     // set a linear gradient with colors extracted
