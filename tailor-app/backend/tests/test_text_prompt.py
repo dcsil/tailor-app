@@ -121,7 +121,7 @@ def test_search_class_group_exception_handling(mock_logger, mock_files_collectio
         mock_files_collection, query_emb, group_name, classes, allocation
     )
 
-    assert results == []  # Should return empty list on exception
+    assert not results  # Should return empty list on exception
     mock_logger.warning.assert_called_once()
     assert "Error searching test_group" in mock_logger.warning.call_args[0][0]
 

@@ -157,7 +157,7 @@ def test_get_history_empty(mock_get_user_id, mock_find_documents, client):
     # Check response
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert len(data) == 0
+    assert not data
     assert isinstance(data, list)
 
     # Verify our mocks were called correctly
