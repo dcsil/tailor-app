@@ -300,7 +300,7 @@ const BoardTest = (props) => {
       ])
 
       setSuccessExport(true)
-      setTimeout(() => navigate('/'), 2000)
+      //setTimeout(() => navigate('/'), 2000)
     } catch (error) {
       console.error('Export failed:', error)
     }
