@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import { getBackendUrl } from '../utils/env.js'
 
 // Assets
@@ -54,15 +55,16 @@ const PromptInput = () => {
 
       {/* Action Buttons */}
       <div className='flex justify-end mt-4 space-x-2'>
-        <button className='px-4 py-2 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2'>
+        {/* <button className='px-4 py-2 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2'>
           <Paperclip className='w-5 h-5' />
           <span>Attach</span>
-        </button>
+        </button> */}
 
         {/* Send prompt */}
-        <button onClick={handleSend} disabled={isLoading} className='px-4 py-2 bg-gray-900 rounded-full hover:bg-gray-800 outline-solid'>
+        <button onClick={handleSend} disabled={isLoading} className='px-4 py-2 bg-gray-900 rounded-full hover:bg-gray-800 outline-solid' data-tip="Click to generate mood board for your prompt">
           {isLoading ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : <Send className='w-5 h-5 text-white' />}
         </button>
+        <ReactTooltip place="top" type="dark" effect="solid" />
       </div>
     </div>
   )

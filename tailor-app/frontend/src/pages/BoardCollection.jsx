@@ -54,6 +54,7 @@ function BoardCollection() {
                 <div className='relative aspect-square black overflow-hidden'>
                   <img
                     id={board._id}
+                    alt={board.boardname}
                     src={board.blob_url}
                     className='max-w-full max-h-full object-cover'
                     onClick={() => setSelectedImage(board)}
@@ -88,7 +89,7 @@ function BoardCollection() {
       {selectedImage && (
         <div className='fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4' onClick={() => setSelectedImage(null)}>
           <div className='relative max-w-full max-h-full' onClick={(e) => e.stopPropagation()}>
-            <img src={selectedImage.blob_url} width={'auto'} height={'auto'} />
+            <img src={selectedImage.blob_url} width={'auto'} height={'auto'}  alt={selectedImage.boardname}/>
 
             <button
               className='absolute top-1 right-1 bg-black/70 text-white p-2 rounded-full hover:bg-red-500 transition-all'
