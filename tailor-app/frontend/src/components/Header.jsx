@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip'
 const Header = () => {
   return (
     <div className='header w-full p-1 font-[Apple Color Emoji] text-gray-300 text-sm flex justify-between items-center mb-10'>
-      <NavLink to='/' className='text-xl cursor-pointer' data-tip='Go to main page'>
+      <NavLink to='/home' className='text-xl cursor-pointer' data-tip='Go to main page'>
         <h1>
           T<span className='font-extrabold tracking-widest text-white'>AI</span>LOR
         </h1>
