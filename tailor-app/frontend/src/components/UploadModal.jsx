@@ -116,10 +116,10 @@ const UploadModal = ({ isOpen, onClose, userId = '123' }) => {
 
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('description', description);
+    formData.append('description', description)
     formData.append('user_id', userId)
-    formData.append('class', fileClass);
-    formData.append('colour', colour);
+    formData.append('class', fileClass)
+    formData.append('colour', colour)
 
     try {
       const response = await fetch(`${API_URL}/api/files/upload`, {
