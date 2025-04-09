@@ -21,6 +21,7 @@
     "color-namer": "^1.4.0",
     "colorthief": "^2.6.0",
     "html-to-image": "^1.11.11",
+    "html2pdf.js": "^0.10.3",
     "jest-environment-jsdom": "^29.7.0",
     "lucide-react": "^0.483.0",
     "react": "^18.3.1",
@@ -29,6 +30,7 @@
     "react-markdown": "^10.1.0",
     "react-resizable": "^3.0.5",
     "react-router-dom": "^7.2.0",
+    "react-tooltip": "^4.2.21",
     "tailwindcss": "^4.0.14",
     "typescript": "^5.8.2"
   },

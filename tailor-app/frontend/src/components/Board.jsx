@@ -1,6 +1,8 @@
 /* eslint-disable */
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
+import html2pdf from 'html2pdf.js'
 import Image from './Image'
 import { getBackendUrl } from '../utils/env.js'
 import { toBlob } from 'html-to-image'
@@ -231,8 +233,27 @@ const BoardTest = (props) => {
     setActiveImages((prevImages) => [...prevImages, next_image_url])
   }
 
-  // Handle Export
-  const handleExport = async () => {
+  const handleAnalysisDownload = () => {
+    try {
+      const element = document.querySelector('.markdown-body')
+      const options = {
+        filename: title + '_analysis.pdf',
+        html2canvas: { scale: 2 },
+        margin: [20, 10, 20, 10],
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        }
+      }
+      html2pdf().from(element).set(options).save()
+    } catch (error) {
+      console.error('Analysis PDF export failed:', error)
+    }
+  }
+
+  const handleBoardDownload = async () => {
     if (!boardRef.current) {
       console.error('Export failed: Board reference not found')
       return
@@ -285,6 +306,12 @@ const BoardTest = (props) => {
     }
   }
 
+  // Handle Export
+  const handleExport = async () => {
+    handleBoardDownload()
+    handleAnalysisDownload()
+  }
+
   return (
     <>
       <MoodboardTitle title={title} setTitle={setTitle} />
@@ -293,6 +320,7 @@ const BoardTest = (props) => {
           <button
             className='flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer'
             onClick={handleExport}
+            data-tip='Export board and analysis'
           >
             <ExportIcon />
             Download
@@ -301,10 +329,12 @@ const BoardTest = (props) => {
           <button
             className='flex items-center gap-3 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer'
             onClick={handleAddImage}
+            data-tip='Regenerate image'
           >
             <AddIcon />
             Add
           </button>
+          <ReactTooltip place='top' type='dark' effect='solid' />
 
           {/* <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
             // onClick={handleUndo}
