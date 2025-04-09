@@ -1,60 +1,58 @@
-/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 
 // Assets and styling
 import '../App.css'
-import { getBackendUrl } from '../utils/env.js';
+import { getBackendUrl } from '../utils/env.js'
 
 // Components
-import UploadModal from '../components/UploadModal';
-import CollectionItem from '../components/CollectionItem.jsx';
+import UploadModal from '../components/UploadModal'
+import CollectionItem from '../components/CollectionItem.jsx'
 
+function MyCollection() {
+  const API_URL = getBackendUrl()
+  const navigate = useNavigate()
+  const [uploads, setUploads] = useState(null)
+  const [boards, setBoards] = useState(null)
+  const userId = '123'
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-function MyCollection (){
-    const API_URL = getBackendUrl();
-    const navigate = useNavigate();
-    const [uploads, setUploads] = useState(null);
-    const [boards, setBoards] = useState(null);
-    const userId = '123';
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => {
+    setIsModalOpen(true)
+  }
 
-    const openModal = () => {
-      setIsModalOpen(true);
-    };
-  
-    const closeModal = () => {
-      setIsModalOpen(false);
-    };
-    
-    async function fetchUploads() {
-        const response = await fetch(`${API_URL}/api/files/user/${userId}`);
-        const data = await response.json();
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
 
-        if (data.error) throw new Error(data.error);
-        setUploads(data.files);
+  async function fetchUploads() {
+    const response = await fetch(`${API_URL}/api/files/user/${userId}`)
+    const data = await response.json()
+
+    if (data.error) throw new Error(data.error)
+    setUploads(data.files)
+  }
+
+  async function fetchMoodboards() {
+    const response = await fetch(`${API_URL}/api/boards/user/${userId}`)
+    const data = await response.json()
+
+    if (data.error) throw new Error(data.error)
+    setBoards(data.boards)
+  }
+
+  useEffect(() => {
+    if (uploads === null) {
+      fetchUploads()
     }
+  }, [uploads])
 
-    async function fetchMoodboards() {
-        const response = await fetch(`${API_URL}/api/boards/user/${userId}`);
-        const data = await response.json();
-
-        if (data.error) throw new Error(data.error);
-        setBoards(data.boards);
+  useEffect(() => {
+    if (boards === null) {
+      fetchMoodboards()
     }
-
-    useEffect(() => {
-        if (uploads === null) {
-            fetchUploads();
-        }
-    }, [uploads]);
-    
-    useEffect(() => {
-        if (boards === null) {
-            fetchMoodboards();
-        }
-    }, [boards]);
+  }, [boards])
 
     return (
         <div className="flex flex-col min-h-screen text-white p-4">
@@ -92,7 +90,11 @@ function MyCollection (){
             userId="123"
           />
         </div>
-      );
+      </div>
+
+      <UploadModal isOpen={isModalOpen} onClose={closeModal} userId='123' />
+    </div>
+  )
 }
 
-export default MyCollection;
+export default MyCollection
