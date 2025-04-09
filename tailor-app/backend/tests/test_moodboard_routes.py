@@ -1,10 +1,14 @@
 from io import BytesIO
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from datetime import datetime
 from bson import ObjectId
 
 
 def create_test_board(filename="test_board.jpg", content=b"Test board content"):
+    return (BytesIO(content), filename)
+
+
+def create_test_image(filename="test_image.jpg", content=b"Test image content"):
     return (BytesIO(content), filename)
 
 
@@ -328,3 +332,260 @@ def test_delete_temp_moodboard_exception(mock_find_documents, client):
     response_json = response.get_json()
     assert response_json["success"] is False
     assert "Database connection error" in response_json["error"]
+
+
+@patch("routes.moodboard_routes.co.chat")
+def test_analyze_moodboard_success(mock_cohere_chat, client):
+    # Setup mock response
+    mock_response = MagicMock()
+    mock_response.message.content = [
+        MagicMock(text="# Moodboard Analysis\n\nThis is a test analysis")
+    ]
+    mock_cohere_chat.return_value = mock_response
+
+    # Create test data
+    image, filename = create_test_image()
+    data = {
+        "file": (image, filename),
+    }
+
+    # Make request
+    response = client.post(
+        "/api/boards/nodescriptionsanalyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    # Assert response
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json["success"] is True
+    assert (
+        response_json["analysis"] == "# Moodboard Analysis\n\nThis is a test analysis"
+    )
+
+    # Verify the Cohere API was called with the correct parameters
+    mock_cohere_chat.assert_called_once()
+    call_args = mock_cohere_chat.call_args[1]
+    assert call_args["model"] == "c4ai-aya-vision-8b"
+    assert not call_args["temperature"]
+
+
+def test_analyze_moodboard_no_file(client):
+    response = client.post("/api/boards/nodescriptionsanalyze", data={})
+    assert response.status_code == 400
+    assert "No file uploaded" in response.get_json()["error"]
+
+
+def test_analyze_moodboard_empty_file(client):
+    response = client.post(
+        "/api/boards/nodescriptionsanalyze",
+        data={"file": (BytesIO(b""), "")},
+        content_type="multipart/form-data",
+    )
+    assert response.status_code == 400
+    assert "No file received" in response.get_json()["error"]
+
+
+@patch("routes.moodboard_routes.allowed_file")
+def test_analyze_moodboard_invalid_file_format(mock_allowed_file, client):
+    mock_allowed_file.return_value = False
+
+    image, filename = create_test_image()
+    data = {"file": (image, filename)}
+
+    response = client.post(
+        "/api/boards/nodescriptionsanalyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 400
+    assert "Unsupported file format" in response.get_json()["error"]
+
+
+# @patch("routes.moodboard_routes.allowed_file")
+# def test_analyze_moodboard_file_too_large(mock_allowed_file, client):
+#     mock_allowed_file.return_value = True
+
+#     # Create test image with content_length property
+#     image, filename = create_test_image()
+#     image.content_length = 30 * 1024 * 1024  # 30MB, should exceed MAX_IMAGE_SIZE
+
+#     data = {"file": (image, filename)}
+
+#     response = client.post(
+#         "/api/boards/nodescriptionsanalyze",
+#         data=data,
+#         content_type="multipart/form-data",
+#     )
+
+#     assert response.status_code == 400
+#     assert "File size exceeds 20 MB" in response.get_json()["error"]
+
+
+@patch("routes.moodboard_routes.allowed_file")
+@patch("routes.moodboard_routes.co.chat")
+def test_analyze_moodboard_exception(mock_cohere_chat, mock_allowed_file, client):
+    mock_allowed_file.return_value = True
+    mock_cohere_chat.side_effect = Exception("AI service unavailable")
+
+    image, filename = create_test_image()
+    data = {"file": (image, filename)}
+
+    response = client.post(
+        "/api/boards/nodescriptionsanalyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 500
+    response_json = response.get_json()
+    assert "AI service unavailable" in response_json["error"]
+
+
+# Tests for analyze_moodboardV2 (with descriptions)
+@patch("routes.moodboard_routes.co.chat")
+def test_analyze_moodboardV2_success(mock_cohere_chat, client):
+    # Setup mock response
+    mock_response = MagicMock()
+    mock_response.message.content = [
+        MagicMock(
+            text="# Detailed Moodboard Analysis\n\nThis is a detailed test analysis"
+        )
+    ]
+    mock_cohere_chat.return_value = mock_response
+
+    # Create test data
+    image, filename = create_test_image()
+    data = {
+        "file": (image, filename),
+        "image_descriptions": '["Image 1 description", "Image 2 description"]',
+    }
+
+    # Make request
+    response = client.post(
+        "/api/boards/analyze", data=data, content_type="multipart/form-data"
+    )
+
+    # Assert response
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json["success"] is True
+    assert (
+        response_json["analysis"]
+        == "# Detailed Moodboard Analysis\n\nThis is a detailed test analysis"
+    )
+
+    # Verify the Cohere API was called with the correct parameters
+    mock_cohere_chat.assert_called_once()
+    call_args = mock_cohere_chat.call_args[1]
+    assert call_args["model"] == "c4ai-aya-vision-8b"
+
+
+def test_analyze_moodboardV2_no_file(client):
+    response = client.post("/api/boards/analyze", data={})
+    assert response.status_code == 400
+    assert "No file uploaded" in response.get_json()["error"]
+
+
+def test_analyze_moodboardV2_empty_file(client):
+    response = client.post(
+        "/api/boards/analyze",
+        data={"file": (BytesIO(b""), "")},
+        content_type="multipart/form-data",
+    )
+    assert response.status_code == 400
+    assert "No file selected" in response.get_json()["error"]
+
+
+@patch("routes.moodboard_routes.allowed_file")
+def test_analyze_moodboardV2_invalid_file_format(mock_allowed_file, client):
+    mock_allowed_file.return_value = False
+
+    image, filename = create_test_image()
+    data = {"file": (image, filename)}
+
+    response = client.post(
+        "/api/boards/analyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 400
+    assert "Unsupported file format" in response.get_json()["error"]
+
+
+# @patch("routes.moodboard_routes.allowed_file")
+# def test_analyze_moodboardV2_file_too_large(mock_allowed_file, client):
+#     mock_allowed_file.return_value = True
+
+#     # Create test image with content_length property
+#     image, filename = create_test_image()
+#     image.content_length = 30 * 1024 * 1024  # 30MB, should exceed MAX_IMAGE_SIZE
+
+#     data = {"file": (image, filename)}
+
+#     response = client.post(
+#         "/api/boards/analyze",
+#         data=data,
+#         content_type="multipart/form-data",
+#     )
+
+#     assert response.status_code == 400
+#     assert "File size exceeds 20 MB" in response.get_json()["error"]
+
+
+def test_analyze_moodboardV2_invalid_image_descriptions_format(client):
+    image, filename = create_test_image()
+    data = {"file": (image, filename), "image_descriptions": "invalid json format"}
+
+    response = client.post(
+        "/api/boards/analyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 400
+    assert "Invalid image_descriptions format" in response.get_json()["error"]
+
+
+def test_analyze_moodboardV2_invalid_image_descriptions_type(client):
+    image, filename = create_test_image()
+    data = {
+        "file": (image, filename),
+        "image_descriptions": '{"not_a_list": "This is an object, not a list"}',
+    }
+
+    response = client.post(
+        "/api/boards/analyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 400
+    assert "image_descriptions must be a list" in response.get_json()["error"]
+
+
+@patch("routes.moodboard_routes.allowed_file")
+@patch("routes.moodboard_routes.co.chat")
+def test_analyze_moodboardV2_exception(mock_cohere_chat, mock_allowed_file, client):
+    mock_allowed_file.return_value = True
+    mock_cohere_chat.side_effect = Exception("AI service unavailable")
+
+    image, filename = create_test_image()
+    data = {
+        "file": (image, filename),
+        "image_descriptions": '["Image 1 description", "Image 2 description"]',
+    }
+
+    response = client.post(
+        "/api/boards/analyze",
+        data=data,
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 500
+    response_json = response.get_json()
+    assert "Internal Server Error" in response_json["error"]
+    assert "AI service unavailable" in response_json["details"]
