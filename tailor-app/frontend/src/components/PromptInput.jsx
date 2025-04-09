@@ -39,6 +39,14 @@ const PromptInput = () => {
     }
   }
 
+  // Handle key press events for Enter
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !isLoading) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
   return (
     <div className='w-[70vw]'>
       {/* Text Input Area */}
@@ -49,6 +57,7 @@ const PromptInput = () => {
           placeholder='How can I inspire you?'
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={handleKeyDown}
           className='w-full py-4 px-12 rounded-2xl bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300'
         />
       </div>
