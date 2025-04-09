@@ -306,14 +306,13 @@ const BoardTest = (props) => {
             Add
           </button>
 
-            {/* <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
+          {/* <button className="flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer"
             // onClick={handleUndo}
           >
             <UndoIcon />
             Undo
             </button> */}
-
-          </div>
+        </div>
 
         <div className='flex flex-row gap-2'>
           <div
