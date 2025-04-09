@@ -9,94 +9,93 @@
 
 /* Container */
 .privacy-policy-container {
-    max-width: 900px;
-    align-self: center;
-    padding: 20px;
-    background-color: var(--color-gray-dark);
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
+  max-width: 900px;
+  align-self: center;
+  padding: 20px;
+  background-color: var(--color-gray-dark);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Title */
+.privacy-policy-title {
+  font-size: 3.5rem;
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: monospace;
+}
+
+/* Intro Section */
+.intro {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #e1e1e1;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 10px;
+  margin-top: 50px;
+  font-family: monospace;
+}
+
+/* Section Content */
+.section-content {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #e1e1e1;
+  margin-bottom: 10px;
+}
+
+/* No Bullet Points, Just Indented List */
+.section-list {
+  margin-left: 20px;
+  padding-left: 0;
+  margin-bottom: 15px;
+  color: #e1e1e1;
+}
+
+.section-list li {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Contact Details */
+.contact-details {
+  font-size: 1.1rem;
+  color: #e1e1e1;
+}
+
+.contact-details a {
+  color: #a6a6a6;
+  text-decoration: none;
+}
+
+.contact-details a:hover {
+  text-decoration: underline;
+}
+
+/* Make it responsive */
+@media (max-width: 768px) {
+  .privacy-policy-container {
+    padding: 15px;
   }
-  
-  /* Title */
+
   .privacy-policy-title {
-    font-size: 3.5rem;
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-    font-family: monospace;
-  }
-  
-  /* Intro Section */
-  .intro {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #e1e1e1;
-  }
-  
-  /* Section Title */
-  .section-title {
     font-size: 2rem;
-    color: white;
-    margin-bottom: 10px;
-    margin-top: 50px;
-    font-family: monospace;
   }
-  
-  /* Section Content */
-  .section-content {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    color: #e1e1e1;
-    margin-bottom: 10px;
+
+  .section-title {
+    font-size: 1.6rem;
   }
-  
-  /* No Bullet Points, Just Indented List */
+
+  .section-content,
   .section-list {
-    margin-left: 20px;
-    padding-left: 0;
-    margin-bottom: 15px;
-    color: #e1e1e1;
+    font-size: 1rem;
   }
-  
-  .section-list li {
-    font-size: 1.1rem;
-    color: #555;
-    margin-bottom: 10px;
-  }
-  
-  /* Contact Details */
-  .contact-details {
-    font-size: 1.1rem;
-    color: #e1e1e1;
-  }
-  
-  .contact-details a {
-    color: #a6a6a6;
-    text-decoration: none;
-  }
-  
-  .contact-details a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Make it responsive */
-  @media (max-width: 768px) {
-    .privacy-policy-container {
-      padding: 15px;
-    }
-  
-    .privacy-policy-title {
-      font-size: 2rem;
-    }
-  
-    .section-title {
-      font-size: 1.6rem;
-    }
-  
-    .section-content,
-    .section-list {
-      font-size: 1rem;
-    }
-  }
-  
+}

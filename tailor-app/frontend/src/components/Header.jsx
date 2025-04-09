@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from 'react-tooltip'
 
 const Header = () => {
   return (
     <div className='header w-full p-1 font-[Apple Color Emoji] text-gray-300 text-sm flex justify-between items-center mb-10'>
-      <NavLink to='/' className='text-xl cursor-pointer' data-tip="Go to main page">
+      <NavLink to='/' className='text-xl cursor-pointer' data-tip='Go to main page'>
         <h1>
           T<span className='font-extrabold tracking-widest text-white'>AI</span>LOR
         </h1>
@@ -20,7 +20,7 @@ const Header = () => {
         <NavLink
           to='/mycollection'
           className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? 'font-bold text-white' : ''}`}
-          data-tip="Go to uploads and boards"
+          data-tip='Go to uploads and boards'
         >
           Collections
         </NavLink>
@@ -28,7 +28,7 @@ const Header = () => {
           Account
         </NavLink>
       </nav>
-      <ReactTooltip place="top" type="dark" effect="solid" />
+      <ReactTooltip place='top' type='dark' effect='solid' />
     </div>
   )
 }

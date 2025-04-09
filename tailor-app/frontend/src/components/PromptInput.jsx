@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip'
 import { getBackendUrl } from '../utils/env.js'
 
 // Assets
-import { Search, Paperclip, Send, Loader2 } from 'lucide-react'
+import { Search, Send, Loader2 } from 'lucide-react'
 
 // Components
 
@@ -61,10 +61,15 @@ const PromptInput = () => {
         </button> */}
 
         {/* Send prompt */}
-        <button onClick={handleSend} disabled={isLoading} className='px-4 py-2 bg-gray-900 rounded-full hover:bg-gray-800 outline-solid' data-tip="Click to generate mood board for your prompt">
+        <button
+          onClick={handleSend}
+          disabled={isLoading}
+          className='px-4 py-2 bg-gray-900 rounded-full hover:bg-gray-800 outline-solid'
+          data-tip='Click to generate mood board for your prompt'
+        >
           {isLoading ? <Loader2 className='w-5 h-5 text-white animate-spin' /> : <Send className='w-5 h-5 text-white' />}
         </button>
-        <ReactTooltip place="top" type="dark" effect="solid" />
+        <ReactTooltip place='top' type='dark' effect='solid' />
       </div>
     </div>
   )

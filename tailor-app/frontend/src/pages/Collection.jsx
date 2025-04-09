@@ -60,11 +60,11 @@ function MyCollection() {
         <button
           className='px-6 py-3 bg-white text-black rounded-full hover:bg-gray-200 flex items-center space-x-2 transition-colors duration-200 font-medium hover:cursor-pointer'
           onClick={openModal}
-          data-tip="Upload a new image"
+          data-tip='Upload a new image'
         >
           <span>Upload</span>
         </button>
-        <ReactTooltip place="top" type="dark" effect="solid" />
+        <ReactTooltip place='top' type='dark' effect='solid' />
       </div>
 
       <div className='w-[50%]'>

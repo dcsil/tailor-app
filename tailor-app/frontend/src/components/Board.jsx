@@ -235,23 +235,23 @@ const BoardTest = (props) => {
 
   const handleAnalysisDownload = () => {
     try {
-      const element = document.querySelector('.markdown-body');  
+      const element = document.querySelector('.markdown-body')
       const options = {
         filename: title + '_analysis.pdf',
-        html2canvas: { scale: 2 },  
-        margin: [20, 10, 20, 10],    
-        pagebreak: { mode: 'avoid-all'},            
-        jsPDF: { 
-          unit: 'mm',                    
-          format: 'a4',                    
-          orientation: 'portrait',
+        html2canvas: { scale: 2 },
+        margin: [20, 10, 20, 10],
+        pagebreak: { mode: 'avoid-all' },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
         }
-      };
-      html2pdf().from(element).set(options).save();
+      }
+      html2pdf().from(element).set(options).save()
     } catch (error) {
-      console.error("Analysis PDF export failed:", error);
+      console.error('Analysis PDF export failed:', error)
     }
-  };
+  }
 
   const handleBoardDownload = async () => {
     if (!boardRef.current) {
@@ -308,8 +308,8 @@ const BoardTest = (props) => {
 
   // Handle Export
   const handleExport = async () => {
-    handleBoardDownload();
-    handleAnalysisDownload();
+    handleBoardDownload()
+    handleAnalysisDownload()
   }
 
   return (
@@ -319,20 +319,22 @@ const BoardTest = (props) => {
         <div className='flex flex-row justify-start gap-3 mb-4 mx-5'>
           <button
             className='flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer'
-            onClick={handleExport} data-tip="Export board and analysis"
-          > 
+            onClick={handleExport}
+            data-tip='Export board and analysis'
+          >
             <ExportIcon />
             Download
           </button>
 
           <button
             className='flex items-center gap-3 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer'
-            onClick={handleAddImage} data-tip="Regenerate image"
+            onClick={handleAddImage}
+            data-tip='Regenerate image'
           >
             <AddIcon />
             Add
           </button>
-          <ReactTooltip place="top" type="dark" effect="solid" />
+          <ReactTooltip place='top' type='dark' effect='solid' />
 
           <button
             className='flex items-center gap-4 px-3 py-1.5 rounded-xl border-gray-600 border-2 hover:bg-gray-300 cursor-pointer'

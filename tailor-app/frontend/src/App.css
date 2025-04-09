@@ -67,17 +67,17 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 33vh; 
+  height: 33vh;
   width: 100%;
   margin: 0 auto;
-  position: relative; 
+  position: relative;
   top: 1rem;
   bottom: 2rem;
-  left: 50%; 
-  transform: translateX(-50%); 
+  left: 50%;
+  transform: translateX(-50%);
   border: 1px solid var(--color-gray-light);
   border-radius: 8px;
-  background-color: var(--color-gray-dark); 
+  background-color: var(--color-gray-dark);
 }
 
 .chat-messages {
@@ -201,7 +201,7 @@
   letter-spacing: 15px;
   color: transparent;
   text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.5);
-  background-image: url('https://media.licdn.com/dms/image/v2/D5622AQEW3TDqkP-fbg/feedshare-shrink_800/feedshare-shrink_800/0/1716899554594?e=2147483647&v=beta&t=ZjPzKAcUG55hvfAFi8OU_Wf9wsQUlXbrQ1qv4B9xFfM'); 
+  background-image: url('https://media.licdn.com/dms/image/v2/D5622AQEW3TDqkP-fbg/feedshare-shrink_800/feedshare-shrink_800/0/1716899554594?e=2147483647&v=beta&t=ZjPzKAcUG55hvfAFi8OU_Wf9wsQUlXbrQ1qv4B9xFfM');
   background-size: 50%; /* Enlarged for smooth animation */
   background-position: 0 50%;
   background-clip: text;
@@ -212,10 +212,10 @@
 
 @keyframes animate-background {
   0% {
-      background-position: 100% 50%;
+    background-position: 100% 50%;
   }
   100% {
-      background-position: 0% 50%;
+    background-position: 0% 50%;
   }
 }
 

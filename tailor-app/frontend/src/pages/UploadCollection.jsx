@@ -89,7 +89,7 @@ function UploadCollection() {
       {selectedImage && (
         <div className='fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4' onClick={() => setSelectedImage(null)}>
           <div className='relative max-w-full max-h-full' onClick={(e) => e.stopPropagation()}>
-            <img src={selectedImage.blob_url} width={'auto'} height={'auto'} alt={selectedImage.filename}/>
+            <img src={selectedImage.blob_url} width={'auto'} height={'auto'} alt={selectedImage.filename} />
 
             <button
               className='absolute top-1 right-1 bg-black/70 text-white p-2 rounded-full hover:bg-red-500 transition-all'
