@@ -24,7 +24,11 @@ const Header = () => {
         >
           Collections
         </NavLink>
-        <NavLink to='/login' className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? 'font-bold text-white' : ''}`}>
+        <NavLink
+          to='/login'
+          className={({ isActive }) => `px-5 hover:text-white cursor-pointe ${isActive ? 'font-bold text-white' : ''}`}
+          data-tip='Back to login'
+        >
           Account
         </NavLink>
       </nav>
