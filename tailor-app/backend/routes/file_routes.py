@@ -349,6 +349,7 @@ def update_file(user_id, file_id):
 
     except Exception as e:
         logger.error(f"Error updating file: {e}", exc_info=True)
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @file_bp.route("/api/files/<user_id>/<file_id>", methods=["GET"])

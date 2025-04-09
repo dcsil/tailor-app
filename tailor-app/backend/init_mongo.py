@@ -214,8 +214,8 @@ class MockCollection:
 
         return Result()
 
-    def create_index(self):
-        pass
+    # def create_index(self):
+    #     pass
 
 
 # Only initialize connection if this file is run directly or if we're not in testing mode
