@@ -40,6 +40,15 @@ Below is a natural flow of the available use cases along with their descriptions
 
 
 - #### Frontend:
+    #### Upon commit
+    `prettier src/**/*.{js,jsx} --write --config ./.prettierrc` is run, where `--write` fixes and formats the code according to the prettier standard configured in `.prettierrc`. This includes consistent indentation, removing trailing commas, code normalization, and more. Prettier can be easily integrated with pre-commit hooks as we have done, and formatting is performed with each commit.
+
+    Prettier is an opinionated code formatter that allows developers to avoid style debates by providing a consistent format for .js and .jsx files and their respective components to follow. 
+
+    #### On Pull Request
+    `eslint  --fix src/**/*.{js,jsx}` is run first to check if the frontend code adheres to linting standards, and generates a report on which areas violate standards or could be reformatted. 
+
+    `prettier src/**/*.{js,jsx} --check --config ./.prettierrc` runs after to check if code adheres to formatting standards, and also generates a report to see if any of the code is in violation of prettier's formatting standards. This command does not format the code though, as `--write` does in the pre-commit hook.
 
 ### Code coverage:
 
