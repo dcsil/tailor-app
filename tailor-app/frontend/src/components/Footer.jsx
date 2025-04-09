@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
-    <footer className='p-4 text-center text-gray-400 text-sm mt-10 mb-6'>
+    <footer className="p-4 text-center text-gray-400 text-sm mt-10 mb-6">
       <p>
         Tailor{' '}
 
@@ -21,12 +21,11 @@ const Footer = () => {
           onClick={() => navigate("/privacy")}
           className="underline hover:text-white cursor-pointer"
         >
-
           Privacy Policy
         </span>
       </p>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

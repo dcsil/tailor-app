@@ -1,49 +1,30 @@
-import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { getBackendUrl } from '../utils/env.js'
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getBackendUrl } from '../utils/env.js';
 
 // styling
-import '../App.css'
-import { X } from 'lucide-react'
+import '../App.css';
+import { X } from "lucide-react";
 
-function BoardCollection() {
-  const API_URL = getBackendUrl()
-  const userId = '123'
-  const location = useLocation()
-  const navigate = useNavigate()
-  const state_files = location.state?.files || []
-  const [files, setFiles] = useState(state_files)
-  const [selectedImage, setSelectedImage] = useState(null)
 
-  async function handleBoardDelete(board_id) {
-    const response = await fetch(`${API_URL}/api/boards/${userId}/${board_id}`, { method: 'DELETE' })
-    const data = await response.json()
+function BoardCollection () {
+    const API_URL = getBackendUrl();
+    const userId = "123";
+    const location = useLocation();
+    const navigate = useNavigate();
+    const state_files = location.state?.files || [];
+    const [files, setFiles] = useState(state_files);
+    const [selectedImage, setSelectedImage] = useState(null);
 
-    if (data.error) throw new Error(data.error)
-    setFiles((prevFiles) => prevFiles.filter((file, _) => file._id !== board_id))
-  }
+    async function handleBoardDelete(board_id) {
+        const response = await fetch(`${API_URL}/api/boards/${userId}/${board_id}`,
+            { method: 'DELETE',}
+        );
+        const data = await response.json();
 
-  return (
-    <div className='container mx-auto px-4 py-8'>
-      {/* Breadcrumb Navigation */}
-      <nav className='sticky top-0 z-50 bg-gray-900  py-4 mb-8 shadow-lg shadow-purple-500/30'>
-        <ol className='flex items-center space-x-3 text-lg'>
-          <li>
-            <button
-              onClick={() => navigate('/mycollection')}
-              className='text-gray-500 hover:text-white transition-colors duration-200 cursor-pointer'
-            >
-              My Collection
-            </button>
-          </li>
-          <li aria-hidden='true' className='text-white'>
-            {'>'}
-          </li>
-          <li className='text-white font-medium' aria-current='page'>
-            Boards
-          </li>
-        </ol>
-      </nav>
+        if (data.error) throw new Error(data.error);
+        setFiles((prevFiles) => prevFiles.filter((file,_)=>file._id!==board_id));
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -121,9 +102,9 @@ function BoardCollection() {
               width={'auto'}
               height={'auto'}
             />
-
+            
             <button
-              className='absolute top-1 right-1 bg-black/70 text-white p-2 rounded-full hover:bg-red-500 transition-all'
+              className="absolute top-1 right-1 bg-black/70 text-white p-2 rounded-full hover:bg-red-500 transition-all"
               onClick={() => setSelectedImage(null)}
             >
               <X size={24} />
@@ -131,8 +112,9 @@ function BoardCollection() {
           </div>
         </div>
       )}
-    </div>
-  )
+
+        </div>
+    )
 }
 
-export default BoardCollection
+export default BoardCollection;

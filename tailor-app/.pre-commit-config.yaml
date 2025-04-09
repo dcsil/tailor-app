@@ -6,11 +6,3 @@ repos:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-
-   # 2. Prettier - formats JS/JSX frontend files
-  - repo: local
-    hooks:
-      - id: prettier-frontend
-        name: prettier (frontend)
-        entry: bash -c "cd tailor-app/frontend"
-        language: system

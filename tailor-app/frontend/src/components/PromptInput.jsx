@@ -4,43 +4,44 @@ import ReactTooltip from 'react-tooltip';
 import { getBackendUrl } from '../utils/env.js';
 
 // Assets
-import { Search, Paperclip, Send, Loader2 } from 'lucide-react'
+import { Search, Paperclip, Send, Scissors, Loader2 } from 'lucide-react';
 
 // Components
 
 const PromptInput = () => {
-  const [prompt, setPrompt] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const API_URL = getBackendUrl()
+  const [prompt, setPrompt] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const API_URL = getBackendUrl();
 
   const handleSend = async () => {
-    if (!prompt.trim()) return
+    if (!prompt.trim()) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const response = await fetch(`${API_URL}/api/search-prompt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: prompt.trim(), template: 'basic_chat' })
-      })
+        body: JSON.stringify({ prompt: prompt.trim(), template: 'basic_chat' }),
+      });
 
-      const data = await response.json()
-      if (data.error) throw new Error(data.error)
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
 
-      // Navigate to moodboard page
-      navigate('/moodboardresult', { state: { prompt: prompt.trim(), response: data } })
+      // Navigate to moodboard page 
+      navigate('/moodboardresult', { state: { prompt: prompt.trim(), response: data } });
+
     } catch (error) {
-      console.error('Error:', error)
-      navigate('/moodboardresult', { state: { prompt: prompt.trim(), response: 'Error processing request.' } })
+      console.error('Error:', error);
+      navigate('/moodboardresult', { state: { prompt: prompt.trim(), response: 'Error processing request.' } });
+
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-
     <div className="w-[70vw]">
           {/* Text Input Area */}
           <div className="relative">
@@ -76,4 +77,4 @@ const PromptInput = () => {
   );
 };
 
-export default PromptInput
+export default PromptInput;

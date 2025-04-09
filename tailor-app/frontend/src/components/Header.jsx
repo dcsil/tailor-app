@@ -1,4 +1,3 @@
-
 import { NavLink } from "react-router-dom";
 import ReactTooltip from 'react-tooltip';
 
@@ -22,6 +21,5 @@ const Header = () => {
         </div>
     );
 };
-
 
 export default Header
