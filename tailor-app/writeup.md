@@ -1,5 +1,8 @@
 Tailor is a cutting-edge Generative AI platform that automates the creation of personalized mood boards, transforming creative ideas into visually stunning collections with ease.
 
+## Link to Video 
+https://drive.google.com/file/d/1HRPB1j-TndKt2Bh47NJApEf150Pk5hzc/view?usp=sharing
+
 ## Use cases
 Below is a natural flow of the available use cases along with their descriptions:
 
